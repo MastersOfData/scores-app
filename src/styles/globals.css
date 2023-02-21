@@ -1,7 +1,58 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap");
+
 :root {
+  /* Colors */
   --bg-primary-hsl: 0 0% 100%;
   --bg-primary: hsl(var(--bg-primary-hsl));
-  --clr-primary: hsl(0 0% 20%);
+  --glass-primary: hsl(var(--bg-primary-hsl) / var(--glass-opacity));
+  --bg-secondary-hsl: 0 0% 95%;
+  --bg-secondary: hsl(var(--bg-secondary-hsl));
+  --glass-secondary: hsl(var(--bg-secondary-hsl) / var(--glass-opacity));
+  --clr-primary: hsl(0 0% 24%);
+  --clr-secondary: hsl(0 0% 40%);
+  --clr-heading: hsl(0 0% 0%);
+  --clr-strong: hsl(0 0% 12%);
+  --clr-placeholder: hsl(0 0% 55%);
+  --shadow-soft: hsl(0 0% 0% / .2);
+  --shadow-medium: hsl(0 0% 0% / .35);
+  --shadow-strong: hsl(0 0% 0% / .5);
+  --accent: hsl(220 55% 50%);
+
+  /* Metrics */
+  --padding-y-text: .4em;
+  --padding-x: 1.25rem;
+  --padding-y: .75rem;
+  --icon-size: 1.5rem;
+  --border-radius-round: 100vmax;
+  --border-radius-soft: .5rem;
+  --border-radius-medium: .25rem;
+  --border-radius-hard: .125rem;
+
+  /* Font families */
+  --ff-primary: 'Open Sans', sans-serif;
+  --ff-heading: 'Lato', sans-serif;
+
+  /* Font sizes */
+  --fs-300: .925rem;
+  --fs-400: 1rem;
+  --fs-500: 1.125rem;
+  --fs-600: 1.25rem;
+  --fs-700: 1.5rem;
+  --fs-800: 2rem;
+  --fs-900: 2.5rem;
+
+  /* Misc */
+  --glass-opacity: .9;
+  --transition-fast: 250ms;
+  --transition-medium: 375ms;
+  --transition-slow: 500ms;
+  --box-shadow-s: 0 .2rem .4rem;
+  --box-shadow-m: 0 .35rem .7rem;
+  --box-shadow-l: 0 .5rem 1rem;
+  --box-shadow-border-s: 0 0 .2rem;
+  --box-shadow-border-m: 0 0 .35rem;
+  --box-shadow-border-l: 0 0 .7rem;
 }
 
 * {
@@ -15,10 +66,57 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   background-color: var(--bg-primary);
-  color: var(--clr-primary)
+  color: var(--clr-primary);
+  font-family: var(--ff-primary);
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+button {
+  border: none;
+  outline: none;
+  background-color: var(--accent);
+  color: hsl(0 0% 100%);
+  border-radius: var(--border-radius-round);
+  padding: var(--padding-y) var(--padding-y);
+  cursor: pointer;
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-color: hsl(0 0% 100%);
+  opacity: 0;
+  box-shadow: none;
+  transition:
+    opacity var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+button:hover::after {
+  opacity: .1;
+  box-shadow: var(--box-shadow-border-m) var(--shadow-soft);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary-hsl: 0 0% 28%;
+    --bg-secondary-hsl: 0 0% 35%;
+    --clr-primary: hsl(0 0% 80%);
+    --clr-secondary: hsl(0 0% 65%);
+    --clr-heading: hsl(0 0% 100%);
+    --clr-strong: hsl(0 0% 92%);
+    --clr-placeholder: hsl(0 0% 50%);
+    --shadow-soft: hsl(0 0% 0% / .5);
+    --shadow-medium: hsl(0 0% 0% / .75);
+    --shadow-strong: hsl(0 0% 0% / 1);
+  }
 }
