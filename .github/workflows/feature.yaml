@@ -16,10 +16,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: sarisia/actions-status-discord@v1
-        if: always()
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -27,3 +23,7 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: npm run test
+      - uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
