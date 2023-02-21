@@ -1,0 +1,24 @@
+:root {
+  --bg-primary-hsl: 0 0% 100%;
+  --bg-primary: hsl(var(--bg-primary-hsl));
+  --clr-primary: hsl(0 0% 20%);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: var(--bg-primary);
+  color: var(--clr-primary)
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
