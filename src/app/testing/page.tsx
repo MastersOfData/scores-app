@@ -18,7 +18,7 @@ export default function TestingPage() {
         <p className={styles.secondary}>Secondary text</p>
       </div>
 
-      <div>
+      <div className="form-group">
         <form className={styles.form}>
           <input
             type="text"
