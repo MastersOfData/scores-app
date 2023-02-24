@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app"
 import { getFirestore } from "firebase/firestore"
-//import { getAuth } from "firebase/auth"
+import { getAuth } from "firebase/auth/cordova"
 
 const firebaseConfig = {
   apiKey: "AIzaSyAQG3eR4JCGXgxD6bjIJ_YkVa9OSjKUm_0",
@@ -11,6 +11,6 @@ const firebaseConfig = {
   appId: "1:166006246251:web:e4aec33034cd9bb2dc1a2e"
 }
 
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)
-export const auth = null //getAuth(app)
+export const auth = getAuth(app)
