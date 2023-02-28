@@ -89,7 +89,12 @@ strong {
   color: var(--clr-strong);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--clr-heading);
   font-family: var(--ff-heading);
   font-weight: 700;
@@ -153,7 +158,8 @@ button:hover::after {
   opacity: .1;
 }
 
-textarea, input:not([type="checkbox"]) {
+textarea,
+input:not([type="checkbox"]) {
   border: none;
   outline: none;
   background-color: var(--tint-soft);
