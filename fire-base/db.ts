@@ -1,19 +1,20 @@
 import { db } from "./services"
-import { 
-  onSnapshot, 
-  doc, 
-  collection, 
-  CollectionReference, 
-  DocumentData, 
-  QueryConstraint, 
-  query, 
-  addDoc, 
-  deleteDoc, 
-  DocumentReference, 
-  updateDoc, 
-  getDoc, 
-  UpdateData, 
-  getDocs} from "firebase/firestore"
+import {
+  onSnapshot,
+  doc,
+  collection,
+  CollectionReference,
+  DocumentData,
+  QueryConstraint,
+  query,
+  addDoc,
+  deleteDoc,
+  DocumentReference,
+  updateDoc,
+  getDoc,
+  UpdateData,
+  getDocs
+} from "firebase/firestore"
 
 // Types
 type Document<T extends DocumentData> = T & { id: string }
