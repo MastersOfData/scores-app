@@ -1,4 +1,4 @@
-import AuthTester from "@/components/AuthTester"
+import AuthTester from "../../components/AuthTester"
 import styles from "../../styles/Testing.module.css"
 
 export default function TestingPage() {
