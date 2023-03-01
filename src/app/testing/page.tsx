@@ -4,7 +4,7 @@ import { ControllerIcon } from "src/assets/icons/ControllerIcon";
 import { GroupIcon } from "src/assets/icons/GroupIcon";
 import { PersonIcon } from "src/assets/icons/PersonIcon";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
-import AuthTester from "../../components/AuthTester";
+import Input from "src/components/Input"
 import styles from "../../styles/Testing.module.css";
 
 export default function TestingPage() {
@@ -50,7 +50,27 @@ export default function TestingPage() {
       <Button variant={ButtonVariant.Round} color={ButtonColor.Pink}>
         Rund knapp
       </Button>
-      <AuthTester />
+      <div>
+        <Input type="text" placeholder="Text Input"/>
+        <br/>
+        <br/>
+        <Input type="email" placeholder="Email Input" />
+        <br/>
+        <br/>
+        <Input type="password" placeholder="Password Input" />
+        <br/>
+        <br/>
+        <Input type="number" placeholder="Number Input" />
+        <br/>
+        <br/>
+        <Input type="textarea" rows={6} placeholder="TextArea Input" />
+        <br/>
+        <br/>
+        <Input type="checkbox" />
+        <br/>
+        <br/>
+        <Input type="toggle" onInput={console.log} />
+      </div>
     </main>
   );
 }
