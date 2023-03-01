@@ -52,9 +52,6 @@
 
   /* Misc */
   --glass-opacity: .9;
-  --transition-fast: 250ms;
-  --transition-medium: 375ms;
-  --transition-slow: 500ms;
   --box-shadow-s: 0 .2rem .4rem;
   --box-shadow-m: 0 .35rem .7rem;
   --box-shadow-l: 0 .5rem 1rem;
@@ -128,39 +125,6 @@ h6 {
 }
 
 /* Interactables */
-button {
-  border: none;
-  outline: none;
-  background-color: var(--accent-green);
-  color: hsl(0 0% 100%);
-  border-radius: var(--border-radius-round);
-  padding: var(--padding-y) var(--padding-x);
-  cursor: pointer;
-  transition: box-shadow var(--transition-fast);
-  isolation: isolate;
-  overflow: hidden;
-  position: relative;
-}
-
-button::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-color: hsl(0 0% 100%);
-  opacity: 0;
-  box-shadow: none;
-  transition: opacity var(--transition-fast);
-}
-
-button:hover {
-  box-shadow: var(--box-shadow-border-m) var(--shadow-soft);
-}
-
-button:hover::after {
-  opacity: .1;
-}
-
 textarea,
 input:not([type="checkbox"]) {
   border: none;

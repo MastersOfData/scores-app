@@ -1,0 +1,31 @@
+.binary-choice-input {
+  width: 6rem;
+  aspect-ratio: 3.5/1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-radius: var(--border-radius-medium);
+  overflow: hidden;
+}
+
+.binary-choice-left, .binary-choice-right {
+  border: none;
+  outline: none;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  color: hsl(0 0% 0%);
+  opacity: .2;
+}
+
+.binary-choice-left {
+  background-color: var(--accent-green);
+}
+
+.binary-choice-right {
+  background-color: var(--accent-red);
+}
+
+.selected {
+  opacity: 1;
+  transition: opacity 100ms;
+}

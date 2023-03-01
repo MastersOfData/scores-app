@@ -1,4 +1,6 @@
-import AuthTester from "../../components/AuthTester"
+"use client"
+
+import { BinaryChoiceInput, TextInput } from "src/components/Input"
 import styles from "../../styles/Testing.module.css"
 
 export default function TestingPage() {
@@ -19,21 +21,12 @@ export default function TestingPage() {
         <p className={styles.secondary}>Secondary text</p>
       </div>
 
-      <div className="form-group">
-        <form className={styles.form}>
-          <input
-            type="text"
-            placeholder="Text Input"
-          />
-          <textarea 
-            rows={6}
-            placeholder="Textarea"
-          />
-          <button>Submit Button</button>
-        </form>
+      <div>
+        <TextInput placeholder="Text Input"/>
+        <br/>
+        <br/>
+        <BinaryChoiceInput leftText="Ja" rightText="Nei" startingState="right" onChoice={console.log} />
       </div>
-
-      <AuthTester />
     </main>
   )
 }
