@@ -8,6 +8,11 @@ type StandardInputProps = {
   onInput?: (value: string) => void
 }
 
+type CheckBoxInputProps = {
+  placeholder?: InputHTMLAttributes<HTMLInputElement>["placeholder"],
+  onInput?: (checked: boolean) => void
+}
+
 type ToggleInputProps = {
   startingState?: boolean,
   onInput?: (value: boolean) => void
@@ -20,7 +25,8 @@ type TextAreaInputProps = {
 }
 
 type InputProps = 
-  (StandardInputProps & { type: "text" | "number" | "email" | "password" | "checkbox" }) | 
+  (StandardInputProps & { type: "text" | "number" | "email" | "password" }) | 
+  (CheckBoxInputProps & { type: "checkbox" }) |
   (ToggleInputProps & { type: "toggle" }) |
   (TextAreaInputProps & { type: "textarea" })
 
@@ -34,7 +40,7 @@ export default function Input(props: InputProps) {
   return <EmailInput {...props} />
 }
 
-function handleInput(e: FormEvent, onInput?: (value: string) => void) {
+function handleTextInput(e: FormEvent, onInput?: (value: string) => void) {
   const elem = e.target as HTMLInputElement | HTMLTextAreaElement
   onInput?.(elem.value)
 }
@@ -42,7 +48,7 @@ function handleInput(e: FormEvent, onInput?: (value: string) => void) {
 function TextAreaInput({ onInput, ...props }: TextAreaInputProps) {
   return (
     <textarea
-      onInput={e => handleInput(e, onInput)}
+      onInput={e => handleTextInput(e, onInput)}
       {...props}
     />
   )
@@ -52,7 +58,7 @@ function TextInput({ onInput, ...props }: StandardInputProps) {
   return (
     <input
       type="text"
-      onInput={e => handleInput(e, onInput)}
+      onInput={e => handleTextInput(e, onInput)}
       {...props}
     />
   )
@@ -65,7 +71,7 @@ function NumberInput({ onInput, ...props }: StandardInputProps) {
       inputMode="numeric"
       pattern="[0-9]+"
       className={styles["number-input"]}
-      onInput={e => handleInput(e, onInput)}
+      onInput={e => handleTextInput(e, onInput)}
       {...props}
     />
   )
@@ -75,7 +81,7 @@ function EmailInput({ onInput, ...props }: StandardInputProps) {
   return (
     <input
       type="email"
-      onInput={e => handleInput(e, onInput)}
+      onInput={e => handleTextInput(e, onInput)}
       {...props}
     />
   )
@@ -85,17 +91,22 @@ function PasswordInput({ onInput, ...props }: StandardInputProps) {
   return (
     <input
       type="password"
-      onInput={e => handleInput(e, onInput)}
+      onInput={e => handleTextInput(e, onInput)}
       {...props}
     />
   )
 }
 
-function CheckBoxInput({ onInput, ...props }: StandardInputProps) {
+function handleBooleanInput(e: FormEvent, onInput?: (value: boolean) => void) {
+  const elem = e.target as HTMLInputElement
+  onInput?.(elem.checked)
+}
+
+function CheckBoxInput({ onInput, ...props }: CheckBoxInputProps) {
   return (
     <input
       type="checkbox"
-      onInput={e => handleInput(e, onInput)}
+      onInput={e => handleBooleanInput(e, onInput)}
       {...props}
     />
   )
