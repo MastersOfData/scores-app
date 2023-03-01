@@ -1,9 +1,11 @@
-import { InputHTMLAttributes, TextareaHTMLAttributes, useState } from "react"
+"use client"
+
+import { FormEvent, InputHTMLAttributes, TextareaHTMLAttributes, useState } from "react"
 import styles from "../styles/Input.module.css"
 
 type StandardInputProps = {
   placeholder?: InputHTMLAttributes<HTMLInputElement>["placeholder"],
-  onInput?: InputHTMLAttributes<HTMLInputElement>["onInput"]
+  onInput?: (value: string) => void
 }
 
 type ToggleInputProps = {
@@ -13,7 +15,7 @@ type ToggleInputProps = {
 
 type TextAreaInputProps = {
   placeholder?: TextareaHTMLAttributes<HTMLTextAreaElement>["placeholder"],
-  onInput?: TextareaHTMLAttributes<HTMLTextAreaElement>["onInput"],
+  onInput?: (value: string) => void,
   rows?: TextareaHTMLAttributes<HTMLTextAreaElement>["rows"],
 }
 
@@ -32,57 +34,68 @@ export default function Input(props: InputProps) {
   return <EmailInput {...props} />
 }
 
-function TextAreaInput(props: TextAreaInputProps) {
+function handleInput(e: FormEvent, onInput?: (value: string) => void) {
+  const elem = e.target as HTMLInputElement | HTMLTextAreaElement
+  onInput?.(elem.value)
+}
+
+function TextAreaInput({ onInput, ...props }: TextAreaInputProps) {
   return (
     <textarea
+      onInput={e => handleInput(e, onInput)}
       {...props}
     />
   )
 }
 
-function TextInput(props: StandardInputProps) {
+function TextInput({ onInput, ...props }: StandardInputProps) {
   return (
     <input
       type="text"
+      onInput={e => handleInput(e, onInput)}
       {...props}
     />
   )
 }
 
-function NumberInput(props: StandardInputProps) {
+function NumberInput({ onInput, ...props }: StandardInputProps) {
   return (
     <input
       type="text"
       inputMode="numeric"
       pattern="[0-9]+"
       className={styles["number-input"]}
+      onInput={e => handleInput(e, onInput)}
       {...props}
     />
   )
 }
 
-function EmailInput(props: StandardInputProps) {
+function EmailInput({ onInput, ...props }: StandardInputProps) {
   return (
     <input
       type="email"
+      onInput={e => handleInput(e, onInput)}
       {...props}
     />
   )
 }
 
-function PasswordInput(props: StandardInputProps) {
+function PasswordInput({ onInput, ...props }: StandardInputProps) {
   return (
     <input
       type="password"
+      onInput={e => handleInput(e, onInput)}
       {...props}
     />
   )
 }
 
-function CheckBoxInput(props: StandardInputProps) {
+function CheckBoxInput({ onInput, ...props }: StandardInputProps) {
   return (
     <input
       type="checkbox"
+      onInput={e => handleInput(e, onInput)}
       {...props}
     />
   )
