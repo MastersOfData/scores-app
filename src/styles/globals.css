@@ -129,13 +129,13 @@ h6 {
 
 /* Interactables */
 button {
-  border: none;
-  outline: none;
   background-color: var(--accent-green);
-  color: hsl(0 0% 100%);
-  border-radius: var(--border-radius-round);
-  padding: var(--padding-y) var(--padding-x);
+  border: none;
+  border-radius: 8px;
+  color: var(--clr-icon);
   cursor: pointer;
+  outline: none;
+  padding: var(--padding-y) var(--padding-x);
   transition: box-shadow var(--transition-fast);
   isolation: isolate;
   overflow: hidden;
