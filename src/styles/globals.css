@@ -43,6 +43,7 @@
   --ff-heading: 'Lato', sans-serif;
 
   /* Font sizes */
+  --fs-200: .875rem;
   --fs-300: .925rem;
   --fs-400: 1rem;
   --fs-500: 1.125rem;

@@ -17,9 +17,9 @@ export enum ButtonVariant {
 }
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant: ButtonVariant;
-  color?: ButtonColor;
   className?: string;
+  color?: ButtonColor;
+  variant: ButtonVariant;
   onClick?: () => void;
   children?: ReactNode;
 }

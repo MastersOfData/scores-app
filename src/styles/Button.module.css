@@ -1,21 +1,25 @@
 .button-sm {
-  height: 24px;
+  font-size: var(--fs-200);
+  height: 1.5rem;
   max-width: fit-content;
+  padding: 0 var(--padding-x);
 }
 
 .button-md {
-  height: 40px;
+  height: 2.5rem;
   max-width: fit-content;
+  padding: 0 var(--padding-x);
 }
 
 .button-round {
+  font-size: var(--fs-600);
   border-radius: 100vmax;
 }
 
 .button-action {
   border-radius: 50%;
-  height: 80px;
-  width: 80px;
+  height: 5rem;
+  width: 5rem;
 }
 
 .button--green {
