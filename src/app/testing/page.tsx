@@ -22,22 +22,22 @@ export default function TestingPage() {
       </div>
 
       <div>
-        <Input type="text" placeholder="Text Input"/>
+        <Input type="text" placeholder="Text Input" onInput={console.log} />
         <br/>
         <br/>
-        <Input type="email" placeholder="Email Input" />
+        <Input type="email" placeholder="Email Input" onInput={console.log} />
         <br/>
         <br/>
-        <Input type="password" placeholder="Password Input" />
+        <Input type="password" placeholder="Password Input" onInput={console.log} />
         <br/>
         <br/>
-        <Input type="number" placeholder="Number Input" />
+        <Input type="number" placeholder="Number Input" onInput={console.log} />
         <br/>
         <br/>
-        <Input type="textarea" rows={6} placeholder="TextArea Input" />
+        <Input type="textarea" rows={6} placeholder="TextArea Input" onInput={console.log} />
         <br/>
         <br/>
-        <Input type="checkbox" />
+        <Input type="checkbox" onInput={console.log} />
         <br/>
         <br/>
         <Input type="toggle" onInput={console.log} />
