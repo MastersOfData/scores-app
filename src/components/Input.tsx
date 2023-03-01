@@ -1,9 +1,46 @@
-import { InputHTMLAttributes, useState } from "react"
+import { InputHTMLAttributes, TextareaHTMLAttributes, useState } from "react"
 import styles from "../styles/Input.module.css"
 
-type InputProps = InputHTMLAttributes<HTMLInputElement>
+type StandardInputProps = {
+  placeholder?: InputHTMLAttributes<HTMLInputElement>["placeholder"],
+  onInput?: InputHTMLAttributes<HTMLInputElement>["onInput"]
+}
 
-export function TextInput(props: InputProps) {
+type ToggleInputProps = {
+  startingState?: boolean,
+  onInput?: (value: boolean) => void
+}
+
+type TextAreaInputProps = {
+  placeholder?: TextareaHTMLAttributes<HTMLTextAreaElement>["placeholder"],
+  onInput?: TextareaHTMLAttributes<HTMLTextAreaElement>["onInput"],
+  rows?: TextareaHTMLAttributes<HTMLTextAreaElement>["rows"],
+}
+
+type InputProps = 
+  (StandardInputProps & { type: "text" | "number" | "email" | "password" | "checkbox" }) | 
+  (ToggleInputProps & { type: "toggle" }) |
+  (TextAreaInputProps & { type: "textarea" })
+
+export default function Input(props: InputProps) {
+  if (props.type === "toggle")   return <ToggleInput   {...props} />
+  if (props.type === "text")     return <TextInput     {...props} />
+  if (props.type === "number")   return <NumberInput   {...props} />
+  if (props.type === "password") return <PasswordInput {...props} />
+  if (props.type === "checkbox") return <CheckBoxInput {...props} />
+  if (props.type === "textarea") return <TextAreaInput {...props} />
+  return <EmailInput {...props} />
+}
+
+function TextAreaInput(props: TextAreaInputProps) {
+  return (
+    <textarea
+      {...props}
+    />
+  )
+}
+
+function TextInput(props: StandardInputProps) {
   return (
     <input
       type="text"
@@ -12,18 +49,19 @@ export function TextInput(props: InputProps) {
   )
 }
 
-export function NumberInput(props: InputProps) {
+function NumberInput(props: StandardInputProps) {
   return (
     <input
       type="text"
       inputMode="numeric"
       pattern="[0-9]+"
+      className={styles["number-input"]}
       {...props}
     />
   )
 }
 
-export function EmailInput(props: InputProps) {
+function EmailInput(props: StandardInputProps) {
   return (
     <input
       type="email"
@@ -32,7 +70,7 @@ export function EmailInput(props: InputProps) {
   )
 }
 
-export function PasswordInput(props: InputProps) {
+function PasswordInput(props: StandardInputProps) {
   return (
     <input
       type="password"
@@ -41,36 +79,36 @@ export function PasswordInput(props: InputProps) {
   )
 }
 
-type BinaryChoice = "left" | "right"
-
-type BinaryChoiceInputProps = {
-  leftText: string,
-  rightText: string,
-  startingState: BinaryChoice,
-  onChoice?: (choice: BinaryChoice) => void
+function CheckBoxInput(props: StandardInputProps) {
+  return (
+    <input
+      type="checkbox"
+      {...props}
+    />
+  )
 }
 
-export function BinaryChoiceInput({ leftText, rightText, startingState, onChoice }: BinaryChoiceInputProps) {
-  const [selected, setSelected] = useState<BinaryChoice>(startingState)
+function ToggleInput({ onInput, startingState }: ToggleInputProps) {
+  const [yes, setYes] = useState<boolean>(startingState ?? true)
 
-  function handleChoice(choice: BinaryChoice) {
-    setSelected(choice)
-    if (onChoice) onChoice(choice)
+  function handleToggle(value: boolean) {
+    setYes(value)
+    if (onInput) onInput(value)
   }
 
   return (
     <span className={styles["binary-choice-input"]}>
       <button 
-        className={`${styles["binary-choice-left"]} ${selected === "left" ? styles["selected"] : ""}`} 
-        onClick={() => handleChoice("left")}
+        className={`${styles["binary-choice-left"]} ${yes ? styles["selected"] : ""}`} 
+        onClick={() => handleToggle(true)}
       >
-        {leftText}
+        Ja
       </button>
       <button 
-        className={`${styles["binary-choice-right"]} ${selected === "right" ? styles["selected"] : ""}`} 
-        onClick={() => handleChoice("right")}
+        className={`${styles["binary-choice-right"]} ${!yes ? styles["selected"] : ""}`} 
+        onClick={() => handleToggle(false)}
       >
-        {rightText}
+        Nei
       </button>
     </span>
   )

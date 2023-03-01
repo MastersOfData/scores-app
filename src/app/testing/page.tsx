@@ -1,6 +1,6 @@
 "use client"
 
-import { BinaryChoiceInput, TextInput } from "src/components/Input"
+import Input from "src/components/Input"
 import styles from "../../styles/Testing.module.css"
 
 export default function TestingPage() {
@@ -22,10 +22,25 @@ export default function TestingPage() {
       </div>
 
       <div>
-        <TextInput placeholder="Text Input"/>
+        <Input type="text" placeholder="Text Input"/>
         <br/>
         <br/>
-        <BinaryChoiceInput leftText="Ja" rightText="Nei" startingState="right" onChoice={console.log} />
+        <Input type="email" placeholder="Email Input" />
+        <br/>
+        <br/>
+        <Input type="password" placeholder="Password Input" />
+        <br/>
+        <br/>
+        <Input type="number" placeholder="Number Input" />
+        <br/>
+        <br/>
+        <Input type="textarea" rows={6} placeholder="TextArea Input" />
+        <br/>
+        <br/>
+        <Input type="checkbox" />
+        <br/>
+        <br/>
+        <Input type="toggle" onInput={console.log} />
       </div>
     </main>
   )

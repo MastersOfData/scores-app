@@ -1,6 +1,5 @@
 .binary-choice-input {
-  width: 6rem;
-  aspect-ratio: 3.5/1;
+  height: fit-content;
   display: grid;
   grid-template-columns: 1fr 1fr;
   border-radius: var(--border-radius-medium);
@@ -8,6 +7,8 @@
 }
 
 .binary-choice-left, .binary-choice-right {
+  height: fit-content;
+  padding: var(--padding);
   border: none;
   outline: none;
   display: grid;
@@ -15,6 +16,11 @@
   cursor: pointer;
   color: hsl(0 0% 0%);
   opacity: .2;
+}
+
+:is(.binary-choice-left, .binary-choice-right):hover {
+  opacity: .3;
+  transition: opacity 100ms;
 }
 
 .binary-choice-left {
@@ -26,6 +32,16 @@
 }
 
 .selected {
-  opacity: 1;
+  opacity: 1 !important;
   transition: opacity 100ms;
+}
+
+.number-input::-webkit-outer-spin-button,
+.number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.numer-input {
+  -moz-appearance: textfield;
 }
