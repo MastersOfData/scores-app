@@ -31,7 +31,7 @@ export default function TestingPage() {
         <Input type="password" placeholder="Password Input" onInput={console.log} />
         <br/>
         <br/>
-        <Input type="number" placeholder="Number Input" onInput={console.log} />
+        <Input type="number" placeholder="Number Input" defaultValue={5} onInput={console.log} />
         <br/>
         <br/>
         <Input type="textarea" rows={6} placeholder="TextArea Input" onInput={console.log} />
