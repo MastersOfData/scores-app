@@ -33,7 +33,7 @@ type InfoContextType = {
 
 const InfoContext = createContext<InfoContextType>({
   show: false,
-  toggle: () => {}
+  toggle: () => {throw new Error("Function not initialised")}
 })
 
 const useInfoContext = () => useContext(InfoContext)
