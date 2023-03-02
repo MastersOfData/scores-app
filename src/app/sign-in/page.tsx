@@ -2,7 +2,7 @@
 
 import router from "next/router";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
-import { GamesBanner } from "src/components/GamesBanner";
+import { GamesBanner } from "src/assets/icons/GamesBanner";
 import Input from "src/components/Input";
 import styles from "../../styles/SignIn.module.css";
 
@@ -15,16 +15,16 @@ export default function SignInPage() {
         <p className={styles.inputLabel}>Email/Brukernavn:</p>
         <Input
           type="text"
-          placeholder="Text Input"
-          onInput={() => console.log()}
+          placeholder="Brukernavn"
+          onInput={(value) => console.log(value)}
         />
       </div>
       <div className={styles.inputContainer}>
         <p className={styles.inputLabel}>Passord:</p>
         <Input
           type="password"
-          placeholder="Password Input"
-          onInput={() => console.log()}
+          placeholder="Passord"
+          onInput={(value) => console.log(value)}
         />
       </div>
       <div className={styles.buttonContainer}>
