@@ -28,13 +28,6 @@ export default function TestingPage() {
         <p className={styles.secondary}>Secondary text</p>
       </div>
 
-      <div className="form-group">
-        <form className={styles.form}>
-          <input type="text" placeholder="Text Input" />
-          <textarea rows={6} placeholder="Textarea" />
-          <button>Submit Button</button>
-        </form>
-      </div>
       <Button variant={ButtonVariant.Action}>
         <ControllerIcon />
       </Button>
@@ -49,25 +42,14 @@ export default function TestingPage() {
       <Button variant={ButtonVariant.Round} color={ButtonColor.Pink} onClick={() => router.push("/")}>
         Rund knapp
       </Button>
-      <div>
+
+      <div className={styles.column}>
         <Input type="text" placeholder="Text Input" onInput={console.log} />
-        <br/>
-        <br/>
         <Input type="email" placeholder="Email Input" onInput={console.log} />
-        <br/>
-        <br/>
         <Input type="password" placeholder="Password Input" onInput={console.log} />
-        <br/>
-        <br/>
         <Input type="number" placeholder="Number Input" defaultValue={5} onInput={console.log} />
-        <br/>
-        <br/>
         <Input type="textarea" rows={6} placeholder="TextArea Input" onInput={console.log} />
-        <br/>
-        <br/>
         <Input type="checkbox" onInput={console.log} />
-        <br/>
-        <br/>
         <Input type="toggle" onInput={console.log} />
       </div>
     </main>

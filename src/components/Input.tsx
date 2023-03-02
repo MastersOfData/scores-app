@@ -161,15 +161,15 @@ function ToggleInput({ onInput, startingState }: ToggleInputProps) {
   }
 
   return (
-    <span className={styles["binary-choice-input"]}>
+    <span className={styles["toggle-input"]}>
       <button 
-        className={`${styles["binary-choice-left"]} ${yes ? styles["selected"] : ""}`} 
+        className={`${styles["toggle-on"]} ${yes ? styles["selected"] : ""}`} 
         onClick={() => handleToggle(true)}
       >
         Ja
       </button>
       <button 
-        className={`${styles["binary-choice-right"]} ${!yes ? styles["selected"] : ""}`} 
+        className={`${styles["toggle-off"]} ${!yes ? styles["selected"] : ""}`} 
         onClick={() => handleToggle(false)}
       >
         Nei
