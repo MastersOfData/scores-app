@@ -1,0 +1,43 @@
+.button-sm {
+  font-size: var(--fs-200);
+  height: 1.5rem;
+  max-width: fit-content;
+  padding: 0 var(--padding-x);
+}
+
+.button-md {
+  height: 2.5rem;
+  max-width: fit-content;
+  padding: 0 var(--padding-x);
+}
+
+.button-round {
+  font-size: var(--fs-600);
+  border-radius: 100vmax;
+}
+
+.button-action {
+  border-radius: 50%;
+  height: 5rem;
+  width: 5rem;
+}
+
+.button--green {
+  background-color: var(--accent-green);
+}
+
+.button--red {
+  background-color: var(--accent-red);
+}
+
+.button--yellow {
+  background-color: var(--accent-yellow);
+}
+
+.button--pink {
+  background-color: var(--accent-pink);
+}
+
+.button--orange {
+  background-color: var(--accent-orange);
+}

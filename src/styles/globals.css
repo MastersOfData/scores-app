@@ -43,6 +43,7 @@
   --ff-heading: 'Lato', sans-serif;
 
   /* Font sizes */
+  --fs-200: .875rem;
   --fs-300: .925rem;
   --fs-400: 1rem;
   --fs-500: 1.125rem;
@@ -126,6 +127,39 @@ h6 {
 }
 
 /* Interactables */
+button {
+  background-color: var(--accent-green);
+  border: none;
+  border-radius: 8px;
+  color: var(--clr-icon);
+  cursor: pointer;
+  outline: none;
+  padding: var(--padding-y) var(--padding-x);
+  transition: box-shadow var(--transition-fast);
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-color: hsl(0 0% 100%);
+  opacity: 0;
+  box-shadow: none;
+  transition: opacity var(--transition-fast);
+}
+
+button:hover {
+  box-shadow: var(--box-shadow-border-m) var(--shadow-soft);
+}
+
+button:hover::after {
+  opacity: .1;
+}
+
 textarea,
 input:not([type="checkbox"]) {
   border: none;
