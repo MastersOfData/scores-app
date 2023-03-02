@@ -50,14 +50,14 @@ function handleCheckBoxInput(e: FormEvent, onInput?: (value: boolean) => void) {
 }
 
 // Input components
-export default function Input(props: InputProps) {
-  if (props.type === "toggle")   return <ToggleInput   {...props} />
-  if (props.type === "text")     return <TextInput     {...props} />
-  if (props.type === "number")   return <NumberInput   {...props} />
-  if (props.type === "password") return <PasswordInput {...props} />
-  if (props.type === "checkbox") return <CheckBoxInput {...props} />
-  if (props.type === "textarea") return <TextAreaInput {...props} />
-  return <EmailInput {...props} />
+export default function Input({ type, ...props }: InputProps) {
+  if (type === "toggle")   return <ToggleInput   {...props as ToggleInputProps} />
+  if (type === "text")     return <TextInput     {...props as TextInputProps} />
+  if (type === "number")   return <NumberInput   {...props as NumberInputProps} />
+  if (type === "password") return <PasswordInput {...props as TextInputProps} />
+  if (type === "checkbox") return <CheckBoxInput {...props as CheckBoxInputProps} />
+  if (type === "textarea") return <TextAreaInput {...props as TextAreaInputProps} />
+  return <EmailInput {...props as TextInputProps} />
 }
 
 function TextAreaInput({ onInput, ...props }: TextAreaInputProps) {
@@ -102,6 +102,9 @@ function PasswordInput({ onInput, ...props }: TextInputProps) {
 function NumberInput({ onInput, defaultValue, ...props }: NumberInputProps) {
   const ref = useRef<HTMLInputElement>(null)
   const [value, setValue] = useState<number>(defaultValue || 0)
+  const regexp = /^[0-9]+$/
+  let regexpStr = regexp + ""
+  regexpStr = regexpStr.substring(1, regexpStr.length - 1)
 
   function handleInput() {
     const elem = ref.current!
@@ -112,7 +115,7 @@ function NumberInput({ onInput, defaultValue, ...props }: NumberInputProps) {
     }
 
     const val = parseInt(valStr)
-    const isValid = !Number.isNaN(val)
+    const isValid = !Number.isNaN(val) && regexp.test(valStr)
     if (!isValid) {
       elem.value = value + ""
       return
@@ -130,7 +133,7 @@ function NumberInput({ onInput, defaultValue, ...props }: NumberInputProps) {
     <input
       type="text"
       inputMode="numeric"
-      pattern="[0-9]+"
+      pattern={regexpStr}
       className={styles["number-input"]}
       onInput={handleInput}
       ref={ref}
