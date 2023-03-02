@@ -3,15 +3,16 @@
   display: grid;
   place-content: center;
   gap: 1rem;
+  padding: 2rem;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: min(35ch, 100%);
 }
 
 .secondary {
   color: var(--clr-secondary);
-}
-
-.form {
-  width: 35ch;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
