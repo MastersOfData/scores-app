@@ -1,12 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { ControllerIcon } from "src/assets/icons/ControllerIcon";
-import { GroupIcon } from "src/assets/icons/GroupIcon";
-import { PersonIcon } from "src/assets/icons/PersonIcon";
-import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
-import Input from "src/components/Input";
-import styles from "../../styles/Testing.module.css";
+import { useRouter } from "next/navigation"
+import { useState } from "react";
+import { ControllerIcon } from "src/assets/icons/ControllerIcon"
+import { GroupIcon } from "src/assets/icons/GroupIcon"
+import { PersonIcon } from "src/assets/icons/PersonIcon"
+import { Button, ButtonColor, ButtonVariant } from "src/components/Button"
+import { InfoContextProvider, InfoBox, InfoButton } from "src/components/Info"
+import Input from "src/components/Input"
+import styles from "../../styles/Testing.module.css"
 
 export default function TestingPage() {
   const router = useRouter();
@@ -51,7 +53,13 @@ export default function TestingPage() {
         <Input type="textarea" rows={6} placeholder="TextArea Input" onInput={console.log} />
         <Input type="checkbox" onInput={console.log} />
         <Input type="toggle" onInput={console.log} />
+        <div>
+          <InfoContextProvider>
+            <InfoButton />
+            <InfoBox>Informasjonstekst</InfoBox>
+          </InfoContextProvider>
+        </div>
       </div>
     </main>
-  );
+  )
 }
