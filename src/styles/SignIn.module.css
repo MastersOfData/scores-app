@@ -1,0 +1,27 @@
+.container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 2rem;
+}
+
+.title {
+  margin-bottom: 2rem;
+}
+
+.gamesBanner {
+  margin-bottom: 2rem;
+}
+
+.inputContainer {
+  margin: 1rem 0;
+}
+
+.inputLabel {
+  margin-bottom: 0.5rem;
+}
+
+.buttonContainer {
+  margin-top: 2rem;
+}
