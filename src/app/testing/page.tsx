@@ -6,6 +6,7 @@ import { ControllerIcon } from "src/assets/icons/ControllerIcon";
 import { GroupIcon } from "src/assets/icons/GroupIcon";
 import { PersonIcon } from "src/assets/icons/PersonIcon";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
+import Emoji from "src/components/Emoji";
 import { InfoContextProvider, InfoBox, InfoButton } from "src/components/Info";
 import Input from "src/components/Input";
 import { Card } from "../../components/Card";
@@ -93,6 +94,7 @@ export default function TestingPage() {
             <InfoBox>Informasjonstekst</InfoBox>
           </InfoContextProvider>
         </div>
+        <Emoji>😀</Emoji>
       </div>
 
       <h2>Cards</h2>
