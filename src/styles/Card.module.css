@@ -1,0 +1,114 @@
+.card {
+  border-radius: var(--border-radius-soft);
+  background-color: var(--bg-secondary);
+
+  min-height: 2.188rem;
+  padding: 0 10px;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.card-sm {
+  max-height: 2.188rem;
+}
+
+.card-lg {
+  padding: 4px 10px 10px;
+}
+
+.card-header-wrapper {
+  display: flex;
+  gap: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* margin-top: 2px; */
+}
+
+.card-title {
+  font-size: var(--fs-200);
+  font-weight: 500;
+  padding: 0;
+
+  white-space: nowrap;
+}
+
+.card-emoji {
+  font-size: 16px;
+}
+
+.card-labels-wrapper {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-label {
+  background-color: rgb(255, 255, 255, 0.07);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: var(--border-radius-soft);
+  height: 1.25rem;
+  width: fit-content;
+  padding: 0 8px;
+}
+
+.card-label-text {
+  font-size: 0.625rem;
+  color: white;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.card-selected {
+  background-color: white;
+}
+
+.card-selected * {
+  color: black;
+}
+
+.card-clickable {
+  cursor: pointer;
+}
+
+.center-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  gap: 10px;
+}
+
+.scrollable-cards {
+  display: flex;
+  overflow: scroll;
+  gap: 10px;
+
+  /* TODO: Change margin/padding to equal on page paddings */
+  /* Also, turn this off in desktop mode */
+  margin: 0 calc(-10vw / 2);
+  padding: 0 calc(10vw / 2);
+
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollable-cards::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+@media (min-width: 700px) {
+  .scrollable-cards {
+    margin: 0;
+    padding: 0;
+  }
+}
