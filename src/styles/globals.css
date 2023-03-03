@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap");
-@import url("http://fonts.googleapis.com/earlyaccess/khyay.css");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
 :root {
   /* Colors */
@@ -40,8 +40,8 @@
   --border-radius-hard: 0.125rem;
 
   /* Font families */
-  --ff-primary: "Khyay", sans-serif;
-  --ff-heading: "Khyay", sans-serif;
+  --ff-primary: "Poppins", sans-serif;
+  --ff-heading: "Poppins", sans-serif;
 
   /* Font sizes */
   --fs-200: 0.875rem;
