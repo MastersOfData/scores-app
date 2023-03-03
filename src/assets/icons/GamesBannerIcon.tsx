@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-export const GamesBanner: FC = () => (
+export const GamesBannerIcon: FC = () => (
   <svg
     width="195"
     height="73"
