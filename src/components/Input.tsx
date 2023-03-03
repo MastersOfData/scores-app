@@ -127,7 +127,7 @@ function NumberInput({ onInput, defaultValue, ...props }: NumberInputProps) {
   useEffect(() => {
     ref.current!.value = value + ""
     onInput?.(value)
-  }, [value])
+  }, [value, onInput])
 
   return (
     <input
