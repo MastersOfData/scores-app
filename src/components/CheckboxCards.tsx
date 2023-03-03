@@ -1,9 +1,9 @@
 import React, { FC } from "react";
-import { Card } from "./Card";
+import { Card, CardItemSmall } from "./Card";
 import styles from "../styles/Card.module.css";
 
 interface CheckboxCardsProps {
-  items: string[];
+  items: CardItemSmall[];
   checked: string[];
   setChecked: (x: string[]) => void;
 }
@@ -17,14 +17,14 @@ export const CheckboxCards: FC<CheckboxCardsProps> = ({
     <div className={styles["center-cards"]}>
       {items.map((item) => (
         <Card
-          key={item}
-          title={item}
-          selected={checked.includes(item)}
+          key={item.key}
+          title={item.title}
+          selected={checked.includes(item.key)}
           onClick={() => {
-            if (checked.includes(item)) {
-              setChecked(checked.filter((x) => x !== item));
+            if (checked.includes(item.key)) {
+              setChecked(checked.filter((x) => x !== item.key));
             } else {
-              setChecked([...checked, item]);
+              setChecked([...checked, item.key]);
             }
           }}
         />

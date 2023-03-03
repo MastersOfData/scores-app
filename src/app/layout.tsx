@@ -1,14 +1,22 @@
-import type { Metadata } from "next"
-import "../styles/globals.css"
+import type { Metadata } from "next";
+import "../styles/globals.css";
 
 export const metadata: Metadata = {
-  title: "Score Tracker"
-}
+  title: "Score Tracker",
+};
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang='en'>
+      <body>
+        <div className='page-container'>
+          <div className='content-wrapper'>{children}</div>
+        </div>
+      </body>
     </html>
-  )
+  );
 }

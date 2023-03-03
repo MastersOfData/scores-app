@@ -4,7 +4,7 @@
   background-color: var(--bg-secondary);
   color: var(--clr-secondary);
   border-radius: var(--border-radius-hard);
-  padding: calc(.5 * var(--padding-y)) var(--padding-x);
+  padding: calc(0.5 * var(--padding-y)) var(--padding-x);
   transform: scaleY(0);
   transition: transform 200ms;
 }

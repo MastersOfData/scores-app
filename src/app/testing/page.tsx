@@ -24,7 +24,13 @@ export default function TestingPage() {
   const [selected, setSelected] = useState<string | undefined>(undefined);
 
   return (
-    <main className={styles.container}>
+    <main
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "20px",
+      }}
+    >
       <div>
         <h1>h1</h1>
         <h2>h2</h2>
@@ -101,32 +107,39 @@ export default function TestingPage() {
       />
 
       <p>Centered small cards [CenteredSmallCards]</p>
-      <CenteredSmallCards items={users} />
+      <CenteredSmallCards
+        items={users.map((user, i) => ({ title: user, key: i.toString() }))}
+      />
 
       <p>Scrollable large cards [ScrollableLargeCards]</p>
       <ScrollableLargeCards
         items={[
           {
+            key: "1",
             title: "Bingo-gjengen",
             labels: ["Noe relevant info", "Annen info"],
             emoji: "🎰",
           },
           {
+            key: "2",
+            title: "Tennis-gutta",
+            labels: ["Noe relevant info", "Annen info"],
+            emoji: "🎾",
+          },
+          {
+            key: "3",
+            title: "Yatzy for life",
+            labels: ["Noe relevant info", "Annen info"],
+            emoji: "🎲",
+          },
+          {
+            key: "4",
             title: "Bingo-gjengen",
             labels: ["Noe relevant info", "Annen info"],
             emoji: "🎰",
           },
           {
-            title: "Bingo",
-            labels: ["Noe relevant info", "Annen info"],
-            emoji: "🎰",
-          },
-          {
-            title: "Bingo-gjengen",
-            labels: ["Noe relevant info", "Annen info"],
-            emoji: "🎰",
-          },
-          {
+            key: "5",
             title: "Bingo-gjengen",
             labels: ["Noe relevant info", "Annen info"],
             emoji: "🎰",
@@ -135,10 +148,18 @@ export default function TestingPage() {
       />
 
       <p>Card checkboxes [CheckboxCards]</p>
-      <CheckboxCards items={users} checked={checked} setChecked={setChecked} />
+      <CheckboxCards
+        items={users.map((user, i) => ({ title: user, key: i.toString() }))}
+        checked={checked}
+        setChecked={setChecked}
+      />
 
       <p>Card radios [RadioCards]</p>
-      <RadioCards items={users} selected={selected} setSelected={setSelected} />
+      <RadioCards
+        items={users.map((user, i) => ({ title: user, key: i.toString() }))}
+        selected={selected}
+        setSelected={setSelected}
+      />
     </main>
   );
 }

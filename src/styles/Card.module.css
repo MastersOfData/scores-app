@@ -93,9 +93,10 @@
   overflow: scroll;
   gap: 10px;
 
-  /* Change margin/padding to equal on page paddings */
-  margin: 0 -32px;
-  padding: 0 32px;
+  /* TODO: Change margin/padding to equal on page paddings */
+  /* Also, turn this off in desktop mode */
+  margin: 0 calc(-10vw / 2);
+  padding: 0 calc(10vw / 2);
 
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
@@ -103,4 +104,11 @@
 
 .scrollable-cards::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
+}
+
+@media (min-width: 700px) {
+  .scrollable-cards {
+    margin: 0;
+    padding: 0;
+  }
 }
