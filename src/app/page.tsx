@@ -7,6 +7,7 @@ export default function Home() {
       Home Page
       <br/>
       <Link href="/testing">Testing</Link>
+      <Link href="/register">Registrer</Link>
     </main>
   )
 }

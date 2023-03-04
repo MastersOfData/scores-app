@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React, { ButtonHTMLAttributes, FC, ReactNode } from "react";
 import styles from "../styles/Button.module.css";
 
@@ -16,13 +17,24 @@ export enum ButtonVariant {
   Action = "button-action",
 }
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+type RouteProps =
+  | {
+      withLink?: false;
+      href?: undefined;
+    }
+  | {
+      withLink: true;
+      href: string;
+    };
+
+export type ButtonProps = (ButtonHTMLAttributes<HTMLButtonElement> & {
   className?: string;
   color?: ButtonColor;
   variant: ButtonVariant;
   onClick?: () => void;
   children?: ReactNode;
-}
+}) &
+  RouteProps;
 
 export const Button: FC<ButtonProps> = (props) => {
   const {
@@ -31,9 +43,20 @@ export const Button: FC<ButtonProps> = (props) => {
     className = "",
     onClick,
     children,
+    withLink,
+    href,
   } = props;
 
-  return (
+  return withLink ? (
+    <Link href={{pathname: href}}>
+      <button
+        className={`${styles[variant]} ${styles[color]} ${className}`}
+        onClick={onClick}
+      >
+        {children}
+      </button>
+    </Link>
+  ) : (
     <button
       className={`${styles[variant]} ${styles[color]} ${className}`}
       onClick={onClick}

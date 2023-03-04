@@ -1,0 +1,27 @@
+.container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-top: 2rem;
+}
+
+.banner {
+  margin-bottom: 2rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.label-input-group {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.75rem;
+  gap: .5rem;
+}
+
+.button-container {
+  margin-top: 2rem;
+}
