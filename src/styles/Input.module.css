@@ -1,4 +1,4 @@
-.binary-choice-input {
+.toggle-input {
   height: fit-content;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -6,10 +6,11 @@
   overflow: hidden;
 }
 
-.binary-choice-left, .binary-choice-right {
+.toggle-on, .toggle-off {
   height: fit-content;
   padding: var(--padding);
   border: none;
+  border-radius: 0;
   outline: none;
   display: grid;
   place-content: center;
@@ -18,16 +19,16 @@
   opacity: .2;
 }
 
-:is(.binary-choice-left, .binary-choice-right):hover {
+:is(.toggle-on, .toggle-off):hover {
   opacity: .3;
   transition: opacity 100ms;
 }
 
-.binary-choice-left {
+.toggle-on {
   background-color: var(--accent-green);
 }
 
-.binary-choice-right {
+.toggle-off {
   background-color: var(--accent-red);
 }
 
