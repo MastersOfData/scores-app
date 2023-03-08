@@ -44,6 +44,7 @@
   --ff-heading: "Poppins", sans-serif;
 
   /* Font sizes */
+  --fs-100: 0.75rem;
   --fs-200: 0.875rem;
   --fs-300: 0.925rem;
   --fs-400: 1rem;
@@ -176,18 +177,28 @@ button:hover::after {
 
 textarea,
 input:not([type="checkbox"]) {
-  border: none;
+  border: 0.15rem solid transparent;
   outline: none;
   background-color: var(--bg-secondary);
   padding: var(--padding);
 }
 
-:is(textarea, input:not([type="checkbox"])):hover {
-  outline: 0.15em solid var(--tint-strong);
+textarea,
+input:not([type="checkbox"]):hover {
+  border: 0.15rem solid transparent;
+  outline: none;
+  background-color: var(--bg-secondary);
+  padding: var(--padding);
 }
 
+/* :is(textarea, input:not([type="checkbox"])):hover {
+  border: 0.1rem solid var(--tint-strong);
+  outline: none;
+} */
+
 :is(textarea, input:not([type="checkbox"])):focus {
-  outline: 0.15em solid currentColor;
+  border: 0.15em solid var(--tint-strong);
+  outline: none;
 }
 
 textarea {
