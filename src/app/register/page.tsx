@@ -1,17 +1,12 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createAccount } from "fire-base/auth";
 import { GamesBannerIcon } from "src/assets/icons/GamesBannerIcon";
 import { Button, ButtonVariant } from "src/components/Button";
 import Input from "src/components/Input";
 import styles from "../../styles/Register.module.css";
-
-interface RegisterFields {
-  email: string;
-  password: string;
-}
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -19,10 +14,16 @@ export default function RegisterPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const onSubmit = async ({ email, password }: RegisterFields) => {
-    createAccount(email, password)
-      .catch((err) => alert(`Failed with error: ${err}`)) // temp
-      .then(() => router.push("/"));
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault()
+    try {
+      await createAccount(email, password)
+      router.push("/")
+    }
+    catch (err) {
+      console.error(err)
+      alert("Oops, something went wrong")
+    }
   };
 
   return (
@@ -34,7 +35,7 @@ export default function RegisterPage() {
       <div className="form-group">
         <form
           className={styles.form}
-          onSubmit={() => onSubmit({ email: email, password: password })}
+          onSubmit={onSubmit}
         >
           <div className={styles["label-input-group"]}>
             <label>E-postadresse:</label>

@@ -30,3 +30,7 @@ export async function createAccount(email: string, password: string) {
 export function onAuthStateChanged(observer: NextOrObserver<User>) {
   return _onAuthStateChanged(auth, observer)
 }
+
+export function getCurrentUser() {
+  return auth.currentUser
+}
