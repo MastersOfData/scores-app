@@ -45,11 +45,13 @@ export const Button: FC<ButtonProps> = (props) => {
     children,
     withLink,
     href,
+    ...rest
   } = props;
 
   return withLink ? (
     <Link href={{pathname: href}}>
       <button
+        {...rest}
         className={`${styles[variant]} ${styles[color]} ${className}`}
         onClick={onClick}
       >
@@ -58,6 +60,7 @@ export const Button: FC<ButtonProps> = (props) => {
     </Link>
   ) : (
     <button
+      {...rest}
       className={`${styles[variant]} ${styles[color]} ${className}`}
       onClick={onClick}
     >
