@@ -7,6 +7,7 @@ import { GamesBannerIcon } from "src/assets/icons/GamesBannerIcon";
 import { Button, ButtonVariant } from "src/components/Button";
 import Input from "src/components/Input";
 import styles from "../../styles/Register.module.css";
+import { Header } from "src/components/Header";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -28,7 +29,7 @@ export default function RegisterPage() {
 
   return (
     <main className={styles.container}>
-      <h1>Registrer</h1>
+      <Header> Registrer </Header>
       <div className={styles.banner}>
         <GamesBannerIcon />
       </div>
