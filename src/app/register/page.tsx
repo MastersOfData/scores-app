@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createAccount } from "fire-base/auth";
+import { createAccount } from "src/fire-base/auth";
 import { GamesBannerIcon } from "src/assets/icons/GamesBannerIcon";
 import { Button, ButtonVariant } from "src/components/Button";
 import Input from "src/components/Input";

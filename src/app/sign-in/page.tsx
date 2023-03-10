@@ -6,7 +6,7 @@ import { GamesBannerIcon } from "src/assets/icons/GamesBannerIcon";
 import Input from "src/components/Input";
 import styles from "../../styles/SignIn.module.css";
 import { FormEvent, useState } from "react";
-import { signIn } from "../../../fire-base/auth";
+import { signIn } from "../../fire-base/auth";
 
 export default function SignInPage() {
   const router = useRouter();

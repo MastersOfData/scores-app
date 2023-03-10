@@ -1,4 +1,4 @@
-import { auth } from "./services"
+import { auth } from "./config"
 import { 
   signInWithEmailAndPassword, 
   signOut as _signOut, 
