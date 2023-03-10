@@ -11,11 +11,10 @@ export type HeaderProps = (
 )
 
 export function Header({ path, children } : HeaderProps){
-  
 
   return (
         <div  className = {styles["header-container"]}>
-          <Link href={path ?? "/"}>
+          <Link href={{pathname: path ?? "/"}}>
             <BackArrowIcon />
           </Link>
           <h1>{children}</h1>
