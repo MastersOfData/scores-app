@@ -185,20 +185,13 @@ input:not([type="checkbox"]) {
 
 textarea,
 input:not([type="checkbox"]):hover {
-  border: 0.15rem solid transparent;
-  outline: none;
+  border-color: var(--tint-strong);
   background-color: var(--bg-secondary);
   padding: var(--padding);
 }
 
-/* :is(textarea, input:not([type="checkbox"])):hover {
-  border: 0.1rem solid var(--tint-strong);
-  outline: none;
-} */
-
 :is(textarea, input:not([type="checkbox"])):focus {
-  border: 0.15em solid var(--tint-strong);
-  outline: none;
+  border-color: currentColor;
 }
 
 textarea {
