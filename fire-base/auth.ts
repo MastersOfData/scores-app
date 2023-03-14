@@ -1,6 +1,4 @@
 import { auth } from "./config"
-import { setDocument } from "./db"
-import { User } from "./models"
 import { 
   signInWithEmailAndPassword, 
   signOut as _signOut, 
@@ -8,7 +6,7 @@ import {
   createUserWithEmailAndPassword, 
   onAuthStateChanged as _onAuthStateChanged, 
   NextOrObserver, 
-  User as FirebaseUser, 
+  User, 
   GoogleAuthProvider,
   updateProfile } from "firebase/auth"
 
@@ -26,15 +24,11 @@ export async function signOut() {
   return await _signOut(auth)
 }
 
-export async function createAccount(email: string, username: string, password: string) {
-  const credentials = await createUserWithEmailAndPassword(auth, email, password)
-  await setDocument<User>("users", credentials.user.uid, {
-    email,
-    username,
-  })
+export async function createAccount(email: string, password: string) {
+  return await createUserWithEmailAndPassword(auth, email, password)
 }
 
-export function onAuthStateChanged(observer: NextOrObserver<FirebaseUser>) {
+export function onAuthStateChanged(observer: NextOrObserver<User>) {
   return _onAuthStateChanged(auth, observer)
 }
 
