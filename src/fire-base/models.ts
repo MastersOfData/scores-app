@@ -1,10 +1,6 @@
 import type { DocumentData, Timestamp } from "firebase/firestore"
 
 // id is not part of document data
-export interface Example extends DocumentData {
-  name: string,
-  age: number
-}
 
 export interface User extends DocumentData {
   email: string;

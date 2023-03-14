@@ -13,12 +13,13 @@ export default function RegisterPage() {
   const router = useRouter();
 
   const [email, setEmail] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
     try {
-      await createAccount(email, password)
+      await createAccount(email, username, password)
       router.push("/")
     }
     catch (err) {
@@ -44,6 +45,14 @@ export default function RegisterPage() {
               type="email"
               placeholder="Skriv e-postadresse..."
               onInput={setEmail}
+            />
+          </div>
+          <div className={styles["label-input-group"]}>
+            <label>Brukernavn:</label>
+            <Input
+              type="text"
+              placeholder="Skriv brukernavn..."
+              onInput={setUsername}
             />
           </div>
           <div className={styles["label-input-group"]}>
