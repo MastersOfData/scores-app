@@ -7,7 +7,7 @@ import { getCurrentUser } from "src/fire-base/auth"
 export default function Home() {
   return (
     <main className={styles.container}>
-      <h1>Hello {getCurrentUser()?.email}!</h1>
+      <h1>Hello {getCurrentUser()?.email ?? "Class"}!</h1>
       <br/>
       <Link href="/testing">Testing</Link>
       <br/>
