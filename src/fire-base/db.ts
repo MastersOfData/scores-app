@@ -1,4 +1,4 @@
-import { db } from "./services"
+import { db } from "./config"
 import {
   onSnapshot,
   doc,

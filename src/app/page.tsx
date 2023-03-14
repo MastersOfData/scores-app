@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import styles from "../styles/Home.module.css"
-import { getCurrentUser } from "fire-base/auth"
+import { getCurrentUser } from "src/fire-base/auth"
 
 export default function Home() {
   return (
