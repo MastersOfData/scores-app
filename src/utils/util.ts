@@ -5,6 +5,7 @@ export const generateUserGroupStatisticDocumentId = (
   groupId: string
 ): string => userId + "-" + groupId;
 
+// IKKE FJERN enda. Kan hende den trengs
 // export const unwrapUserGroupStatisticDocumentId = (
 //   documentId: string,
 // ): {userId: string, groupId: string} => {
