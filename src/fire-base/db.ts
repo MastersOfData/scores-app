@@ -13,19 +13,22 @@ import {
   updateDoc,
   getDoc,
   UpdateData,
-  getDocs
+  getDocs,
+  setDoc
 } from "firebase/firestore"
 
 // Types
 type Document<T extends DocumentData> = T & { id: string }
 
+type Collection = "users" | "groups" | "games" | "user_group_statistics"
+
 type QueryDefinition = {
-  collectionId: string,
+  collectionId: Collection,
   constraints?: QueryConstraint[]
 }
 
 // Functions
-export function subscribeToDoc<T extends DocumentData>(collectionId: string, docId: string, observer: (document: Document<T> | null) => void) {
+export function subscribeToDoc<T extends DocumentData>(collectionId: Collection, docId: string, observer: (document: Document<T> | null) => void) {
   const docRef = doc(db, collectionId, docId) as DocumentReference<T>
   return onSnapshot(docRef, snapshot => {
     const id = snapshot.id
@@ -49,22 +52,27 @@ export function subscribeToDocuments<T extends DocumentData>({ collectionId, con
   })
 }
 
-export async function addDocument<T extends DocumentData>(collectionId: string, data: T) {
+export async function addDocument<T extends DocumentData>(collectionId: Collection, data: T) {
   const collectionRef = collection(db, collectionId) as CollectionReference<T>
   return await addDoc(collectionRef, data)
 }
 
-export async function deleteDocument(collectionId: string, docId: string) {
+export async function setDocument<T extends DocumentData>(collectionId: Collection, docId: string, data: T) {
+  const docRef = doc(db, collectionId, docId) as DocumentReference<T>
+  return await setDoc(docRef, data)
+}
+
+export async function deleteDocument(collectionId: Collection, docId: string) {
   const docRef = doc(db, collectionId, docId)
   return await deleteDoc(docRef)
 }
 
-export async function updateDocument<T extends DocumentData>(collectionId: string, docId: string, updateData: UpdateData<T>) {
+export async function updateDocument<T extends DocumentData>(collectionId: Collection, docId: string, updateData: UpdateData<T>) {
   const docRef = doc(db, collectionId, docId) as DocumentReference<T>
   return await updateDoc(docRef, updateData)
 }
 
-export async function getDocument<T extends DocumentData>(collectionId: string, docId: string) {
+export async function getDocument<T extends DocumentData>(collectionId: Collection, docId: string) {
   const docRef = doc(db, collectionId, docId) as DocumentReference<T>
   const snapshot = await getDoc(docRef)
   const id = snapshot.id
