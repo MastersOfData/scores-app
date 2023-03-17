@@ -14,25 +14,27 @@ export default function CreateGroupPage(){
         <main className = {styles.container}>
             <Header> Ny gruppe </Header>
             <div>
-
-                <form>
-                    <div className={styles.form}>
+                <form className={styles.form}>
+                    <div className={styles.inputContainer}>
                         <p className={styles.inputLabel}>Gruppenavn:</p>
                         <Input 
+                            className={styles.inputStyle}
                             type = "text"
                             placeholder="Skriv gruppenavn..."
-                            onInput={setGroupName} />
+                            onInput={setGroupName}
+                             />
                             </div>
-                    <div className={styles.form}>
+                    <div className={styles.inputContainer}>
                         <p className={styles.inputLabel}>Emoji:</p>
                         
                     </div>
-                        <div className={styles.setEmoji}>
+                        <div className={styles.emojiContainer}>
                         <Input
+                            className={styles.emojiStyle}
                             type="text"
                             placeholder=""
                             onInput={setEmoji}
-                      
+                            
                             />
                             </div>
                         
@@ -46,8 +48,6 @@ export default function CreateGroupPage(){
                         </Button>
                         </div>
                 </form>
-
-                
             </div>
         </main>
     )

@@ -2,6 +2,7 @@
     align-items: center;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     width: 100%;
     padding-top: 2rem;
 }
@@ -11,18 +12,37 @@
     font-family: var(--ff-primary);
 }
 
-.form{
+.inputContainer{
     display: flex;
     flex-direction: column;
-    margin-top: .5rem;
+    margin-top: 1rem;
     gap: .5rem;
 }
 
-.setEmoji{
-    padding-left: 6rem;
-    margin-top: 2rem;
-    border-radius: 100%;
+.form{
+    width: 100%;
+    margin-top: rem;
+    gap: .5rem;
 
+}
+
+.inputStyle{
+    width: 100%;
+}
+
+.emojiStyle{
+    width: 5rem;
+    height: 5rem;
+    border-radius: 100vmax !important;
+    display: block;
+    font-size: var(--fs-800);
+}
+
+.emojiContainer{
+    justify-content: center;
+    align-items: center;
+    display: flex;
+  
 }
 
 .button-container {
