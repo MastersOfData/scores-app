@@ -9,8 +9,9 @@ import {
   onAuthStateChanged as _onAuthStateChanged, 
   NextOrObserver, 
   User as FirebaseUser, 
-  GoogleAuthProvider,
-  updateProfile } from "firebase/auth"
+  GoogleAuthProvider } from "firebase/auth"
+
+export { updatePassword, updateProfile } from "firebase/auth"
 
 export async function signIn(email: string, password: string) {
   return await signInWithEmailAndPassword(auth, email, password)
@@ -41,5 +42,3 @@ export function onAuthStateChanged(observer: NextOrObserver<FirebaseUser>) {
 export function getCurrentUser() {
   return auth.currentUser
 }
-
-export const updateAccount = updateProfile
