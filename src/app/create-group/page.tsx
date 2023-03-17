@@ -32,8 +32,7 @@ export default function CreateGroupPage(){
                             type="text"
                             placeholder=""
                             onInput={setEmoji}
-                            maxLength="2"
-                            size="1"
+                      
                             />
                             </div>
                         
