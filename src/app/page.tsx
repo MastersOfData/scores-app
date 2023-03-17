@@ -12,6 +12,8 @@ export default function Home() {
       <Link href="/testing">Testing</Link>
       <br/>
       <Link href="/register">Registrer</Link>
+      <br />
+      <Link href={{pathname: "/create-group"}}>Ny Gruppe</Link>
     </main>
   )
 }
