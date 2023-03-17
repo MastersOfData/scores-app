@@ -1,15 +1,17 @@
 
-
 .header-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding-bottom: 2rem;
-  }
+  width: 100%;
+  height: max(4rem, fit-content);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
 
-
-
-  .form {
-    display: flex;
-    flex-direction: column;
-  }
+.back-button-container {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: fit-content;
+  display: grid;
+  place-content: center;
+}

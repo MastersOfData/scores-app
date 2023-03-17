@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "../../styles/CreateGroupe.module.css";
-import { Header } from "src/components/Header";
+import { useHeader } from "src/components/Header";
 import Input from "src/components/Input";
 import { useState } from "react";
 import { Button, ButtonVariant, ButtonColor } from "src/components/Button";
@@ -9,10 +9,10 @@ import { Button, ButtonVariant, ButtonColor } from "src/components/Button";
 export default function CreateGroupPage(){
     const [groupName, setGroupName] = useState<string>("");
     const [emoji, setEmoji] = useState<string>("");
+    useHeader("Ny Gruppe", "/")
 
     return (
         <main className = {styles.container}>
-            <Header> Ny gruppe </Header>
             <div>
                 <form className={styles.form}>
                     <div className={styles.inputContainer}>

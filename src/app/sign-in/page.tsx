@@ -7,10 +7,11 @@ import Input from "src/components/Input";
 import styles from "../../styles/SignIn.module.css";
 import { FormEvent, useState } from "react";
 import { signIn } from "../../fire-base/auth";
-import { Header } from "src/components/Header";
+import { useHeader } from "src/components/Header";
 
 export default function SignInPage() {
   const router = useRouter();
+  useHeader("Sign In", "/")
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -25,10 +26,8 @@ export default function SignInPage() {
     }
   }
 
-  // TODO: Insert Header component
   return (
     <main className={styles.container}>
-      <Header>Log in</Header>
       <div className={styles.gamesBanner}>{<GamesBannerIcon />}</div>
       <form onSubmit={handleSignIn}>
         <div className={styles.inputContainer}>
