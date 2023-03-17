@@ -1,21 +1,37 @@
+"use client"
+
 import styles from '../styles/Header.module.css';
 import { BackArrowIcon } from 'src/assets/icons/BackArrowIcon';
+import { useAtom, atom } from "jotai";
 import  Link from "next/link";
 
-export type HeaderProps = {
-    path?: string;
-    children: string;
-  }
+const headerTitleAtom = atom("")
+const headerPathAtom = atom("/")
+const headerBackButtonAtom = atom(true)
 
-export default function Header({ path, children } : HeaderProps){
+export default function Header() {
+  const [ title ] = useAtom(headerTitleAtom)
+  const [ path ] = useAtom(headerPathAtom)
+  const [ backButton ] = useAtom(headerBackButtonAtom)
   return (
     <div className={styles["header-container"]}>
-      <div className={styles["back-button-container"]}>
-        <Link href={{pathname: path ?? "/"}}>
-          <BackArrowIcon />
-        </Link>
-      </div>
-      <h1>{children}</h1>
+      {backButton &&
+        <div className={styles["back-button-container"]}>
+          <Link href={{pathname: path ?? "/"}}>
+            <BackArrowIcon />
+          </Link>
+        </div>
+      }
+      <h1>{title}</h1>
     </div>
   );
+}
+
+export function useHeader(title: string, path: string, backButton = true) {
+  const [_title, setTitle] = useAtom(headerTitleAtom)
+  const [_path, setPath] = useAtom(headerPathAtom)
+  const [_backButton, setBackButton] = useAtom(headerBackButtonAtom)
+  setTitle(title)
+  setPath(path)
+  setBackButton(backButton)
 }
