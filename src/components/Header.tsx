@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import styles from '../styles/Header.module.css';
 import { BackArrowIcon } from 'src/assets/icons/BackArrowIcon';
 import  Link from "next/link";
