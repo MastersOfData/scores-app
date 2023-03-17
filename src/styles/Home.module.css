@@ -1,1 +1,43 @@
-.container {}
+.container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-top: 2rem;
+}
+
+.buttons-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.label {
+  padding-top: 1rem;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.title {
+  padding-top: 2rem;
+  font-weight: 400;
+  font-size: 20px;
+}
+
+.group-input-container {
+  padding-top: 1rem;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.text-input {
+  height: 100%;
+}
