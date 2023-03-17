@@ -3,13 +3,19 @@
 import styles from "../../styles/CreateGroupe.module.css";
 import { useHeader } from "src/components/Header";
 import Input from "src/components/Input";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { Button, ButtonVariant, ButtonColor } from "src/components/Button";
+
+
 
 export default function CreateGroupPage(){
     const [groupName, setGroupName] = useState<string>("");
     const [emoji, setEmoji] = useState<string>("");
     useHeader("Ny Gruppe", "/")
+
+    async function onSubmit(e: FormEvent) {
+        e.preventDefault();   
+    }
 
     return (
         <main className = {styles.container}>
@@ -34,15 +40,14 @@ export default function CreateGroupPage(){
                             type="text"
                             placeholder=""
                             onInput={setEmoji}
-                            
                             />
-                            </div>
-                        
+                            </div> 
                         <div>
                         <Button
                             className={styles["button-container"]}
                             variant={ButtonVariant.Round}
                             color={ButtonColor.Green}
+                            onSubmit={e => onSubmit(e)}
                             >
                                 Opprett gruppe
                         </Button>
