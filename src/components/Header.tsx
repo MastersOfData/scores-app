@@ -6,16 +6,14 @@ import { useAtom, atom } from "jotai";
 import  Link from "next/link";
 
 const headerTitleAtom = atom("")
-const headerPathAtom = atom("/")
-const headerBackButtonAtom = atom(true)
+const headerPathAtom = atom<string | null>("/")
 
 export default function Header() {
   const [ title ] = useAtom(headerTitleAtom)
   const [ path ] = useAtom(headerPathAtom)
-  const [ backButton ] = useAtom(headerBackButtonAtom)
   return (
     <div className={styles["header-container"]}>
-      {backButton &&
+      {path &&
         <div className={styles["back-button-container"]}>
           <Link href={{pathname: path ?? "/"}}>
             <BackArrowIcon />
@@ -27,11 +25,9 @@ export default function Header() {
   );
 }
 
-export function useHeader(title: string, path: string, backButton = true) {
+export function useHeader(title: string, path: string | null = null) {
   const [_title, setTitle] = useAtom(headerTitleAtom)
   const [_path, setPath] = useAtom(headerPathAtom)
-  const [_backButton, setBackButton] = useAtom(headerBackButtonAtom)
   setTitle(title)
   setPath(path)
-  setBackButton(backButton)
 }
