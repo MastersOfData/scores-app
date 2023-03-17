@@ -3,7 +3,7 @@
 import Link from "next/link";
 import styles from "../styles/Home.module.css";
 import { getCurrentUser } from "src/fire-base/auth";
-import Header from "src/components/Header";
+import Header, { useHeader } from "src/components/Header";
 import { ControllerIcon } from "src/assets/icons/ControllerIcon";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
 import { PersonIcon } from "src/assets/icons/PersonIcon";
@@ -11,9 +11,9 @@ import { GroupIcon } from "src/assets/icons/GroupIcon";
 import Input from "src/components/Input";
 
 export default function Home() {
+  useHeader("Velkommen", "/");
   return (
     <main className={styles.container}>
-      <Header>Velkommen</Header>
       <div className={styles["buttons-container"]}>
         <div className={styles["button-container"]}>
           <Button variant={ButtonVariant.Action}>
