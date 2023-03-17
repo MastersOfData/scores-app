@@ -7,7 +7,7 @@ import Input from "src/components/Input";
 import styles from "../../styles/SignIn.module.css";
 import { FormEvent, useState } from "react";
 import { signIn } from "../../fire-base/auth";
-import { Header } from "src/components/Header";
+import Header from "src/components/Header";
 
 export default function SignInPage() {
   const router = useRouter();

@@ -15,7 +15,7 @@ import { CheckboxCards } from "../../components/CheckboxCards";
 import { RadioCards } from "../../components/RadioCards";
 import { ScrollableLargeCards } from "../../components/ScrollableLargeCards";
 import styles from "../../styles/Testing.module.css";
-import { Header } from "src/components/Header";
+import Header from "src/components/Header";
 
 export default function TestingPage() {
   const router = useRouter();

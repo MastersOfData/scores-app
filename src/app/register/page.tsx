@@ -7,7 +7,7 @@ import { GamesBannerIcon } from "src/assets/icons/GamesBannerIcon";
 import { Button, ButtonVariant } from "src/components/Button";
 import Input from "src/components/Input";
 import styles from "../../styles/Register.module.css";
-import { Header } from "src/components/Header";
+import Header from "src/components/Header";
 
 export default function RegisterPage() {
   const router = useRouter();
