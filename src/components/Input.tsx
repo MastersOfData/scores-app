@@ -4,28 +4,32 @@ import { FormEvent, useEffect, useRef, useState } from "react"
 import styles from "../styles/Input.module.css"
 
 // Types
-type TextInputProps = {
+type CommonInputProps = {
+  className?: string
+}
+
+type TextInputProps = CommonInputProps & {
   placeholder?: string,
   onInput?: (value: string) => void
 }
 
-type NumberInputProps = {
+type NumberInputProps = CommonInputProps & {
   placeholder?: string,
   defaultValue?: number,
   onInput?: (value: number) => void
 }
 
-type CheckBoxInputProps = {
+type CheckBoxInputProps = CommonInputProps & {
   placeholder?: string,
   onInput?: (checked: boolean) => void
 }
 
-type ToggleInputProps = {
+type ToggleInputProps = CommonInputProps & {
   startingState?: boolean,
   onInput?: (value: boolean) => void
 }
 
-type TextAreaInputProps = {
+type TextAreaInputProps = CommonInputProps & {
   placeholder?: string,
   onInput?: (value: string) => void,
   rows?: number,
@@ -152,7 +156,7 @@ function CheckBoxInput({ onInput, ...props }: CheckBoxInputProps) {
   )
 }
 
-function ToggleInput({ onInput, startingState }: ToggleInputProps) {
+function ToggleInput({ onInput, startingState, className }: ToggleInputProps) {
   const [yes, setYes] = useState<boolean>(startingState ?? true)
 
   function handleToggle(value: boolean) {
@@ -169,7 +173,7 @@ function ToggleInput({ onInput, startingState }: ToggleInputProps) {
         Ja
       </button>
       <button 
-        className={`${styles["toggle-off"]} ${!yes ? styles["selected"] : ""}`} 
+        className={`${styles["toggle-off"]} ${!yes ? styles["selected"] : ""} ${className}`} 
         onClick={() => handleToggle(false)}
       >
         Nei
