@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import styles from "../styles/Home.module.css";
-import { getCurrentUser } from "src/fire-base/auth";
-import Header, { useHeader } from "src/components/Header";
+import { useHeader } from "src/components/Header";
 import { ControllerIcon } from "src/assets/icons/ControllerIcon";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
 import { PersonIcon } from "src/assets/icons/PersonIcon";
