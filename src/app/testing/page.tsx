@@ -69,27 +69,27 @@ export default function TestingPage() {
       </Button>
 
       <div className={styles.column}>
-        <Input type="text" placeholder="Text Input" onInput={console.log} />
-        <Input type="email" placeholder="Email Input" onInput={console.log} />
+        <Input type='text' placeholder='Text Input' onInput={console.log} />
+        <Input type='email' placeholder='Email Input' onInput={console.log} />
         <Input
-          type="password"
-          placeholder="Password Input"
+          type='password'
+          placeholder='Password Input'
           onInput={console.log}
         />
         <Input
-          type="number"
-          placeholder="Number Input"
+          type='number'
+          placeholder='Number Input'
           defaultValue={5}
           onInput={console.log}
         />
         <Input
-          type="textarea"
+          type='textarea'
           rows={6}
-          placeholder="TextArea Input"
+          placeholder='TextArea Input'
           onInput={console.log}
         />
-        <Input type="checkbox" onInput={console.log} />
-        <Input type="toggle" onInput={console.log} />
+        <Input type='checkbox' onInput={console.log} />
+        <Input type='toggle' onInput={console.log} />
         <div>
           <InfoContextProvider>
             <InfoButton />
@@ -102,11 +102,11 @@ export default function TestingPage() {
       <h2>Cards</h2>
 
       <p>Small card</p>
-      <Card title={"Small card"} emoji="🎲" />
+      <Card title={"Small card"} emoji='🎲' />
       <p>Large card / card with labels</p>
       <Card
         title={"Large card"}
-        emoji="🎾"
+        emoji='🎾'
         labels={["Info label", "More info"]}
       />
 
