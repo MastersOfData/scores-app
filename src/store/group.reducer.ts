@@ -5,7 +5,7 @@ import {
   getGroupsForCurrentUser,
   joinGroup,
 } from "../services/group.service";
-import { DataStatus, DataWithStatus } from "./storeTypes";
+import { DataStatus, DataWithStatus } from "./store.types";
 
 type GroupState = DataWithStatus<(Group & { id: string })[]>;
 

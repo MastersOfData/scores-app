@@ -22,5 +22,5 @@ export enum DataStatus {
   ERROR = "error",
 }
 
-export type AppDispatchType = ThunkDispatch<any, undefined, AnyAction> &
+export type AppDispatchType = ThunkDispatch<unknown, undefined, AnyAction> &
   Dispatch<AnyAction>;

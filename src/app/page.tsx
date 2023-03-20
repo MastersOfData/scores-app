@@ -73,6 +73,7 @@ export default function Home() {
 
   return (
     <main className={styles.container}>
+      <a href='/testing'>testing</a>
       <div className={styles["buttons-container"]}>
         <div className={styles["button-container"]}>
           <Button variant={ButtonVariant.Action}>

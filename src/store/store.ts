@@ -5,6 +5,7 @@ export const store = configureStore({
   reducer: {
     groups: groupsReducer,
   },
+  devTools: process.env.NODE_ENV !== "production",
 });
 
 export type StoreType = ReturnType<typeof store.getState>;

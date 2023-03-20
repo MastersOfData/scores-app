@@ -1,14 +1,11 @@
-"use client";
-
 import type { Metadata } from "next/types";
-import { Provider } from "react-redux";
-import { store } from "../store/store";
 import Header from "src/components/Header";
 import "../styles/globals.css";
+import { StateProvider } from "./provider";
 
-// export const metadata: Metadata = {
-//   title: "Score Tracker",
-// };
+export const metadata: Metadata = {
+  title: "Score Tracker",
+};
 
 export default function RootLayout({
   children,
@@ -16,17 +13,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Provider store={store}>
-      <html lang='en'>
-        <body>
-          <div className='page-container'>
-            <div className='content-wrapper'>
+    <html lang='en'>
+      <body>
+        <div className='page-container'>
+          <div className='content-wrapper'>
+            <StateProvider>
               <Header />
               {children}
-            </div>
+            </StateProvider>
           </div>
-        </body>
-      </html>
-    </Provider>
+        </div>
+      </body>
+    </html>
   );
 }

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, TypedUseSelectorHook, useSelector } from "react-redux";
 import { getUsersGroupsAction } from "./group.reducer";
 import { AppDispatch, StoreType } from "./store";
-import { DataStatus } from "./storeTypes";
+import { DataStatus } from "./store.types";
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<StoreType> = useSelector;
