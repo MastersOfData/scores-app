@@ -3,6 +3,7 @@
 import type { Metadata } from "next/types";
 import { Provider } from "react-redux";
 import { store } from "../store/store";
+import Header from "src/components/Header";
 import "../styles/globals.css";
 
 // export const metadata: Metadata = {
@@ -19,7 +20,10 @@ export default function RootLayout({
       <html lang='en'>
         <body>
           <div className='page-container'>
-            <div className='content-wrapper'>{children}</div>
+            <div className='content-wrapper'>
+              <Header />
+              {children}
+            </div>
           </div>
         </body>
       </html>

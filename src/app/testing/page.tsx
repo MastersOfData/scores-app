@@ -15,12 +15,14 @@ import { CheckboxCards } from "../../components/CheckboxCards";
 import { RadioCards } from "../../components/RadioCards";
 import { ScrollableLargeCards } from "../../components/ScrollableLargeCards";
 import styles from "../../styles/Testing.module.css";
-import { Header } from "src/components/Header";
+import Header from "src/components/Header";
 import { useAppDispatch } from "../../store/hooks";
 import { getUsersGroups } from "../../store/groupsReducer";
+import { useHeader } from "src/components/Header";
 
 export default function TestingPage() {
   const router = useRouter();
+  useHeader("Testing Page", "/");
 
   // State for card demos
   const users = ["xXbirgerXx", "mr_bean", "lars", "randi", "user1", "user2"];
@@ -52,7 +54,6 @@ export default function TestingPage() {
         gap: "20px",
       }}
     >
-      <Header> Header </Header>
       <div>
         <h1>h1</h1>
         <h2>h2</h2>
