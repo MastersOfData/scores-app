@@ -10,11 +10,15 @@
     "test": "jest"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.9.3",
     "@types/react-dom": "18.0.11",
+    "@types/react-redux": "^7.1.25",
     "firebase": "^9.17.1",
     "next": "^13.2.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.0.5",
+    "redux": "^4.2.1"
   },
   "jest": {
     "verbose": true

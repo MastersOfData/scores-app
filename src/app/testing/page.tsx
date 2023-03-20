@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ControllerIcon } from "src/assets/icons/ControllerIcon";
 import { GroupIcon } from "src/assets/icons/GroupIcon";
 import { PersonIcon } from "src/assets/icons/PersonIcon";
@@ -16,6 +16,8 @@ import { RadioCards } from "../../components/RadioCards";
 import { ScrollableLargeCards } from "../../components/ScrollableLargeCards";
 import styles from "../../styles/Testing.module.css";
 import { Header } from "src/components/Header";
+import { useAppDispatch } from "../../store/hooks";
+import { getUsersGroups } from "../../store/groupsReducer";
 
 export default function TestingPage() {
   const router = useRouter();
@@ -24,6 +26,23 @@ export default function TestingPage() {
   const users = ["xXbirgerXx", "mr_bean", "lars", "randi", "user1", "user2"];
   const [checked, setChecked] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | undefined>(undefined);
+
+  // const [userWithStatus] = useAtom(userLoader);
+  // const [createGroup] = useAtom(createGroupLoadable);
+
+  // if (userWithStatus.state === "loading") {
+  //   return "Loading user data...";
+  // }
+
+  // if (userWithStatus.state === "hasData") {
+  //   console.log("User data: ", userWithStatus.data.username);
+  // }
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(getUsersGroups("123"));
+  }, []);
 
   return (
     <main
