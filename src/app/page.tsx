@@ -37,7 +37,7 @@ export default function Home() {
     {
       gameTypeId: "69",
       groupId: "420",
-      players: ["1", 50],
+      players: [{ playerId: "1", points: 50 }],
       winner: "1",
       timestamp: Timestamp.now(),
       state: "ONGOING",
@@ -45,7 +45,7 @@ export default function Home() {
     {
       gameTypeId: "420",
       groupId: "69",
-      players: ["2", 69],
+      players: [{ playerId: "2", points: 69 }],
       winner: "3",
       timestamp: Timestamp.now(),
       state: "FINISHED",
@@ -53,7 +53,7 @@ export default function Home() {
     {
       gameTypeId: "69",
       groupId: "420",
-      players: ["4", 420],
+      players: [{ playerId: "4", points: 420 }],
       winner: "5",
       timestamp: Timestamp.now(),
       state: "FINISHED",

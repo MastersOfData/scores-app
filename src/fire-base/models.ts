@@ -19,7 +19,8 @@ type GameState = "FINISHED" | "PAUSED" | "ONGOING";
 export interface Game extends DocumentData {
   gameTypeId: string;
   groupId?: string;
-  players: [playerId: string, points: number]
+  adminId?: string;
+  players: {playerId: string, points: number}[]
   winner?: string;
   timestamp: Timestamp
   duration?: number;
