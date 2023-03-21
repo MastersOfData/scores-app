@@ -11,7 +11,6 @@ import { Game, Group } from "src/fire-base/models";
 import { CardItem } from "src/components/Card";
 import { Timestamp } from "firebase/firestore";
 import { differenceBetweenFirestoreTimestampsInDays } from "src/utils/util";
-import Link from "next/link";
 import PageWrapper from "src/components/PageWrapper";
 
 export default function Home() {
@@ -79,27 +78,35 @@ export default function Home() {
     <PageWrapper title='Velkommen!'>
       <div className={styles["buttons-container"]}>
         <div className={styles["button-container"]}>
-          <Link href='/?pressed=profile'>
-            <Button variant={ButtonVariant.Action}>
-              <PersonIcon />
-            </Button>
-          </Link>
+          <Button
+            variant={ButtonVariant.Action}
+            withLink
+            href='/?pressed=profile'
+          >
+            <PersonIcon />
+          </Button>
           <p className={styles.label}>Profil</p>
         </div>
         <div className={styles["button-container"]}>
-          <Link href='/?pressed=new_game'>
-            <Button variant={ButtonVariant.Action} color={ButtonColor.Orange}>
-              <ControllerIcon />
-            </Button>
-          </Link>
+          <Button
+            variant={ButtonVariant.Action}
+            color={ButtonColor.Orange}
+            withLink
+            href='/play-option'
+          >
+            <ControllerIcon />
+          </Button>
           <p className={styles.label}>Nytt spill</p>
         </div>
         <div className={styles["button-container"]}>
-          <Link href='/create-group'>
-            <Button variant={ButtonVariant.Action} color={ButtonColor.Pink}>
-              <GroupIcon />
-            </Button>
-          </Link>
+          <Button
+            variant={ButtonVariant.Action}
+            color={ButtonColor.Pink}
+            withLink
+            href='/create-group'
+          >
+            <GroupIcon />
+          </Button>
           <p className={styles.label}>Ny gruppe</p>
         </div>
       </div>

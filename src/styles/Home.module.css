@@ -16,12 +16,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  width: 80px;
 }
 
 .label {
   padding-top: 1rem;
   font-size: 14px;
   font-weight: 400;
+  color: white;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .title-centered {
