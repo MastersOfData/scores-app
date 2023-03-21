@@ -1,7 +1,6 @@
 "use client";
 
 import styles from "../styles/Home.module.css";
-import { useHeader } from "src/components/Header";
 import { ControllerIcon } from "src/assets/icons/ControllerIcon";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
 import { PersonIcon } from "src/assets/icons/PersonIcon";
@@ -13,9 +12,9 @@ import { CardItem } from "src/components/Card";
 import { Timestamp } from "firebase/firestore";
 import { differenceBetweenFirestoreTimestampsInDays } from "src/utils/util";
 import Link from "next/link";
+import PageWrapper from "src/components/PageWrapper";
 
 export default function Home() {
-  useHeader("Velkommen!", "/");
 
   //Mock groups
   const groups: Group[] = [
@@ -78,7 +77,7 @@ export default function Home() {
     });
   //Must update paths
   return (
-    <main className={styles.container}>
+    <PageWrapper title="Velkommen">
       <div className={styles["buttons-container"]}>
         <div className={styles["button-container"]}>
           <Link href="/?pressed=profile">
@@ -120,6 +119,6 @@ export default function Home() {
       <div className={styles["cards-container"]}>
         <ScrollableLargeCards items={cardItemsGames} />
       </div>
-    </main>
+    </PageWrapper>
   );
 }

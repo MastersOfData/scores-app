@@ -1,34 +1,25 @@
 "use client"
 
-import React from 'react';
 import styles from '../styles/Header.module.css';
 import { BackArrowIcon } from 'src/assets/icons/BackArrowIcon';
-import { useAtom, atom } from "jotai";
-import  Link from "next/link";
+import Link from "next/link";
 
-const headerTitleAtom = atom("")
-const headerPathAtom = atom<string | null>("/")
+type HeaderProps = {
+  children: string,
+  backPath?: string
+}
 
-export default function Header() {
-  const [ title ] = useAtom(headerTitleAtom)
-  const [ path ] = useAtom(headerPathAtom)
+export default function Header({ children, backPath }: HeaderProps) {
   return (
     <div className={styles["header-container"]}>
-      {path &&
+      {backPath &&
         <div className={styles["back-button-container"]}>
-          <Link href={{pathname: path ?? "/"}}>
+          <Link href={{pathname: backPath}}>
             <BackArrowIcon />
           </Link>
         </div>
       }
-      <h1>{title}</h1>
+      <h1>{children}</h1>
     </div>
   );
-}
-
-export function useHeader(title: string, path: string | null = null) {
-  const [_title, setTitle] = useAtom(headerTitleAtom)
-  const [_path, setPath] = useAtom(headerPathAtom)
-  setTitle(title)
-  setPath(path)
 }

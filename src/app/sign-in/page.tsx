@@ -7,11 +7,10 @@ import Input from "src/components/Input";
 import styles from "../../styles/SignIn.module.css";
 import { FormEvent, useState } from "react";
 import { signIn } from "../../fire-base/auth";
-import { useHeader } from "src/components/Header";
+import PageWrapper from "src/components/PageWrapper";
 
 export default function SignInPage() {
   const router = useRouter();
-  useHeader("Sign In", "/")
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -27,7 +26,7 @@ export default function SignInPage() {
   }
 
   return (
-    <main className={styles.container}>
+    <PageWrapper title="Logg inn" backPath="/">
       <div className={styles.gamesBanner}>{<GamesBannerIcon />}</div>
       <form onSubmit={handleSignIn}>
         <div className={styles.inputContainer}>
@@ -58,6 +57,6 @@ export default function SignInPage() {
           </Button>
         </div>
       </form>
-    </main>
+    </PageWrapper>
   );
 }
