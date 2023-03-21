@@ -1,10 +1,10 @@
 
-export type PasswordValidation = {
+export type Validation = {
   valid: boolean,
   error?: string
 }
 
-export function validatePassword(password: string): PasswordValidation {
+export function validatePassword(password: string): Validation {
   if (password.length < 8 || password.length > 64) return {
     valid: false,
     error: "Password must be between 8 and 64 characters long"

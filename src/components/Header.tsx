@@ -1,9 +1,9 @@
 "use client"
 
-import React from 'react';
 import styles from '../styles/Header.module.css';
 import { BackArrowIcon } from 'src/assets/icons/BackArrowIcon';
 import { useAtom, atom } from "jotai";
+import { useHydrateAtoms } from "jotai/utils";
 import  Link from "next/link";
 
 const headerTitleAtom = atom("")
@@ -11,6 +11,7 @@ const headerPathAtom = atom("/")
 const headerBackButtonAtom = atom(true)
 
 export default function Header() {
+  useHydrateAtoms([[headerTitleAtom, ""], [headerPathAtom, ""]])
   const [ title ] = useAtom(headerTitleAtom)
   const [ path ] = useAtom(headerPathAtom)
   const [ backButton ] = useAtom(headerBackButtonAtom)

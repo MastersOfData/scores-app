@@ -3,7 +3,7 @@
 import { useHeader } from "src/components/Header"
 import Input from "src/components/Input"
 import { useState, FormEvent } from "react"
-import { validatePassword } from "src/utils/acccount"
+import { validatePassword } from "src/utils/validation"
 import { getCurrentUser, updatePassword } from "src/fire-base/auth"
 import styles from "src/styles/Account.module.css"
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button"
