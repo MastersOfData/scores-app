@@ -10,7 +10,8 @@ type CommonInputProps = {
 
 type TextInputProps = CommonInputProps & {
   placeholder?: string,
-  onInput?: (value: string) => void
+  onInput?: (value: string) => void,
+  maxLength?: number
 }
 
 type NumberInputProps = CommonInputProps & {
@@ -73,10 +74,11 @@ function TextAreaInput({ onInput, ...props }: TextAreaInputProps) {
   )
 }
 
-function TextInput({ onInput, ...props }: TextInputProps) {
+function TextInput({ onInput, maxLength,  ...props }: TextInputProps) {
   return (
     <input
       type="text"
+      maxLength = {maxLength}
       onInput={e => handleTextInput(e, onInput)}
       {...props}
     />

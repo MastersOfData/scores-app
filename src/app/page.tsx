@@ -97,7 +97,7 @@ export default function Home() {
           <p className={styles.label}>Nytt spill</p>
         </div>
         <div className={styles["button-container"]}>
-          <Link href="/?pressed=new_group">
+          <Link href="/create-group">
             <Button variant={ButtonVariant.Action} color={ButtonColor.Pink}>
               <GroupIcon />
             </Button>
