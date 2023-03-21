@@ -36,6 +36,7 @@
     border-radius: 100vmax !important;
     display: block;
     font-size: var(--fs-800);
+    text-align: center;
 }
 
 .emojiContainer{
