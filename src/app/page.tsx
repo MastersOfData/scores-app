@@ -11,6 +11,7 @@ import { ScrollableLargeCards } from "src/components/ScrollableLargeCards";
 import { Game, Group } from "src/fire-base/models";
 import { CardItem } from "src/components/Card";
 import { Timestamp } from "firebase/firestore";
+import { differenceBetweenFirestoreTimestampsInDays } from "src/utils/util";
 import Link from "next/link";
 
 export default function Home() {
@@ -40,7 +41,7 @@ export default function Home() {
       groupId: "420",
       players: ["1", 50],
       winner: "1",
-      timestamp: Timestamp.now(),
+      timestamp: Timestamp.fromDate(new Date(2023, 2, 21)),
       state: "ONGOING",
     },
     {
@@ -48,7 +49,7 @@ export default function Home() {
       groupId: "69",
       players: ["2", 69],
       winner: "3",
-      timestamp: Timestamp.now(),
+      timestamp: Timestamp.fromDate(new Date(2023, 2, 18)),
       state: "FINISHED",
     },
     {
@@ -56,7 +57,7 @@ export default function Home() {
       groupId: "420",
       players: ["4", 420],
       winner: "5",
-      timestamp: Timestamp.now(),
+      timestamp: Timestamp.fromDate(new Date(2023, 2, 10)),
       state: "FINISHED",
     },
   ];
@@ -64,41 +65,49 @@ export default function Home() {
   const cardItemsGames: CardItem[] = games
     .filter((game) => game.state == "FINISHED")
     .map((game) => {
+      const diffDays = differenceBetweenFirestoreTimestampsInDays(
+        game.timestamp,
+        Timestamp.fromDate(new Date())
+      );
       return {
         key: game.winner!,
-        title: "2 dager siden",
+        title: `${diffDays} dager siden`,
         labels: ["Noe relevant info", "Annen info"],
         emoji: "",
       };
     });
-
+  //Must update paths
   return (
     <main className={styles.container}>
       <div className={styles["buttons-container"]}>
         <div className={styles["button-container"]}>
-          <Button variant={ButtonVariant.Action}>
-            <PersonIcon />
-          </Button>
+          <Link href="/?pressed=profile">
+            <Button variant={ButtonVariant.Action}>
+              <PersonIcon />
+            </Button>
+          </Link>
           <p className={styles.label}>Profil</p>
         </div>
         <div className={styles["button-container"]}>
-          <Button variant={ButtonVariant.Action} color={ButtonColor.Orange}>
-            <ControllerIcon />
-          </Button>
+          <Link href="/?pressed=new_game">
+            <Button variant={ButtonVariant.Action} color={ButtonColor.Orange}>
+              <ControllerIcon />
+            </Button>
+          </Link>
           <p className={styles.label}>Nytt spill</p>
         </div>
         <div className={styles["button-container"]}>
-          <Link href = "/create-group">
-          <Button variant={ButtonVariant.Action} color={ButtonColor.Pink}>
-            <GroupIcon />
-          </Button>
-          <p className={styles.label}>Ny gruppe</p>
+          <Link href="/create-group">
+            <Button variant={ButtonVariant.Action} color={ButtonColor.Pink}>
+              <GroupIcon />
+            </Button>
           </Link>
+          <p className={styles.label}>Ny gruppe</p>
         </div>
       </div>
       <p className={styles["title-centered"]}>Bli med i en gruppe</p>
       <div className={styles["group-input-container"]}>
-        <Input type='text' className={styles["text-input"]} />
+        <Input type="text" className={styles["text-input"]} />
         <Button variant={ButtonVariant.Medium} color={ButtonColor.Red}>
           Bli med
         </Button>
