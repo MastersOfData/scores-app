@@ -1,5 +1,6 @@
 "use client"
 
+import React from 'react';
 import styles from '../styles/Header.module.css';
 import { BackArrowIcon } from 'src/assets/icons/BackArrowIcon';
 import { useAtom, atom } from "jotai";

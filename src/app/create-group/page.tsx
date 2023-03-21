@@ -8,10 +8,11 @@ import { Button, ButtonVariant, ButtonColor } from "src/components/Button";
 
 
 
-export default function CreateGroupPage(){
+export default function CreateGroupPage(){  
     const [groupName, setGroupName] = useState<string>("");
     const [emoji, setEmoji] = useState<string>("");
     useHeader("Ny Gruppe", "/")
+    
 
     async function onSubmit(e: FormEvent) {
         e.preventDefault();   
@@ -40,6 +41,7 @@ export default function CreateGroupPage(){
                             type="text"
                             placeholder=""
                             onInput={setEmoji}
+                            maxLength="2"
                             />
                             </div> 
                         <div>
