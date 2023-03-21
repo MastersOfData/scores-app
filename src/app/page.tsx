@@ -15,7 +15,6 @@ import Link from "next/link";
 import PageWrapper from "src/components/PageWrapper";
 
 export default function Home() {
-
   //Mock groups
   const groups: Group[] = [
     { name: "SnømannGutta", emoji: "⛄", games: [], invitationCode: "5673" },
@@ -63,13 +62,13 @@ export default function Home() {
 
   const cardItemsGames: CardItem[] = games
     .filter((game) => game.state == "FINISHED")
-    .map((game) => {
+    .map((game, i) => {
       const diffDays = differenceBetweenFirestoreTimestampsInDays(
         game.timestamp,
         Timestamp.fromDate(new Date())
       );
       return {
-        key: game.winner!,
+        key: i.toString(),
         title: `${diffDays} dager siden`,
         labels: ["Noe relevant info", "Annen info"],
         emoji: "",
@@ -77,10 +76,10 @@ export default function Home() {
     });
   //Must update paths
   return (
-    <PageWrapper title="Velkommen">
+    <PageWrapper title='Velkommen!'>
       <div className={styles["buttons-container"]}>
         <div className={styles["button-container"]}>
-          <Link href="/?pressed=profile">
+          <Link href='/?pressed=profile'>
             <Button variant={ButtonVariant.Action}>
               <PersonIcon />
             </Button>
@@ -88,7 +87,7 @@ export default function Home() {
           <p className={styles.label}>Profil</p>
         </div>
         <div className={styles["button-container"]}>
-          <Link href="/?pressed=new_game">
+          <Link href='/?pressed=new_game'>
             <Button variant={ButtonVariant.Action} color={ButtonColor.Orange}>
               <ControllerIcon />
             </Button>
@@ -96,7 +95,7 @@ export default function Home() {
           <p className={styles.label}>Nytt spill</p>
         </div>
         <div className={styles["button-container"]}>
-          <Link href="/create-group">
+          <Link href='/create-group'>
             <Button variant={ButtonVariant.Action} color={ButtonColor.Pink}>
               <GroupIcon />
             </Button>
@@ -104,18 +103,22 @@ export default function Home() {
           <p className={styles.label}>Ny gruppe</p>
         </div>
       </div>
-      <p className={styles["title-centered"]}>Bli med i en gruppe</p>
+      <h2 className={styles["title-centered"]}>Bli med i en gruppe</h2>
       <div className={styles["group-input-container"]}>
-        <Input type="text" className={styles["text-input"]} />
+        <Input
+          type='text'
+          className={styles["text-input"]}
+          placeholder='Invitasjons-kode...'
+        />
         <Button variant={ButtonVariant.Medium} color={ButtonColor.Red}>
           Bli med
         </Button>
       </div>
-      <p className={styles.title}>Dine grupper</p>
+      <h2 className={styles.title}>Dine grupper</h2>
       <div className={styles["cards-container"]}>
         <ScrollableLargeCards items={cardItemsGroups} />
       </div>
-      <p className={styles.title}>Nylige spill</p>
+      <h2 className={styles.title}>Nylige spill</h2>
       <div className={styles["cards-container"]}>
         <ScrollableLargeCards items={cardItemsGames} />
       </div>
