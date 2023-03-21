@@ -5,9 +5,10 @@ import {
   getGroupsForCurrentUser,
   joinGroup,
 } from "../services/group.service";
+import { WithId } from "../types/types";
 import { DataStatus, DataWithStatus } from "./store.types";
 
-type GroupState = DataWithStatus<(Group & { id: string })[]>;
+type GroupState = DataWithStatus<WithId<Group>[]>;
 
 const initialState: GroupState = {
   data: undefined,

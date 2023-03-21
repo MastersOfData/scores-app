@@ -12,8 +12,12 @@ import { CardItem } from "src/components/Card";
 import { Timestamp } from "firebase/firestore";
 import { differenceBetweenFirestoreTimestampsInDays } from "src/utils/util";
 import PageWrapper from "src/components/PageWrapper";
+import { useGetGroupsForCurrentUser } from "../store/hooks";
 
 export default function Home() {
+  const groupsWithStatus = useGetGroupsForCurrentUser();
+  console.log("Groups: ", groupsWithStatus);
+
   //Mock groups
   const groups: Group[] = [
     { name: "SnømannGutta", emoji: "⛄", games: [], invitationCode: "5673" },
