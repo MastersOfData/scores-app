@@ -65,7 +65,7 @@ export default function Home() {
     .filter((game) => game.state == "FINISHED")
     .map((game) => {
       return {
-        key: game.timestamp.toString(),
+        key: game.winner!,
         title: "2 dager siden",
         labels: ["Noe relevant info", "Annen info"],
         emoji: "",
@@ -98,7 +98,7 @@ export default function Home() {
       </div>
       <p className={styles["title-centered"]}>Bli med i en gruppe</p>
       <div className={styles["group-input-container"]}>
-        <Input type="text" className={styles["text-input"]} />
+        <Input type='text' className={styles["text-input"]} />
         <Button variant={ButtonVariant.Medium} color={ButtonColor.Red}>
           Bli med
         </Button>
