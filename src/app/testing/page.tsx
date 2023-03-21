@@ -19,7 +19,7 @@ import { useHeader } from "src/components/Header";
 
 export default function TestingPage() {
   const router = useRouter();
-  useHeader("Testing Page", "/")
+  useHeader("Testing Page", "/");
 
   // State for card demos
   const users = ["xXbirgerXx", "mr_bean", "lars", "randi", "user1", "user2"];

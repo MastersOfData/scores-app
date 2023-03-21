@@ -1,6 +1,7 @@
 import type { Metadata } from "next/types";
 import Header from "src/components/Header";
 import "../styles/globals.css";
+import { StateProvider } from "./provider";
 
 export const metadata: Metadata = {
   title: "Score Tracker",
@@ -16,8 +17,10 @@ export default function RootLayout({
       <body>
         <div className='page-container'>
           <div className='content-wrapper'>
-            <Header />
-            {children}
+            <StateProvider>
+              <Header />
+              {children}
+            </StateProvider>
           </div>
         </div>
       </body>
