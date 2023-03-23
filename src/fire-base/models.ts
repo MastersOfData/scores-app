@@ -1,4 +1,5 @@
 import type { DocumentData, Timestamp } from "firebase/firestore"
+import { GameState } from "src/types/types";
 
 // id is not part of document data
 
@@ -13,8 +14,6 @@ export interface Group extends DocumentData {
   games: string[];
   invitationCode: string;
 }
-
-type GameState = "FINISHED" | "PAUSED" | "ONGOING";
 
 export interface Game extends DocumentData {
   gameTypeId: string;

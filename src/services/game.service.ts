@@ -1,9 +1,18 @@
-import { Timestamp } from "firebase/firestore";
-import { addDocument, gamesCol } from "src/fire-base/db";
-import { Game } from "src/fire-base/models";
+import { group } from "console";
+import { documentId, Timestamp, where } from "firebase/firestore";
+import {
+  addDocument,
+  gamesCol,
+  getDocument,
+  getDocuments,
+  groupsCol,
+  usersCol,
+} from "src/fire-base/db";
+import { Game, User } from "src/fire-base/models";
 import { useLocalStorage } from "src/hooks/hooks";
+import { mapGameToInternal } from "src/utils/mappers";
 
-interface CreateGameData {
+export interface CreateGameData {
   groupId?: string;
   gameTypeId: string;
   allowTeams: boolean;
@@ -11,7 +20,7 @@ interface CreateGameData {
 }
 
 export const createGame = async (data: CreateGameData) => {
-  const authUser: string | null = null; // TODO fetch user from context
+  const authUser: string | undefined = undefined; // TODO fetch user from context
 
   const players = data.participants.map((participantId) => ({
     playerId: participantId,
@@ -20,15 +29,36 @@ export const createGame = async (data: CreateGameData) => {
 
   const game: Game = {
     ...data,
-    admin: authUser,
+    adminId: authUser,
     players: players,
     timestamp: Timestamp.fromDate(new Date()),
     state: "ONGOING",
   };
 
-  if (!authUser) {
-    return useLocalStorage("localGame", game)[0];
-  }
+  const gameRef = await addDocument(gamesCol, game);
+  const createdGame = await getDocument<Game>(gamesCol, gameRef.id);
 
-  return await addDocument(gamesCol, game);
+  if (!createdGame) return Promise.reject();
+
+  return createdGame;
+};
+
+export const getGamesForCurrentUser = async (userId: string) => {
+  const games = await getDocuments<Game>({
+    collectionId: gamesCol,
+    constraints: [where("userId", "==", userId)],
+  });
+
+  return games;
+};
+
+export const getGamesForGroup = async (groupId: string) => {
+  // TODO: Perhaps pass user to ensure user is part of group
+
+  const games = await getDocuments<Game>({
+    collectionId: gamesCol,
+    constraints: [where("groupId", "==", groupId)],
+  });
+
+  return games;
 };
