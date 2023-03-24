@@ -12,6 +12,7 @@ type TextInputProps = CommonInputProps & {
   placeholder?: string,
   onInput?: (value: string) => void,
   maxLength?: number
+  required?: boolean
 }
 
 type NumberInputProps = CommonInputProps & {
