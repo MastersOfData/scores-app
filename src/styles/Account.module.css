@@ -14,7 +14,27 @@
   width: 100%;
 }
 
+.form input {
+  width: 100%;
+}
+
 .button-container {
   display: flex;
   justify-content: center;
+}
+
+.info {
+  width: 100%;
+  text-align: center;
+  padding: .35rem;
+  border-radius: var(--border-radius-medium);
+  color: var(--clr-strong);
+}
+
+.info.success {
+  color: var(--accent-green);
+}
+
+.info.error {
+  color: var(--accent-red);
 }

@@ -1,63 +1,79 @@
 "use client"
 
-import { useHeader } from "src/components/Header"
 import Input from "src/components/Input"
 import { useState, FormEvent } from "react"
 import { validatePassword } from "src/utils/validation"
-import { getCurrentUser, updatePassword } from "src/fire-base/auth"
+import { getCurrentUser, signOut, updatePassword } from "src/fire-base/auth"
 import styles from "src/styles/Account.module.css"
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button"
+import PageWrapper from "src/components/PageWrapper"
+import { usePathname, useRouter } from "next/navigation"
 
 export default function AccountPage() {
-  useHeader("Profil", "/")
-
   const [password, setPassword] = useState<string>("")
   const [confPassword, setConfPassword] = useState<string>("")
+  const [infoComponent, setInfoComponent] = useState<React.ReactNode>(null) 
+  const router = useRouter()
+  const pathname = usePathname()
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
+    const form = e.target as HTMLFormElement
 
     if (confPassword !== password) {
-      // TODO: Inform about mismatch
+      setInfoComponent(<p className={`${styles.info} ${styles.error}`}>Passordene samsvarer ikke!</p>)
       return
     }
 
     const { valid, error } = validatePassword(password)
     if (!valid) {
-      // TODO: Inform about error
+      setInfoComponent(<p className={`${styles.info} ${styles.error}`}>{error}</p>)
       return
     }
 
     const user = getCurrentUser()
     if (!user) {
-      // TODO: Redirect to sign in?
+      router.push("/sign-in")
       return
     }
 
-    await updatePassword(user, password)
+    try {
+      await updatePassword(user, password)
+    }
+    catch (err) {
+      console.log(err)
+      router.push(`/sign-in?callbackUrl=${pathname}`)
+      return
+    }
+
+    form.reset()
+    setInfoComponent(<p className={`${styles.info} ${styles.success}`}>Ditt passord ble oppdattert!</p>)
   }
 
   return (
-    <main className={styles.main}>
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <div>
-          <strong>Endre password</strong>
+    <PageWrapper title="Profil" authenticated={true}>
+      <main className={styles.main}>
+        <form className={styles.form} onSubmit={handleSubmit}>
+          {infoComponent}
+          <div>
+            <strong>Endre password</strong>
+            <Input
+              type="password"
+              placeholder="Nytt passord"
+              onInput={setPassword}
+            />
+          </div>
           <Input
             type="password"
-            placeholder="Nytt passord"
-            onInput={setPassword}
+            placeholder="Bekreft passord"
+            onInput={setConfPassword}
           />
-        </div>
-        <Input
-          type="password"
-          placeholder="Bekreft passord"
-          onInput={setConfPassword}
-        />
-        <Button variant={ButtonVariant.Round} color={ButtonColor.Green}>Endre passord</Button>
-        <span className={styles["button-container"]}>
-          <Button variant={ButtonVariant.Medium} color={ButtonColor.Red}>Logg ut</Button>
-        </span>
-      </form>
-    </main>
+          <Button variant={ButtonVariant.Round} color={ButtonColor.Green}>Endre passord</Button>
+          <span className={styles["button-container"]}>
+            <Button variant={ButtonVariant.Medium} color={ButtonColor.Red} onClick={signOut}>Logg ut</Button>
+          </span>
+        </form>
+      </main>
+    </PageWrapper>
   )
 }

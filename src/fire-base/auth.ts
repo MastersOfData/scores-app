@@ -41,3 +41,7 @@ export function onAuthStateChanged(observer: NextOrObserver<FirebaseUser>) {
 export function getCurrentUser() {
   return auth.currentUser
 }
+
+export function isSignedIn() {
+  return auth.currentUser !== null
+}
