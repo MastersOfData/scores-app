@@ -59,8 +59,14 @@ const gamesSlice = createSlice({
         state.status = DataStatus.LOADING;
       })
       .addCase(createGameAction.fulfilled, (state, action) => {
+        const userId = action.payload.userId;
         state.status = DataStatus.COMPLETED;
-        state.data = { ...state.data, [action.payload.userId]: action.payload };
+
+        if (state.data) {
+          state.data[userId] = [...state.data[userId], action.payload];
+        } else {
+          state.data = { [action.payload.userId]: [action.payload] };
+        }
       })
       .addCase(createGameAction.rejected, (state) => {
         state.status = DataStatus.ERROR;
@@ -69,8 +75,15 @@ const gamesSlice = createSlice({
         state.status = DataStatus.LOADING;
       })
       .addCase(getUsersGamesAction.fulfilled, (state, action) => {
+        const userId = action.meta.arg;
+
         state.status = DataStatus.COMPLETED;
-        state.data = { ...state.data, [action.meta.arg]: action.payload };
+
+        if (state.data) {
+          state.data[userId] = [...state.data[userId], ...action.payload];
+        } else {
+          state.data = { [userId]: action.payload }
+        }
       })
       .addCase(getUsersGamesAction.rejected, (state) => {
         state.status = DataStatus.ERROR;
@@ -79,8 +92,14 @@ const gamesSlice = createSlice({
         state.status = DataStatus.LOADING;
       })
       .addCase(getGroupsGamesAction.fulfilled, (state, action) => {
+        const groupId = action.meta.arg;
         state.status = DataStatus.COMPLETED;
-        state.data = { ...state.data, [action.meta.arg]: action.payload };
+
+        if (state.data) {
+          state.data[groupId] = [...state.data[groupId], ...action.payload];
+        } else {
+          state.data = { [groupId]: action.payload }
+        }
       })
       .addCase(getGroupsGamesAction.rejected, (state) => {
         state.status = DataStatus.ERROR;
