@@ -11,7 +11,6 @@ import { getCurrentUser } from "src/fire-base/auth";
 export default function CreateGroupPage(){  
     const [groupName, setGroupName] = useState<string>("");
     const [emoji, setEmoji] = useState<string>("");
-    useHeader("Ny Gruppe", "/")
     
     async function onSubmit(e: FormEvent) {
         e.preventDefault();  
@@ -26,7 +25,7 @@ export default function CreateGroupPage(){
           }
         }
     }
-
+ 
   return (
     <PageWrapper title='Ny gruppe' backPath='/'>
       <div>
