@@ -16,7 +16,7 @@ export interface CreateGameData {
   participants: string[];
 }
 
-export interface UpdateGameData extends Pick<Game, "winner" | "status"> {};
+export type UpdateGameData = Pick<Game, "winner" | "status">;
 
 export const createGame = async (data: CreateGameData) => {
   const authUser = ""; // TODO fetch user from context or pass a prop
