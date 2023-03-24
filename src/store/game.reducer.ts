@@ -3,12 +3,12 @@ import { Game } from "src/fire-base/models";
 import {
   createGame,
   CreateGameData,
-  getGamesForCurrentUser,
   getGamesForGroup,
 } from "src/services/game.service";
+import { WithId } from "src/types/types";
 import { DataStatus, DataWithStatus } from "./store.types";
 
-type GameState = DataWithStatus<{ [id: string]: (Game & { id: string })[] }>;
+type GameState = DataWithStatus<Record<string, (WithId<Game>)[]>>;
 
 const initialState: GameState = {
   data: {},
@@ -26,23 +26,15 @@ const initialState: GameState = {
 };
 
 export const createGameAction = createAsyncThunk(
-  "games/getAll",
+  "games/create",
   async ({ gameData }: { gameData: CreateGameData }) => {
     const res = await createGame(gameData);
     return res;
   }
 );
 
-export const getUsersGamesAction = createAsyncThunk(
-  "games/user",
-  async (userId: string) => {
-    const res = await getGamesForCurrentUser(userId);
-    return res;
-  }
-);
-
 export const getGroupsGamesAction = createAsyncThunk(
-  "games/group",
+  "games/get",
   async (groupId: string) => {
     const res = await getGamesForGroup(groupId);
     return res;
@@ -59,33 +51,16 @@ const gamesSlice = createSlice({
         state.status = DataStatus.LOADING;
       })
       .addCase(createGameAction.fulfilled, (state, action) => {
-        const userId = action.payload.userId;
+        const groupId = action.payload.groupId;
         state.status = DataStatus.COMPLETED;
 
         if (state.data) {
-          state.data[userId] = [...state.data[userId], action.payload];
+          state.data[groupId] = [...state.data[groupId], action.payload];
         } else {
-          state.data = { [action.payload.userId]: [action.payload] };
+          state.data = { [groupId]: [action.payload] };
         }
       })
       .addCase(createGameAction.rejected, (state) => {
-        state.status = DataStatus.ERROR;
-      })
-      .addCase(getUsersGamesAction.pending, (state) => {
-        state.status = DataStatus.LOADING;
-      })
-      .addCase(getUsersGamesAction.fulfilled, (state, action) => {
-        const userId = action.meta.arg;
-
-        state.status = DataStatus.COMPLETED;
-
-        if (state.data) {
-          state.data[userId] = [...state.data[userId], ...action.payload];
-        } else {
-          state.data = { [userId]: action.payload }
-        }
-      })
-      .addCase(getUsersGamesAction.rejected, (state) => {
         state.status = DataStatus.ERROR;
       })
       .addCase(getGroupsGamesAction.pending, (state) => {
@@ -96,9 +71,9 @@ const gamesSlice = createSlice({
         state.status = DataStatus.COMPLETED;
 
         if (state.data) {
-          state.data[groupId] = [...state.data[groupId], ...action.payload];
+          state.data[groupId] = state.data[groupId].concat(action.payload);
         } else {
-          state.data = { [groupId]: action.payload }
+          state.data = { [groupId]: action.payload };
         }
       })
       .addCase(getGroupsGamesAction.rejected, (state) => {

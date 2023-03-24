@@ -35,6 +35,7 @@ export default function Home() {
   //Mock games
   const games: Game[] = [
     {
+      adminId: "",
       gameTypeId: "69",
       groupId: "420",
       players: [{ playerId: "1", points: 50 }],
@@ -43,6 +44,7 @@ export default function Home() {
       state: "ONGOING",
     },
     {
+      adminId: "",
       gameTypeId: "420",
       groupId: "69",
       players: [{ playerId: "2", points: 69 }],
@@ -51,6 +53,7 @@ export default function Home() {
       state: "FINISHED",
     },
     {
+      adminId: "",
       gameTypeId: "69",
       groupId: "420",
       players: [{ playerId: "4", points: 420 }],

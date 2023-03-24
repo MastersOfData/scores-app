@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { Game } from "src/fire-base/models";
 
 export const testFunc = () => true;
 
@@ -30,3 +31,12 @@ export const differenceBetweenFirestoreTimestampsInDays = (
 
   return Math.floor(daysDiff);
 };
+
+export const calculateDuration = (game: Game): number => {
+  if (game.state === "ONGOING") {
+    const startTime = game.timestamp.toDate().getTime();
+    const currentTime = new Date().getTime();
+    return Math.floor((currentTime - startTime) / 1000);
+  }
+  return game.duration || 0;
+}

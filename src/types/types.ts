@@ -1,13 +1,14 @@
-import { Game, User, UserGroupStatistic } from "src/fire-base/models";
+import { User } from "src/fire-base/models";
 
 export type WithId<T> = {
   id: string;
 } & T;
 
-export type GameState = "FINISHED" | "PAUSED" | "ONGOING";
+export type GameStatus = "FINISHED" | "PAUSED" | "ONGOING";
 
 export type Player = ((WithId<User> & { points: number }) | undefined)[];
 
-export interface GameInternal extends Omit<Game, "players"> {
-  players: Player;
+export type PlayerScore = {
+  playerId: string;
+  points: number;
 }
