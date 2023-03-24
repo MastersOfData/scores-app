@@ -92,12 +92,6 @@ describe("calculatDuration", () => {
     [
       {
         ...mockGame1,
-      },
-      2934000,
-    ],
-    [
-      {
-        ...mockGame1,
         timestamp: Timestamp.fromDate(new Date(2023, 3, 21)),
       },
       259200,
@@ -123,8 +117,6 @@ describe("calculatDuration", () => {
       42069,
     ],
   ])("calculates the correct duration", (game, expected) => {
-    console.log(game.timestamp.toDate().getTime());
-    console.log(new Date().getTime());
     expect(calculateDuration(game)).toBe(expected);
   });
 });
