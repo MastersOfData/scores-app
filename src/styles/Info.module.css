@@ -4,9 +4,11 @@
   background-color: var(--bg-secondary);
   color: var(--clr-secondary);
   border-radius: var(--border-radius-hard);
-  padding: calc(0.5 * var(--padding-y)) var(--padding-x);
+  padding: calc(0.2 * var(--padding-y)) var(--padding-x);
   transform: scaleY(0);
   transition: transform 200ms;
+  max-width: fit-content;
+  font-size: 0.8rem;
 }
 
 .show {
@@ -15,14 +17,20 @@
 
 .info-btn {
   all: initial;
-  padding: 0;
-  margin: 0;
+  margin-left: 0.4rem;
   border: none;
   outline: none;
   color: var(--clr-secondary);
   font-weight: 900;
   font-size: 1.5rem;
   cursor: pointer;
+  scale: 0.7;
+}
+
+.info-btn::after,
+.info-btn::before {
+  pointer-events: none;
+  display: none;
 }
 
 .info-btn:hover {
