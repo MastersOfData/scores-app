@@ -1,8 +1,10 @@
 import {
+  calculateDuration,
   differenceBetweenFirestoreTimestampsInDays,
   generateUserGroupStatisticDocumentId,
 } from "../util";
 import { Timestamp } from "firebase/firestore";
+import { Game } from "src/fire-base/models";
 
 describe("generateUserGroupStatisticDocumentId", () => {
   it.each([
@@ -48,5 +50,81 @@ describe("differenceBetweenFirestoreTimestampsInDays", () => {
         Timestamp.fromDate(new Date(2022, 4, 5))
       )
     ).toBe(37 + 365);
+  });
+});
+
+describe("calculatDuration", () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2023, 3, 24));
+  })
+
+  afterAll(() => {
+    jest.useRealTimers();
+  })
+
+  const mockGame1: Game = {
+    adminId: "",
+    gameTypeId: "",
+    groupId: "",
+    players: [
+      {
+        playerId: "player69",
+        points: 420,
+      },
+    ],
+    winner: "",
+    timestamp: Timestamp.fromDate(new Date(2023, 2, 21)),
+    status: "ONGOING",
+  };
+
+  const mockGame2: Game = {
+    ...mockGame1,
+    status: "FINISHED",
+  }
+
+  const mockGame3: Game = {
+    ...mockGame1,
+    status: "PAUSED",
+  }
+
+  it.each([
+    [
+      {
+        ...mockGame1,
+      },
+      2934000,
+    ],
+    [
+      {
+        ...mockGame1,
+        timestamp: Timestamp.fromDate(new Date(2023, 3, 21)),
+      },
+      259200,
+    ],
+    [
+      {
+        ...mockGame2,
+      },
+      0,
+    ],
+    [
+      {
+        ...mockGame2,
+        duration: 69,
+      },
+      69,
+    ],
+    [
+      {
+        ...mockGame3,
+        duration: 42069,
+      },
+      42069,
+    ],
+  ])("calculates the correct duration", (game, expected) => {
+    console.log(game.timestamp.toDate().getTime());
+    console.log(new Date().getTime());
+    expect(calculateDuration(game)).toBe(expected);
   });
 });

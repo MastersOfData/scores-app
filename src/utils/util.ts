@@ -33,10 +33,10 @@ export const differenceBetweenFirestoreTimestampsInDays = (
 };
 
 export const calculateDuration = (game: Game): number => {
-  if (game.state === "ONGOING") {
+  if (game.status === "ONGOING") {
     const startTime = game.timestamp.toDate().getTime();
     const currentTime = new Date().getTime();
-    return Math.floor((currentTime - startTime) / 1000);
+    return Math.abs((currentTime - startTime) / 1000);
   }
   return game.duration || 0;
 }

@@ -41,7 +41,7 @@ export default function Home() {
       players: [{ playerId: "1", points: 50 }],
       winner: "1",
       timestamp: Timestamp.fromDate(new Date(2023, 2, 21)),
-      state: "ONGOING",
+      status: "ONGOING",
     },
     {
       adminId: "",
@@ -50,7 +50,7 @@ export default function Home() {
       players: [{ playerId: "2", points: 69 }],
       winner: "3",
       timestamp: Timestamp.fromDate(new Date(2023, 2, 18)),
-      state: "FINISHED",
+      status: "FINISHED",
     },
     {
       adminId: "",
@@ -59,7 +59,7 @@ export default function Home() {
       players: [{ playerId: "4", points: 420 }],
       winner: "5",
       timestamp: Timestamp.fromDate(new Date(2023, 2, 10)),
-      state: "FINISHED",
+      status: "FINISHED",
     },
   ];
 
@@ -79,10 +79,10 @@ export default function Home() {
     });
   //Must update paths
   return (
-    <PageWrapper title='Velkommen!'>
+    <PageWrapper title="Velkommen!">
       <div className={styles["buttons-container"]}>
         <div className={styles["button-container"]}>
-          <Link href='/?pressed=profile'>
+          <Link href="/?pressed=profile">
             <Button variant={ButtonVariant.Action}>
               <PersonIcon />
             </Button>
@@ -90,7 +90,7 @@ export default function Home() {
           <p className={styles.label}>Profil</p>
         </div>
         <div className={styles["button-container"]}>
-          <Link href='/?pressed=new_game'>
+          <Link href="/?pressed=new_game">
             <Button variant={ButtonVariant.Action} color={ButtonColor.Orange}>
               <ControllerIcon />
             </Button>
@@ -98,7 +98,7 @@ export default function Home() {
           <p className={styles.label}>Nytt spill</p>
         </div>
         <div className={styles["button-container"]}>
-          <Link href='/create-group'>
+          <Link href={{ pathname: "/create-group" }}>
             <Button variant={ButtonVariant.Action} color={ButtonColor.Pink}>
               <GroupIcon />
             </Button>
@@ -109,9 +109,9 @@ export default function Home() {
       <h2 className={styles["title-centered"]}>Bli med i en gruppe</h2>
       <div className={styles["group-input-container"]}>
         <Input
-          type='text'
+          type="text"
           className={styles["text-input"]}
-          placeholder='Invitasjons-kode...'
+          placeholder="Invitasjons-kode..."
         />
         <Button variant={ButtonVariant.Medium} color={ButtonColor.Red}>
           Bli med

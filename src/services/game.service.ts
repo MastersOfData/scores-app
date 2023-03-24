@@ -7,7 +7,6 @@ import {
   updateDocument,
 } from "src/fire-base/db";
 import { Game } from "src/fire-base/models";
-import { GameStatus, WithId } from "src/types/types";
 import { calculateDuration } from "src/utils/util";
 
 export interface CreateGameData {
@@ -17,10 +16,7 @@ export interface CreateGameData {
   participants: string[];
 }
 
-export interface UpdateGameData {
-  winner?: string;
-  status?: GameStatus;
-}
+export interface UpdateGameData extends Pick<Game, "winner" | "status"> {};
 
 export const createGame = async (data: CreateGameData) => {
   const authUser = ""; // TODO fetch user from context or pass a prop
