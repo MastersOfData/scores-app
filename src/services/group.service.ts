@@ -6,11 +6,11 @@ import {
   getDocuments,
   groupsCol,
   setDocument,
-  userGroupStatisticsCol,
+  membershipsCol,
   usersCol,
 } from "src/fire-base/db";
 import { Group, User, Membership } from "src/fire-base/models";
-import { generateUserGroupStatisticDocumentId } from "src/utils/util";
+import { generateMembershipDocumentId } from "src/utils/util";
 import { GroupInternal } from "../types/types";
 import { mapGroupAndUsersToGroupInternal } from "../utils/mappers";
 
@@ -37,7 +37,7 @@ export const createGroup = async (
 
 export const getGroupsForCurrentUser = async (userId: string) => {
   const groupIds = await getDocuments<Membership>({
-    collectionId: userGroupStatisticsCol,
+    collectionId: membershipsCol,
     constraints: [where("userId", "==", userId)],
   }).then((groups) => [...new Set(groups.map((group) => group.groupId))]);
 
@@ -52,8 +52,8 @@ export const getGroupsForCurrentUser = async (userId: string) => {
   return groups;
 };
 
-export const joinGroup = async (groupId: string, userId: string) => {
-  const docId = generateUserGroupStatisticDocumentId(userId, groupId);
+const joinGroup = async (groupId: string, userId: string) => {
+  const docId = generateMembershipDocumentId(userId, groupId);
 
   const userGroupStatistic: Membership = {
     userId: userId,
@@ -63,7 +63,7 @@ export const joinGroup = async (groupId: string, userId: string) => {
     losses: 0,
   };
 
-  await setDocument(userGroupStatisticsCol, docId, userGroupStatistic);
+  await setDocument(membershipsCol, docId, userGroupStatistic);
 
   return await getDocument<Group>(groupsCol, docId);
 };
@@ -97,7 +97,7 @@ export const joinGroupByInvitationCode = async (
   if (groupArray.length === 0 || groupArray.length > 1) return Promise.reject();
 
   const groupId = groupArray[0].invitationCode;
-  const docId = generateUserGroupStatisticDocumentId(userId, groupId);
+  const docId = generateMembershipDocumentId(userId, groupId);
 
   const userGroupStatistic: Membership = {
     userId: userId,
@@ -107,19 +107,19 @@ export const joinGroupByInvitationCode = async (
     losses: 0,
   };
 
-  await setDocument(userGroupStatisticsCol, docId, userGroupStatistic);
+  await setDocument(membershipsCol, docId, userGroupStatistic);
 
   return await getGroupInternal(groupId);
 };
 
 export const removeUserFromGroup = async (userId: string, groupId: string) => {
-  const statsId = generateUserGroupStatisticDocumentId(userId, groupId);
-  await deleteDocument(userGroupStatisticsCol, statsId);
+  const statsId = generateMembershipDocumentId(userId, groupId);
+  await deleteDocument(membershipsCol, statsId);
 };
 
 export const getStatsForAllUsersInGroup = async (groupId: string) => {
   return await getDocuments<Membership>({
-    collectionId: userGroupStatisticsCol,
+    collectionId: membershipsCol,
     constraints: [where("groupId", "==", groupId)],
   }).then((res) => res);
 };

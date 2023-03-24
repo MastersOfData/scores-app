@@ -1,14 +1,17 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, Update } from "@reduxjs/toolkit";
+import { create } from "domain";
 import { Game } from "src/fire-base/models";
 import {
   createGame,
   CreateGameData,
   getGamesForGroup,
+  updateGame,
+  UpdateGameData,
 } from "src/services/game.service";
 import { WithId } from "src/types/types";
 import { DataStatus, DataWithStatus } from "./store.types";
 
-type GameState = DataWithStatus<Record<string, (WithId<Game>)[]>>;
+type GameState = DataWithStatus<Record<string, WithId<Game>[]>>;
 
 const initialState: GameState = {
   data: {},
@@ -33,11 +36,25 @@ export const createGameAction = createAsyncThunk(
   }
 );
 
-export const getGroupsGamesAction = createAsyncThunk(
+export const getGamesAction = createAsyncThunk(
   "games/get",
   async (groupId: string) => {
     const res = await getGamesForGroup(groupId);
     return res;
+  }
+);
+
+export const updateGameAction = createAsyncThunk(
+  "games/update",
+  async ({
+    gameId,
+    gameData,
+  }: {
+    gameId: string;
+    gameData: UpdateGameData;
+  }) => {
+    await updateGame(gameId, gameData);
+    return gameId;
   }
 );
 
@@ -48,11 +65,11 @@ const gamesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(createGameAction.pending, (state) => {
-        state.status = DataStatus.LOADING;
+        state.create.status = DataStatus.LOADING;
       })
       .addCase(createGameAction.fulfilled, (state, action) => {
         const groupId = action.payload.groupId;
-        state.status = DataStatus.COMPLETED;
+        state.create.status = DataStatus.COMPLETED;
 
         if (state.data) {
           state.data[groupId] = [...state.data[groupId], action.payload];
@@ -61,12 +78,12 @@ const gamesSlice = createSlice({
         }
       })
       .addCase(createGameAction.rejected, (state) => {
-        state.status = DataStatus.ERROR;
+        state.create.status = DataStatus.ERROR;
       })
-      .addCase(getGroupsGamesAction.pending, (state) => {
+      .addCase(getGamesAction.pending, (state) => {
         state.status = DataStatus.LOADING;
       })
-      .addCase(getGroupsGamesAction.fulfilled, (state, action) => {
+      .addCase(getGamesAction.fulfilled, (state, action) => {
         const groupId = action.meta.arg;
         state.status = DataStatus.COMPLETED;
 
@@ -76,8 +93,40 @@ const gamesSlice = createSlice({
           state.data = { [groupId]: action.payload };
         }
       })
-      .addCase(getGroupsGamesAction.rejected, (state) => {
+      .addCase(getGamesAction.rejected, (state) => {
         state.status = DataStatus.ERROR;
+        state.data = {};
+      })
+      .addCase(updateGameAction.pending, (state, action) => {
+        state.update.status = DataStatus.LOADING;
+        state.update.dataId = action.meta.arg.gameId;
+      })
+      .addCase(updateGameAction.fulfilled, (state, action) => {
+        const gameId = action.meta.arg.gameId;
+
+        state.update.status = DataStatus.COMPLETED;
+        state.update.dataId = undefined;
+
+        if (state.data) {
+          for (const group in state.data) {
+            const games = state.data[group];
+            const gameIndex = games.findIndex((g) => g.id === gameId);
+            if (gameIndex > -1) {
+              state.data[group][gameIndex] = Object.assign(
+                state.data[group][gameIndex],
+                action.meta.arg.gameData
+              );
+              break;
+            }
+          }
+        } else {
+          throw Error(
+            "Game updated but doesn't exist: " + action.meta.arg.gameId
+          );
+        }
+      })
+      .addCase(updateGameAction.rejected, (state) => {
+        state.update.status = DataStatus.ERROR;
       });
   },
 });

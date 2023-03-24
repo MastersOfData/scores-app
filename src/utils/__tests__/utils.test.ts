@@ -1,7 +1,7 @@
 import {
   calculateDuration,
   differenceBetweenFirestoreTimestampsInDays,
-  generateUserGroupStatisticDocumentId,
+  generateMembershipDocumentId,
 } from "../util";
 import { Timestamp } from "firebase/firestore";
 import { Game } from "src/fire-base/models";
@@ -12,7 +12,7 @@ describe("generateUserGroupStatisticDocumentId", () => {
     ["a", "b", "a-b"],
     ["asd", "", "asd-"],
   ])("Should return correct value", (userId, groupId, expected) => {
-    const result = generateUserGroupStatisticDocumentId(userId, groupId);
+    const result = generateMembershipDocumentId(userId, groupId);
     expect(result).toBe(expected);
   });
 
@@ -21,7 +21,7 @@ describe("generateUserGroupStatisticDocumentId", () => {
     ["a", "b"],
     ["asd", ""],
   ])("Should return correct type", (userId, groupId) => {
-    const result = generateUserGroupStatisticDocumentId(userId, groupId);
+    const result = generateMembershipDocumentId(userId, groupId);
     expect(typeof result).toBe("string");
   });
 });

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, TypedUseSelectorHook, useSelector } from "react-redux";
 import { AppDispatch, StoreType } from "./store";
 import { DataStatus } from "./store.types";
-import { getGroupsGamesAction } from "./game.reducer";
+import { getGamesAction, updateGameAction } from "./game.reducer";
 import { getAllGroupsAction } from "./groupsInternal.reducer";
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
@@ -29,7 +29,7 @@ export const useGetGamesForGroup = (groupId: string) => {
 
   useEffect(() => {
     if (!games.data![groupId] && games.status !== DataStatus.LOADING) {
-      dispatch(getGroupsGamesAction(groupId));
+      dispatch(getGamesAction(groupId));
     }
   });
 
