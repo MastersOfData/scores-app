@@ -79,7 +79,7 @@ export default function Home() {
     });
   //Must update paths
   return (
-    <PageWrapper title="Velkommen!">
+    <PageWrapper title="Velkommen!" authenticated={true}>
       <div className={styles["buttons-container"]}>
         <div className={styles["button-container"]}>
           <Button
