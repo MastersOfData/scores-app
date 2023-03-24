@@ -1,4 +1,4 @@
-import { User, UserGroupStatistic } from "../fire-base/models";
+import { User, Membership } from "../fire-base/models";
 
 export type WithId<T> = {
   id: string;
@@ -11,5 +11,5 @@ export interface GroupInternal {
   games: string[];
   invitationCode: string;
   gameTypes?: { name: string; emoji: string }[];
-  members: ((WithId<UserGroupStatistic> & User) | undefined)[];
+  members: ((WithId<Membership> & User) | undefined)[];
 }

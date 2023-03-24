@@ -1,4 +1,4 @@
-import { Group, User, UserGroupStatistic } from "../../fire-base/models";
+import { Group, User, Membership } from "../../fire-base/models";
 import { WithId } from "../../types/types";
 import { mapGroupAndUsersToGroupInternal } from "../mappers";
 
@@ -17,7 +17,7 @@ describe("mapGroupAndUsersToGroupInternal", () => {
     invitationCode: "",
   };
 
-  const userStats: WithId<UserGroupStatistic>[] = [
+  const userStats: WithId<Membership>[] = [
     {
       id: "123-g1",
       userId: "123",

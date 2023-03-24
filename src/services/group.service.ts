@@ -9,7 +9,7 @@ import {
   userGroupStatisticsCol,
   usersCol,
 } from "src/fire-base/db";
-import { Group, User, UserGroupStatistic } from "src/fire-base/models";
+import { Group, User, Membership } from "src/fire-base/models";
 import { generateUserGroupStatisticDocumentId } from "src/utils/util";
 import { GroupInternal } from "../types/types";
 import { mapGroupAndUsersToGroupInternal } from "../utils/mappers";
@@ -36,7 +36,7 @@ export const createGroup = async (
 };
 
 export const getGroupsForCurrentUser = async (userId: string) => {
-  const groupIds = await getDocuments<UserGroupStatistic>({
+  const groupIds = await getDocuments<Membership>({
     collectionId: userGroupStatisticsCol,
     constraints: [where("userId", "==", userId)],
   }).then((groups) => [...new Set(groups.map((group) => group.groupId))]);
@@ -55,7 +55,7 @@ export const getGroupsForCurrentUser = async (userId: string) => {
 export const joinGroup = async (groupId: string, userId: string) => {
   const docId = generateUserGroupStatisticDocumentId(userId, groupId);
 
-  const userGroupStatistic: UserGroupStatistic = {
+  const userGroupStatistic: Membership = {
     userId: userId,
     groupId: groupId,
     wins: 0,
@@ -99,7 +99,7 @@ export const joinGroupByInvitationCode = async (
   const groupId = groupArray[0].invitationCode;
   const docId = generateUserGroupStatisticDocumentId(userId, groupId);
 
-  const userGroupStatistic: UserGroupStatistic = {
+  const userGroupStatistic: Membership = {
     userId: userId,
     groupId: groupId,
     wins: 0,
@@ -118,7 +118,7 @@ export const removeUserFromGroup = async (userId: string, groupId: string) => {
 };
 
 export const getStatsForAllUsersInGroup = async (groupId: string) => {
-  return await getDocuments<UserGroupStatistic>({
+  return await getDocuments<Membership>({
     collectionId: userGroupStatisticsCol,
     constraints: [where("groupId", "==", groupId)],
   }).then((res) => res);

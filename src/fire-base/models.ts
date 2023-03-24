@@ -20,14 +20,14 @@ type GameState = "FINISHED" | "PAUSED" | "ONGOING";
 export interface Game extends DocumentData {
   gameTypeId: string;
   groupId?: string;
-  players: [playerId: string, points: number];
+  players: { playerId: string; points: number }[];
   winner?: string;
   timestamp: Timestamp;
   duration?: number;
   state: GameState;
 }
 
-export interface UserGroupStatistic extends DocumentData {
+export interface Membership extends DocumentData {
   userId: string;
   groupId: string;
   wins: number;

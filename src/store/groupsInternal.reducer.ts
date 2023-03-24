@@ -26,7 +26,7 @@ const initialState: GroupsInternalState = {
 };
 
 export const getAllGroupsAction = createAsyncThunk(
-  "groupsInternal/getAll",
+  "groups/getAll",
   async (userId: string) => {
     const res = await getGroupsInternalForCurrentUser(userId);
     return res;
@@ -34,7 +34,7 @@ export const getAllGroupsAction = createAsyncThunk(
 );
 
 export const joinGroupByInvitationCodeAction = createAsyncThunk(
-  "groupsInternal/joinGroup",
+  "groups/joinGroup",
   async ({
     invitationCode,
     userId,
@@ -47,7 +47,7 @@ export const joinGroupByInvitationCodeAction = createAsyncThunk(
 );
 
 export const createGroupAction = createAsyncThunk(
-  "groupsInternal/createGroup",
+  "groups/createGroup",
   async ({
     currentUserId,
     groupName,
@@ -63,7 +63,7 @@ export const createGroupAction = createAsyncThunk(
 );
 
 export const removeUserFromGroupAction = createAsyncThunk(
-  "groupsInternal/removeUser",
+  "groups/removeUser",
   async ({ userId, groupId }: { userId: string; groupId: string }) => {
     await removeUserFromGroup(userId, groupId);
     return {
@@ -73,8 +73,8 @@ export const removeUserFromGroupAction = createAsyncThunk(
   }
 );
 
-const groupsInternalSlice = createSlice({
-  name: "groupsInternal",
+const groups = createSlice({
+  name: "groups",
   initialState: initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -133,4 +133,4 @@ const groupsInternalSlice = createSlice({
   },
 });
 
-export const groupsInternalReducer = groupsInternalSlice.reducer;
+export const groupsReducer = groups.reducer;

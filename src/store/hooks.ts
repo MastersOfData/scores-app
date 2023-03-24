@@ -9,7 +9,7 @@ export const useAppSelector: TypedUseSelectorHook<StoreType> = useSelector;
 
 export const useGetGroupsForCurrentUser = () => {
   const dispatch = useAppDispatch();
-  const groups = useAppSelector((state) => state.groupsInternal);
+  const groups = useAppSelector((state) => state.groups);
 
   const user = { id: "123" };
 

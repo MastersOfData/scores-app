@@ -1,9 +1,9 @@
-import { Group, User, UserGroupStatistic } from "../fire-base/models";
+import { Group, User, Membership } from "../fire-base/models";
 import { GroupInternal, WithId } from "../types/types";
 
 export const mapGroupAndUsersToGroupInternal = (
   group: WithId<Group>,
-  userGroupStats: WithId<UserGroupStatistic>[],
+  userGroupStats: WithId<Membership>[],
   users: WithId<User>[]
 ): GroupInternal => {
   const statsWithUserInfo = userGroupStats.map((stats) => {
