@@ -8,3 +8,21 @@
   padding-bottom: 1rem;
   padding-top: 0.3rem;
 }
+
+.toggle-container {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 1rem;
+}
+
+.toggle-section {
+  width: 15rem;
+  scale: 0.7;
+}
+
+.button-container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  scale: 0.9;
+}
