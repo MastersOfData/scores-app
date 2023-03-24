@@ -1,6 +1,7 @@
 
 .header-container {
   width: 100%;
+  padding-block: 2rem;
   height: max(4rem, fit-content);
   display: flex;
   align-items: center;

@@ -1,4 +1,4 @@
-import type { DocumentData, Timestamp } from "firebase/firestore"
+import type { DocumentData, Timestamp } from "firebase/firestore";
 
 // id is not part of document data
 
@@ -12,6 +12,7 @@ export interface Group extends DocumentData {
   emoji: string;
   games: string[];
   invitationCode: string;
+  gameTypes?: { name: string; emoji: string }[];
 }
 
 type GameState = "FINISHED" | "PAUSED" | "ONGOING";
@@ -19,14 +20,14 @@ type GameState = "FINISHED" | "PAUSED" | "ONGOING";
 export interface Game extends DocumentData {
   gameTypeId: string;
   groupId?: string;
-  players: [playerId: string, points: number]
+  players: { playerId: string; points: number }[];
   winner?: string;
-  timestamp: Timestamp
+  timestamp: Timestamp;
   duration?: number;
   state: GameState;
 }
 
-export interface UserGroupStatistic extends DocumentData {
+export interface Membership extends DocumentData {
   userId: string;
   groupId: string;
   wins: number;

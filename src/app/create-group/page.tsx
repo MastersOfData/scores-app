@@ -1,10 +1,10 @@
 "use client";
 
 import styles from "../../styles/CreateGroupe.module.css";
-import { useHeader } from "src/components/Header";
 import Input from "src/components/Input";
 import { FormEvent, useState } from "react";
 import { Button, ButtonVariant, ButtonColor } from "src/components/Button";
+import PageWrapper from "../../components/PageWrapper";
 import { createGroup } from "src/services/group.service";
 import { getCurrentUser } from "src/fire-base/auth";
 
@@ -27,47 +27,46 @@ export default function CreateGroupPage(){
         }
     }
 
-    return (
-        <main className = {styles.container}>
-          <div>
-            <form className={styles.form}>
-              <div className={styles.inputContainer}>
-                <p className={styles.inputLabel}>Gruppenavn:</p>
-                  <Input 
+  return (
+    <PageWrapper title='Ny gruppe' backPath='/'>
+      <div>
+        <form className={styles.form}>
+          <div className={styles.inputContainer}>
+            <p className={styles.inputLabel}>Gruppenavn:</p>
+            <Input
                     required
-                    className={styles.inputStyle}
-                    type = "text"
-                    placeholder="Skriv gruppenavn..."
-                    onInput={setGroupName}
-                  />
-              </div>
-              <div className={styles.inputContainer}>
-                <p className={styles.inputLabel}>Emoji:</p>
-                        
-                </div>
-                <div className={styles.emojiContainer}>
-                  <Input
-                    required 
-                    className={styles.emojiStyle}
-                    type="text"
-                    placeholder=""
-                    onInput={setEmoji}
-                    maxLength={2}
-                  />
-                </div> 
-                <div>
-                  <Button
-                    className={styles["button-container"]}
-                    variant={ButtonVariant.Round}
-                    color={ButtonColor.Green}
-                    onSubmit={e => onSubmit(e)}
-                    type = "submit"
-                  >
-                    Opprett gruppe
-                  </Button>
-                </div>
-            </form>
+              className={styles.inputStyle}
+              type='text'
+              placeholder='Skriv gruppenavn...'
+              onInput={setGroupName}
+            />
           </div>
-        </main>
-    )
+          <div className={styles.inputContainer}>
+            <p className={styles.inputLabel}>Emoji:</p>
+          </div>
+          <div className={styles.emojiContainer}>
+            <Input
+                    required 
+              className={styles.emojiStyle}
+              type='text'
+              placeholder=''
+              onInput={setEmoji}
+              maxLength={2}
+            />
+          </div>
+          <div className='center-items'>
+            <Button
+              className={styles["button-container"]}
+              variant={ButtonVariant.Round}
+              color={ButtonColor.Green}
+              onSubmit={(e) => onSubmit(e)}
+                    type = "submit"
+            >
+              Opprett gruppe
+            </Button>
+          </div>
+        </form>
+      </div>
+    </PageWrapper>
+  );
 }
