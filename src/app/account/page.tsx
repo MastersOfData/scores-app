@@ -8,15 +8,17 @@ import styles from "src/styles/Account.module.css"
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button"
 import PageWrapper from "src/components/PageWrapper"
 import { usePathname, useRouter } from "next/navigation"
+import { useCurrentUserData } from "src/services/user.service"
 
 export default function AccountPage() {
   const [password, setPassword] = useState<string>("")
   const [confPassword, setConfPassword] = useState<string>("")
   const [infoComponent, setInfoComponent] = useState<React.ReactNode>(null) 
+  const userData = useCurrentUserData()
   const router = useRouter()
   const pathname = usePathname()
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleChangePassword(e: FormEvent) {
     e.preventDefault()
     const form = e.target as HTMLFormElement
 
@@ -53,7 +55,11 @@ export default function AccountPage() {
   return (
     <PageWrapper title="Profil" authenticated={true}>
       <main className={styles.main}>
-        <form className={styles.form} onSubmit={handleSubmit}>
+        <div>
+          <strong>Brukernavn: </strong>
+          <p>{userData?.username}</p>
+        </div>
+        <form className={styles.form} onSubmit={handleChangePassword}>
           {infoComponent}
           <div>
             <strong>Endre password</strong>
