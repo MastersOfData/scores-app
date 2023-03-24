@@ -6,16 +6,16 @@ import { Button, ButtonColor, ButtonVariant } from "../../components/Button";
 import PageWrapper from "../../components/PageWrapper";
 import homeStyles from "../../styles/Home.module.css";
 
-export default function PlayOptionPage() {
+export default function PlayPage() {
   return (
-    <PageWrapper title='Spill' backPath='/'>
+    <PageWrapper title="Spill" backPath="/">
       <div className={homeStyles["buttons-container"]}>
         <div className={homeStyles["button-container"]}>
           <Button
             variant={ButtonVariant.Action}
             color={ButtonColor.Green}
             withLink
-            href='/'
+            href="/register-result"
           >
             <ResultsIcon />
           </Button>
@@ -26,7 +26,7 @@ export default function PlayOptionPage() {
             variant={ButtonVariant.Action}
             color={ButtonColor.Orange}
             withLink
-            href='/'
+            href="/"
           >
             <ControllerIcon />
           </Button>

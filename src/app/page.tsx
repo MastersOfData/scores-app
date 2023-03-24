@@ -75,13 +75,13 @@ export default function Home() {
     });
   //Must update paths
   return (
-    <PageWrapper title='Velkommen!'>
+    <PageWrapper title="Velkommen!">
       <div className={styles["buttons-container"]}>
         <div className={styles["button-container"]}>
           <Button
             variant={ButtonVariant.Action}
             withLink
-            href='/?pressed=profile'
+            href="/?pressed=profile"
           >
             <PersonIcon />
           </Button>
@@ -92,7 +92,7 @@ export default function Home() {
             variant={ButtonVariant.Action}
             color={ButtonColor.Orange}
             withLink
-            href='/play-option'
+            href="/play"
           >
             <ControllerIcon />
           </Button>
@@ -103,7 +103,7 @@ export default function Home() {
             variant={ButtonVariant.Action}
             color={ButtonColor.Pink}
             withLink
-            href='/create-group'
+            href="/create-group"
           >
             <GroupIcon />
           </Button>
@@ -113,9 +113,9 @@ export default function Home() {
       <h2 className={styles["title-centered"]}>Bli med i en gruppe</h2>
       <div className={styles["group-input-container"]}>
         <Input
-          type='text'
+          type="text"
           className={styles["text-input"]}
-          placeholder='Invitasjons-kode...'
+          placeholder="Invitasjons-kode..."
         />
         <Button variant={ButtonVariant.Medium} color={ButtonColor.Red}>
           Bli med
