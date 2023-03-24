@@ -10,7 +10,10 @@ import { ScrollableLargeCards } from "src/components/ScrollableLargeCards";
 import { Game, Group } from "src/fire-base/models";
 import { CardItem } from "src/components/Card";
 import { Timestamp } from "firebase/firestore";
-import { differenceBetweenFirestoreTimestampsInDays } from "src/utils/util";
+import {
+  differenceBetweenFirestoreTimestampsInDays,
+  mapGroupsToCardItems,
+} from "src/utils/util";
 import PageWrapper from "src/components/PageWrapper";
 
 export default function Home() {
@@ -22,14 +25,7 @@ export default function Home() {
     { name: "Pubgruppen", emoji: "✨", games: [], invitationCode: "9031" },
   ];
 
-  const cardItemsGroups: CardItem[] = groups.map((group) => {
-    return {
-      key: group.invitationCode,
-      title: group.name,
-      labels: ["Noe relevant info", "Annen info"],
-      emoji: group.emoji,
-    };
-  });
+  const cardItemsGroups: CardItem[] = mapGroupsToCardItems(groups, true);
 
   //Mock games
   const games: Game[] = [
