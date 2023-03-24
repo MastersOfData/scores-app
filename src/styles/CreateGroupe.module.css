@@ -1,0 +1,49 @@
+.container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  padding-top: 2rem;
+}
+
+.inputLabel {
+  color: var(--clr-primary);
+  font-family: var(--ff-primary);
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+  gap: 0.5rem;
+}
+
+.form {
+  width: 100%;
+  margin-top: rem;
+  gap: 0.5rem;
+}
+
+.inputStyle {
+  width: 100%;
+}
+
+.emojiStyle {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 100vmax !important;
+  display: block;
+  font-size: var(--fs-800);
+  text-align: center;
+}
+
+.emojiContainer {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.button-container {
+  margin-top: 2rem;
+}
