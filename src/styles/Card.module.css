@@ -23,7 +23,6 @@
 .card-header-wrapper {
   display: flex;
   gap: 5px;
-  display: flex;
   align-items: center;
   justify-content: center;
   /* margin-top: 2px; */
