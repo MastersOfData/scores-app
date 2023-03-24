@@ -35,12 +35,29 @@ export default function RegisterResultPage() {
           />
         </div>
       </div>
-      <div className={styles["choose-game"]}>
-        <TitleWithInfo
-          title="Velg spill"
-          infoText="Velg typen spill du ønsker å registrere et nytt resultat for."
+      <TitleWithInfo
+        title="Velg spill"
+        infoText="Velg typen spill du ønsker å registrere et nytt resultat for."
+      />
+      <div className={styles["groups-container"]}>
+        <RadioCards
+          items={groups.map((group, i) => ({
+            title: group.emoji + " " + group.name,
+            key: i.toString(),
+          }))}
+          selected={selectedGroup}
+          setSelected={setSelectedGroup}
         />
       </div>
+      <h2 className={styles["title-centered"]}>Velg deltagere</h2>
+      <TitleWithInfo
+        title="Ønsker du lag?"
+        infoText="Ønsker du at deltagerne skal deles inn i lag?"
+      />
+      <TitleWithInfo
+        title="Hvem vant?"
+        infoText="Flere vinnere kan velges. Alle vinnere får resultat uavgjort mens resten får tap"
+      />
     </PageWrapper>
   );
 }
