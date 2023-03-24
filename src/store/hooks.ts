@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useDispatch, TypedUseSelectorHook, useSelector } from "react-redux";
-import { getUsersGroupsAction } from "./group.reducer";
 import { AppDispatch, StoreType } from "./store";
 import { DataStatus } from "./store.types";
+import { getAllGroupsAction } from "./groupsInternal.reducer";
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<StoreType> = useSelector;
@@ -10,11 +10,12 @@ export const useAppSelector: TypedUseSelectorHook<StoreType> = useSelector;
 export const useGetGroupsForCurrentUser = () => {
   const dispatch = useAppDispatch();
   const groups = useAppSelector((state) => state.groups);
-  const user = { id: "123" }; // TODO: useAppSelector(state => state.user)
+
+  const user = { id: "123" };
 
   useEffect(() => {
     if (user && !groups.data && groups.status !== DataStatus.LOADING) {
-      dispatch(getUsersGroupsAction(user.id));
+      dispatch(getAllGroupsAction(user.id));
     }
   });
 
