@@ -15,8 +15,12 @@ import {
   mapGroupsToCardItems,
 } from "src/utils/util";
 import PageWrapper from "src/components/PageWrapper";
+import { useGetGroupsForCurrentUser } from "../store/hooks";
 
 export default function Home() {
+  const groupsWithStatus = useGetGroupsForCurrentUser();
+  console.log("Groups: ", groupsWithStatus);
+
   //Mock groups
   const groups: Group[] = [
     { name: "SnømannGutta", emoji: "⛄", games: [], invitationCode: "5673" },
@@ -32,7 +36,7 @@ export default function Home() {
     {
       gameTypeId: "69",
       groupId: "420",
-      players: ["1", 50],
+      players: [{ playerId: "1", points: 50 }],
       winner: "1",
       timestamp: Timestamp.fromDate(new Date(2023, 2, 21)),
       state: "ONGOING",
@@ -40,7 +44,7 @@ export default function Home() {
     {
       gameTypeId: "420",
       groupId: "69",
-      players: ["2", 69],
+      players: [{ playerId: "2", points: 69 }],
       winner: "3",
       timestamp: Timestamp.fromDate(new Date(2023, 2, 18)),
       state: "FINISHED",
@@ -48,7 +52,7 @@ export default function Home() {
     {
       gameTypeId: "69",
       groupId: "420",
-      players: ["4", 420],
+      players: [{ playerId: "4", points: 420 }],
       winner: "5",
       timestamp: Timestamp.fromDate(new Date(2023, 2, 10)),
       state: "FINISHED",
@@ -71,7 +75,7 @@ export default function Home() {
     });
   //Must update paths
   return (
-    <PageWrapper title="Velkommen!">
+    <PageWrapper title="Velkommen!" authenticated={true}>
       <div className={styles["buttons-container"]}>
         <div className={styles["button-container"]}>
           <Button
