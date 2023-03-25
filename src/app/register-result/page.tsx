@@ -3,12 +3,12 @@
 import { useState } from "react";
 import styles from "src/styles/RegisterResult.module.css";
 import PageWrapper from "src/components/PageWrapper";
-import { Group } from "src/fire-base/models";
-import { Card } from "src/components/Card";
-import { mapGroupsToCardItems } from "src/utils/util";
+import { Group, User } from "src/fire-base/models";
 import { RadioCards } from "src/components/RadioCards";
-import { InfoBox, InfoButton, InfoContextProvider } from "src/components/Info";
 import TitleWithInfo from "src/components/TitleWithInfo";
+import { CheckboxCards } from "src/components/CheckboxCards";
+import Input from "src/components/Input";
+import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
 
 export default function RegisterResultPage() {
   //Mock groups
@@ -18,7 +18,31 @@ export default function RegisterResultPage() {
     { name: "Yatzy for life", emoji: "🎲", games: [], invitationCode: "5721" },
   ];
 
+  //Dont have a type for this
+  type GameType = {
+    name: string;
+    emoji: string;
+  };
+
+  //Mock games
+  const gameTypes: GameType[] = [
+    { name: "Bingo", emoji: "🎰" },
+    { name: "Tennis", emoji: "🎾" },
+    { name: "Yatzy", emoji: "🎲" },
+  ];
+
+  //Mock users
+  const users: User[] = [
+    { email: "birger@gmail.com", username: "xXbirgerXx" },
+    { email: "lars@gmail.com", username: "lars123" },
+    { email: "anders@gmail.com", username: "mr_bean" },
+  ];
+
   const [selectedGroup, setSelectedGroup] = useState<string>("");
+  const [selectedGame, setSelectedGame] = useState<string>("");
+  const [participants, setParticipants] = useState<string[]>([]);
+  const [winners, setWinners] = useState<string[]>([]);
+  const [wantTeams, setWantTeams] = useState<boolean>(false);
 
   return (
     <PageWrapper title="Registrer resultat" backPath="/play">
@@ -35,11 +59,58 @@ export default function RegisterResultPage() {
           />
         </div>
       </div>
-      <div className={styles["choose-game"]}>
-        <TitleWithInfo
-          title="Velg spill"
-          infoText="Velg typen spill du ønsker å registrere et nytt resultat for."
+      <TitleWithInfo
+        title="Velg spill"
+        infoText="Velg typen spill du ønsker å registrere et nytt resultat for."
+      />
+      <div className={styles["groups-container"]}>
+        <RadioCards
+          items={gameTypes.map((gameType, i) => ({
+            title: gameType.emoji + " " + gameType.name,
+            key: i.toString(),
+          }))}
+          selected={selectedGame}
+          setSelected={setSelectedGame}
         />
+      </div>
+      <h2 className={styles["title-centered"]}>Velg deltagere</h2>
+      <div className={styles["groups-container"]}>
+        <CheckboxCards
+          items={users.map((user, i) => ({
+            title: user.username,
+            key: i.toString(),
+          }))}
+          checked={participants}
+          setChecked={setParticipants}
+        />
+      </div>
+      <TitleWithInfo
+        title="Ønsker du lag?"
+        infoText="Ønsker du at deltagerne skal deles inn i lag?"
+      />
+      <div className={styles["toggle-container"]}>
+        <div className={styles["toggle-section"]}>
+          <Input type="toggle" onInput={setWantTeams} />
+        </div>
+      </div>
+      <TitleWithInfo
+        title="Hvem vant?"
+        infoText="Flere vinnere kan velges. Alle vinnere får resultat uavgjort mens resten får tap"
+      />
+      <div className={styles["groups-container"]}>
+        <CheckboxCards
+          items={users.map((user, i) => ({
+            title: user.username,
+            key: i.toString(),
+          }))}
+          checked={winners}
+          setChecked={setWinners}
+        />
+      </div>
+      <div className={styles["button-container"]}>
+        <Button variant={ButtonVariant.Round} color={ButtonColor.Green}>
+          Legg til resultat
+        </Button>
       </div>
     </PageWrapper>
   );
