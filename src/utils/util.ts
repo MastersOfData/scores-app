@@ -1,6 +1,7 @@
 import { Timestamp } from "firebase/firestore";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import { CardItem } from "src/components/Card";
-import { Game, Group } from "src/fire-base/models";
+import { GroupInternal } from "../types/types";
 
 export const testFunc = () => true;
 
@@ -34,15 +35,17 @@ export const differenceBetweenFirestoreTimestampsInDays = (
 };
 
 export const mapGroupsToCardItems = (
-  groups: Group[],
-  includeLabels: boolean
+  groups: GroupInternal[],
+  includeLabels: boolean,
+  router: AppRouterInstance
 ): CardItem[] => {
   return groups.map((group) => {
     return {
-      key: group.invitationCode,
+      key: group.id,
       title: group.name,
       labels: includeLabels ? ["Noe relevant info", "Annen info"] : undefined,
       emoji: group.emoji,
+      onClick: () => router.push(`/group/${group.id}`),
     };
   });
 };
