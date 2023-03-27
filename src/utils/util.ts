@@ -1,4 +1,6 @@
 import { Timestamp } from "firebase/firestore";
+import { CardItem } from "src/components/Card";
+import { Game, Group } from "src/fire-base/models";
 
 export const testFunc = () => true;
 
@@ -29,4 +31,18 @@ export const differenceBetweenFirestoreTimestampsInDays = (
   const daysDiff = secondsDiff / (24 * 60 * 60);
 
   return Math.floor(daysDiff);
+};
+
+export const mapGroupsToCardItems = (
+  groups: Group[],
+  includeLabels: boolean
+): CardItem[] => {
+  return groups.map((group) => {
+    return {
+      key: group.invitationCode,
+      title: group.name,
+      labels: includeLabels ? ["Noe relevant info", "Annen info"] : undefined,
+      emoji: group.emoji,
+    };
+  });
 };
