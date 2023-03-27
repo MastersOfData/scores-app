@@ -8,7 +8,7 @@ import {
   setDocument,
   userGroupStatisticsCol,
   usersCol,
-} from "src/fire-base/db";
+} from "../fire-base/db";
 import { Group, User, Membership } from "src/fire-base/models";
 import { generateUserGroupStatisticDocumentId } from "src/utils/util";
 import { GroupInternal } from "../types/types";
