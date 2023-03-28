@@ -44,8 +44,6 @@ export default function Home() {
     router
   );
 
-  console.log(cardItemsGroups);
-
   //Mock games
   const games: Game[] = [
     {

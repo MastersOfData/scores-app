@@ -11,6 +11,10 @@ import { DataStatus } from "../../../store/store.types";
 import homeStyles from "../../../styles/Home.module.css";
 import styles from "../../../styles/Group.module.css";
 import Medal, { MedalType } from "../../../components/Medal";
+import { ScrollableLargeCards } from "../../../components/ScrollableLargeCards";
+import { CardItem } from "../../../components/Card";
+import { mapGameTypesToCardItems } from "../../../utils/util";
+import { useRouter } from "next/navigation";
 
 interface GroupPageProps {
   params: { groupId: string };
@@ -19,6 +23,7 @@ interface GroupPageProps {
 const GroupPage: FC<GroupPageProps> = ({ params }) => {
   const { groupId } = params;
   const groupsWithStatus = useGetGroupsForCurrentUser();
+  const router = useRouter();
 
   if (
     !groupsWithStatus.data ||
@@ -32,6 +37,21 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
   if (!group) {
     return <p>Ingen tilgang</p>;
   }
+
+  const gameHistoryMock: CardItem[] = [
+    {
+      key: "1",
+      title: "2 dager siden",
+      labels: ["Yatzy", "Ikke fullført"],
+      emoji: "🎲",
+    },
+    {
+      key: "2",
+      title: "8 dager siden",
+      labels: ["Tennis", "Lars vant! 🎉"],
+      emoji: "🎾",
+    },
+  ];
 
   return (
     <PageWrapper title={group.name} backPath='/'>
@@ -70,8 +90,9 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
           <p className={homeStyles.label}>Administrer medlemmer</p>
         </div>
       </div>
-      <div className={styles["leaderboard-container"]}>
+      <div className={styles["section-container"]}>
         <h2>Leaderboard</h2>
+        <div className={styles["spacing"]} />
         <table className={styles["leaderboard"]}>
           <thead>
             <tr>
@@ -104,17 +125,29 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
                   <td className={styles["draws-col"]}>{member.draws}</td>
                   <td className={styles["losses-col"]}>{member.losses}</td>
                   <td>
-                    {`${
-                      gamesPlayed
-                        ? ((member.wins / gamesPlayed) * 100).toFixed(1)
-                        : 0
-                    }%`}
+                    {gamesPlayed
+                      ? ((member.wins / gamesPlayed) * 100).toFixed(0)
+                      : 0}
                   </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+        <div className={styles["section-container"]}>
+          <h2>Spillhistorikk</h2>
+          <div className={styles["spacing"]} />
+          <ScrollableLargeCards items={gameHistoryMock} />
+        </div>
+        <div className={styles["section-container"]}>
+          <h2>Egendefinerte spill</h2>
+          <div className={styles["spacing"]} />
+          <ScrollableLargeCards
+            items={mapGameTypesToCardItems(group.gameTypes, () =>
+              router.push(`group/${groupId}/newGameType`)
+            )}
+          />
+        </div>
       </div>
     </PageWrapper>
   );

@@ -1,6 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import { CardItem } from "src/components/Card";
+import { GameType } from "../fire-base/models";
 import { GroupInternal } from "../types/types";
 
 export const testFunc = () => true;
@@ -48,4 +49,26 @@ export const mapGroupsToCardItems = (
       onClick: () => router.push(`/group/${group.id}`),
     };
   });
+};
+
+export const mapGameTypesToCardItems = (
+  gameTypes?: GameType[],
+  addGameTypeClickEvent?: () => void
+) => {
+  const gameTypeCards: CardItem[] = gameTypes
+    ? gameTypes.map((gt) => ({
+        key: gt.name,
+        title: gt.name,
+        emoji: gt.emoji,
+      }))
+    : [];
+
+  return [
+    {
+      key: "new",
+      title: "+ Legg til",
+      onClick: () => addGameTypeClickEvent?.(),
+    },
+    ...gameTypeCards.sort((a, b) => a.title.localeCompare(b.title)),
+  ];
 };

@@ -1,4 +1,4 @@
-import { User, Membership } from "../fire-base/models";
+import { User, Membership, GameType } from "../fire-base/models";
 
 export type WithId<T> = {
   id: string;
@@ -12,6 +12,6 @@ export interface GroupInternal {
   emoji: string;
   games: string[];
   invitationCode: string;
-  gameTypes?: { name: string; emoji: string }[];
+  gameTypes?: GameType[];
   members: Member[];
 }

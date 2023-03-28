@@ -1,14 +1,9 @@
-.leaderboard-container {
-  margin-top: 2rem;
-}
-
 .leaderboard {
   background-color: var(--bg-secondary);
   border-radius: var(--border-radius-soft);
   border-spacing: 0;
   overflow: hidden;
   width: 100%;
-  margin-top: 1rem;
 }
 
 .leaderboard thead {
@@ -41,7 +36,7 @@
 }
 
 .wins-col {
-  padding-right: 2px !important;
+  padding-right: 0px !important;
 }
 
 .draws-col {
@@ -70,4 +65,12 @@
 
 .bronze-medal {
   background-color: #825f07;
+}
+
+.section-container {
+  margin-top: 2rem;
+}
+
+.spacing {
+  margin-bottom: 0.6rem;
 }
