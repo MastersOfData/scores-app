@@ -2,30 +2,35 @@
 
 import styles from "../../styles/CreateGroupe.module.css";
 import Input from "src/components/Input";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { Button, ButtonVariant, ButtonColor } from "src/components/Button";
 import PageWrapper from "../../components/PageWrapper";
-import { createGroup } from "src/services/group.service";
 import { getCurrentUser } from "src/fire-base/auth";
+import { useRouter } from "next/navigation";
+import { useAppDispatch } from "src/store/hooks";
+import { createGroupAction } from "src/store/groupsInternal.reducer";
 
-export default function CreateGroupPage(){  
-    const [groupName, setGroupName] = useState<string>("");
-    const [emoji, setEmoji] = useState<string>("");
-    
-    async function onSubmit(e: FormEvent) {
-        e.preventDefault();  
-        
-        if (groupName && emoji){
-          //Linjen under må endres når vi har ordnet access control 
-          const user = getCurrentUser()
-          if (user) {
-            const UserID = user.uid
-            const group = createGroup(UserID, groupName, emoji)
-            //Finne en måte å route til gruppe-pagen her
-          }
-        }
+export default function CreateGroupPage() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const [groupName, setGroupName] = useState<string>("");
+  const [emoji, setEmoji] = useState<string>("");
+
+  async function onSubmit() {
+    if (groupName && emoji) {
+      //Linjen under må endres når vi har ordnet access control 
+      const user = getCurrentUser();
+
+      if (user) {
+        const group = await dispatch(
+          createGroupAction({ currentUserId: user.uid, groupName: groupName, groupEmoji: emoji })
+        ).unwrap();
+        router.push(`group/${group.id}`);
+      }
     }
- 
+  }
+
   return (
     <PageWrapper title='Ny gruppe' backPath='/'>
       <div>
@@ -33,7 +38,7 @@ export default function CreateGroupPage(){
           <div className={styles.inputContainer}>
             <p className={styles.inputLabel}>Gruppenavn:</p>
             <Input
-                    required
+              required
               className={styles.inputStyle}
               type='text'
               placeholder='Skriv gruppenavn...'
@@ -45,7 +50,7 @@ export default function CreateGroupPage(){
           </div>
           <div className={styles.emojiContainer}>
             <Input
-                    required 
+              required
               className={styles.emojiStyle}
               type='text'
               placeholder=''
@@ -58,8 +63,8 @@ export default function CreateGroupPage(){
               className={styles["button-container"]}
               variant={ButtonVariant.Round}
               color={ButtonColor.Green}
-              onSubmit={(e) => onSubmit(e)}
-                    type = "submit"
+              onClick={onSubmit}
+              type="button"
             >
               Opprett gruppe
             </Button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import React, { FC } from "react";
 import { ControllerIcon } from "../../../assets/icons/ControllerIcon";
 import { PeopleIcon } from "../../../assets/icons/PeopleIcon";
 import { ResultsIcon } from "../../../assets/icons/ResultsIcon";

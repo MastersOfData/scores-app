@@ -4,6 +4,12 @@ export type WithId<T> = {
   id: string;
 } & T;
 
+export type GameStatus = "FINISHED" | "PAUSED" | "ONGOING";
+
+export type PlayerScore = {
+  playerId: string;
+  points: number;
+}
 export type Member = WithId<Membership> & User;
 
 export interface GroupInternal {

@@ -47,28 +47,31 @@ export default function Home() {
   //Mock games
   const games: Game[] = [
     {
+      adminId: "",
       gameTypeId: "69",
       groupId: "420",
       players: [{ playerId: "1", points: 50 }],
       winner: "1",
       timestamp: Timestamp.fromDate(new Date(2023, 2, 21)),
-      state: "ONGOING",
+      status: "ONGOING",
     },
     {
+      adminId: "",
       gameTypeId: "420",
       groupId: "69",
       players: [{ playerId: "2", points: 69 }],
       winner: "3",
       timestamp: Timestamp.fromDate(new Date(2023, 2, 18)),
-      state: "FINISHED",
+      status: "FINISHED",
     },
     {
+      adminId: "",
       gameTypeId: "69",
       groupId: "420",
       players: [{ playerId: "4", points: 420 }],
       winner: "5",
       timestamp: Timestamp.fromDate(new Date(2023, 2, 10)),
-      state: "FINISHED",
+      status: "FINISHED",
     },
   ];
 

@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { Game } from "src/fire-base/models";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import { CardItem } from "src/components/Card";
 import { GameType } from "../fire-base/models";
@@ -6,21 +7,10 @@ import { GroupInternal } from "../types/types";
 
 export const testFunc = () => true;
 
-export const generateUserGroupStatisticDocumentId = (
+export const generateMembershipDocumentId = (
   userId: string,
   groupId: string
 ): string => userId + "-" + groupId;
-
-// IKKE FJERN enda. Kan hende den trengs
-// export const unwrapUserGroupStatisticDocumentId = (
-//   documentId: string,
-// ): {userId: string, groupId: string} => {
-//   const ids = documentId.split("-");
-//   return {
-//     userId: ids[0],
-//     groupId: ids[1],
-//   };
-// }
 
 export const differenceBetweenFirestoreTimestampsInDays = (
   t1: Timestamp,
@@ -34,6 +24,18 @@ export const differenceBetweenFirestoreTimestampsInDays = (
 
   return Math.floor(daysDiff);
 };
+
+export const calculateDuration = (game: Game): number => {
+  // Calculate duration between Game timestamp (when game started) and
+  // current time. Duration is calculated in seconds.
+
+  if (game.status === "ONGOING") {
+    const startTime = game.timestamp.toDate().getTime();
+    const currentTime = new Date().getTime();
+    return Math.abs((currentTime - startTime) / 1000);
+  }
+  return game.duration || 0;
+}
 
 export const mapGroupsToCardItems = (
   groups: GroupInternal[],
