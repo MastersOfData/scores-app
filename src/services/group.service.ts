@@ -6,10 +6,11 @@ import {
   getDocuments,
   groupsCol,
   setDocument,
+  updateDocument,
   membershipsCol,
   usersCol,
 } from "src/fire-base/db";
-import { Group, User, Membership } from "src/fire-base/models";
+import { Group, User, Membership, GameType } from "src/fire-base/models";
 import { generateMembershipDocumentId } from "src/utils/util";
 import { GroupInternal } from "../types/types";
 import { mapGroupAndUsersToGroupInternal } from "../utils/mappers";
@@ -177,4 +178,19 @@ export const getGroupsInternalForCurrentUser = async (userId: string) => {
   });
 
   return Promise.all(groupsInternalPromises).then((data) => data);
+};
+
+export const createGameTypeForGroup = async (
+  groupId: string,
+  gameType: GameType
+) => {
+  const group = await getDocument<Group>(groupsCol, groupId);
+  if (!group) return Promise.reject();
+
+  const updatedGroup: Group = {
+    ...group,
+    gameTypes: group.gameTypes?.concat([gameType]),
+  };
+
+  return await updateDocument<Group>(groupsCol, groupId, updatedGroup);
 };

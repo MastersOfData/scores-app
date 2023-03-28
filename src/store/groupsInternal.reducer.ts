@@ -1,5 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { GameType } from "../fire-base/models";
 import {
+  createGameTypeForGroup,
   createGroupNew,
   getGroupsInternalForCurrentUser,
   joinGroupByInvitationCode,
@@ -73,6 +75,14 @@ export const removeUserFromGroupAction = createAsyncThunk(
   }
 );
 
+export const createGameTypeAction = createAsyncThunk(
+  "groups/newGameType",
+  async ({ gameType, groupId }: { gameType: GameType; groupId: string }) => {
+    await createGameTypeForGroup(groupId, gameType);
+    return gameType;
+  }
+);
+
 const groups = createSlice({
   name: "groups",
   initialState: initialState,
@@ -128,6 +138,28 @@ const groups = createSlice({
         });
       })
       .addCase(removeUserFromGroupAction.rejected, (state) => {
+        state.update.status = DataStatus.ERROR;
+      })
+      .addCase(createGameTypeAction.pending, (state, action) => {
+        state.update.dataId = action.meta.arg.groupId;
+        state.update.status = DataStatus.LOADING;
+      })
+      .addCase(createGameTypeAction.fulfilled, (state, action) => {
+        state.update.dataId = undefined;
+        state.update.status = DataStatus.COMPLETED;
+        state.data = state.data?.map((group) => {
+          if (group.id === action.meta.arg.groupId) {
+            return {
+              ...group,
+              gameTypes: group.gameTypes?.concat([action.payload]),
+            };
+          } else {
+            return group;
+          }
+        });
+      })
+      .addCase(createGameTypeAction.rejected, (state) => {
+        state.update.dataId = undefined;
         state.update.status = DataStatus.ERROR;
       });
   },

@@ -17,6 +17,7 @@ export const ScrollableLargeCards: FC<ScrollableLargeCardsProps> = ({
           title={item.title}
           labels={item.labels}
           emoji={item.emoji}
+          onClick={item.onClick}
         />
       ))}
     </div>

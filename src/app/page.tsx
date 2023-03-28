@@ -7,33 +7,42 @@ import { PersonIcon } from "src/assets/icons/PersonIcon";
 import { GroupIcon } from "src/assets/icons/GroupIcon";
 import Input from "src/components/Input";
 import { ScrollableLargeCards } from "src/components/ScrollableLargeCards";
-import { Game, Group } from "src/fire-base/models";
+import { Game } from "src/fire-base/models";
 import { CardItem } from "src/components/Card";
 import { Timestamp } from "firebase/firestore";
-import { differenceBetweenFirestoreTimestampsInDays } from "src/utils/util";
+import {
+  differenceBetweenFirestoreTimestampsInDays,
+  mapGroupsToCardItems,
+} from "src/utils/util";
 import PageWrapper from "src/components/PageWrapper";
 import { useGetGroupsForCurrentUser } from "../store/hooks";
+import { DataStatus } from "../store/store.types";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const groupsWithStatus = useGetGroupsForCurrentUser();
-  console.log("Groups: ", groupsWithStatus);
+  const router = useRouter();
 
   //Mock groups
-  const groups: Group[] = [
-    { name: "SnømannGutta", emoji: "⛄", games: [], invitationCode: "5673" },
-    { name: "GolfGjengen", emoji: "⛳", games: [], invitationCode: "4822" },
-    { name: "BasketBALLERS", emoji: "⛹", games: [], invitationCode: "5721" },
-    { name: "Pubgruppen", emoji: "✨", games: [], invitationCode: "9031" },
-  ];
+  // const groups: Group[] = [
+  //   { name: "SnømannGutta", emoji: "⛄", games: [], invitationCode: "5673" },
+  //   { name: "GolfGjengen", emoji: "⛳", games: [], invitationCode: "4822" },
+  //   { name: "BasketBALLERS", emoji: "⛹", games: [], invitationCode: "5721" },
+  //   { name: "Pubgruppen", emoji: "✨", games: [], invitationCode: "9031" },
+  // ];
 
-  const cardItemsGroups: CardItem[] = groups.map((group) => {
-    return {
-      key: group.invitationCode,
-      title: group.name,
-      labels: ["Noe relevant info", "Annen info"],
-      emoji: group.emoji,
-    };
-  });
+  if (
+    !groupsWithStatus.data ||
+    groupsWithStatus.status === DataStatus.LOADING
+  ) {
+    return <p>Loading...</p>;
+  }
+
+  const cardItemsGroups: CardItem[] = mapGroupsToCardItems(
+    groupsWithStatus.data,
+    true,
+    router
+  );
 
   //Mock games
   const games: Game[] = [
@@ -82,13 +91,13 @@ export default function Home() {
     });
   //Must update paths
   return (
-    <PageWrapper title="Velkommen!" authenticated={true}>
+    <PageWrapper title='Velkommen!' authenticated={true}>
       <div className={styles["buttons-container"]}>
         <div className={styles["button-container"]}>
           <Button
             variant={ButtonVariant.Action}
             withLink
-            href="/?pressed=profile"
+            href='/?pressed=profile'
           >
             <PersonIcon />
           </Button>
@@ -99,7 +108,7 @@ export default function Home() {
             variant={ButtonVariant.Action}
             color={ButtonColor.Orange}
             withLink
-            href="/play"
+            href='/play'
           >
             <ControllerIcon />
           </Button>
@@ -110,7 +119,7 @@ export default function Home() {
             variant={ButtonVariant.Action}
             color={ButtonColor.Pink}
             withLink
-            href="/create-group"
+            href='/create-group'
           >
             <GroupIcon />
           </Button>
@@ -120,9 +129,9 @@ export default function Home() {
       <h2 className={styles["title-centered"]}>Bli med i en gruppe</h2>
       <div className={styles["group-input-container"]}>
         <Input
-          type="text"
+          type='text'
           className={styles["text-input"]}
-          placeholder="Invitasjons-kode..."
+          placeholder='Invitasjons-kode...'
         />
         <Button variant={ButtonVariant.Medium} color={ButtonColor.Red}>
           Bli med

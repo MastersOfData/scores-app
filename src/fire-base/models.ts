@@ -13,7 +13,7 @@ export interface Group extends DocumentData {
   emoji: string;
   games: string[];
   invitationCode: string;
-  gameTypes?: { name: string; emoji: string }[];
+  gameTypes?: GameType[];
 }
 
 export interface Game extends DocumentData {
@@ -33,4 +33,9 @@ export interface Membership extends DocumentData {
   wins: number;
   draws: number;
   losses: number;
+}
+
+export interface GameType {
+  name: string;
+  emoji: string;
 }
