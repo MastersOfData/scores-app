@@ -6,6 +6,13 @@
   padding-top: 2rem;
 }
 
+.form {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
 .title {
   margin-bottom: 2rem;
 }
@@ -16,6 +23,7 @@
 
 .inputContainer {
   margin: 1rem 0;
+  min-width: 19rem;
 }
 
 .inputLabel {
@@ -24,4 +32,8 @@
 
 .buttonContainer {
   margin-top: 2rem;
+}
+
+.input {
+  width: 100%;
 }
