@@ -1,38 +1,44 @@
-"use client"
+"use client";
 
-import styles from "src/styles/PageWrapper.module.css"
-import Header from "src/components/Header"
-import { onAuthStateChanged } from "src/fire-base/auth"
-import { useRouter, usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
+import styles from "src/styles/PageWrapper.module.css";
+import Header from "src/components/Header";
+import { onAuthStateChanged } from "src/fire-base/auth";
+import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import Spinner from "./Spinner";
 
 export type PageWrapperProps = {
-  children?: React.ReactNode,
-  title: string,
-  authenticated?: boolean,
-  backPath?: string
-}
+  children?: React.ReactNode;
+  title: string;
+  authenticated?: boolean;
+  backPath?: string;
+};
 
-export default function PageWrapper({ children, title, authenticated, backPath }: PageWrapperProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const [loading, setLoading] = useState(true)
-  const [isSignedIn, setIsSignedIn] = useState(false)
+export default function PageWrapper({
+  children,
+  title,
+  authenticated,
+  backPath,
+}: PageWrapperProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [loading, setLoading] = useState(true);
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(user => {
-      setIsSignedIn(user !== null)
-      setLoading(false)
-    })
+    const unsub = onAuthStateChanged((user) => {
+      setIsSignedIn(user !== null);
+      setLoading(false);
+    });
 
-    return unsub
-  }, [])
+    return unsub;
+  }, []);
 
-  if (loading) return <div>Loading...</div>
+  if (loading) return <Spinner />;
 
   if (!isSignedIn && authenticated) {
-    router.push(`/sign-in?callbackUrl=${pathname}`)
-    return <div>Redirecting...</div>
+    router.push(`/sign-in?callbackUrl=${pathname}`);
+    return <div>Redirecting...</div>;
   }
 
   return (
@@ -40,5 +46,5 @@ export default function PageWrapper({ children, title, authenticated, backPath }
       <Header backPath={backPath}>{title}</Header>
       {children}
     </div>
-  )
+  );
 }

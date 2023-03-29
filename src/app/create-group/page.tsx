@@ -7,29 +7,41 @@ import { Button, ButtonVariant, ButtonColor } from "src/components/Button";
 import PageWrapper from "../../components/PageWrapper";
 import { getCurrentUser } from "src/fire-base/auth";
 import { useRouter } from "next/navigation";
-import { useAppDispatch } from "src/store/hooks";
+import { useAppDispatch, useGetGroupsForCurrentUser } from "src/store/hooks";
 import { createGroupAction } from "src/store/groupsInternal.reducer";
+import { DataStatus } from "../../store/store.types";
+import Spinner from "../../components/Spinner";
 
 export default function CreateGroupPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const groups = useGetGroupsForCurrentUser();
 
   const [groupName, setGroupName] = useState<string>("");
   const [emoji, setEmoji] = useState<string>("");
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   async function onSubmit() {
     if (groupName && emoji) {
-      //Linjen under må endres når vi har ordnet access control 
+      //Linjen under må endres når vi har ordnet access control
       const user = getCurrentUser();
 
       if (user) {
+        setHasSubmitted(true);
         const group = await dispatch(
-          createGroupAction({ currentUserId: user.uid, groupName: groupName, groupEmoji: emoji })
+          createGroupAction({
+            currentUserId: user.uid,
+            groupName: groupName,
+            groupEmoji: emoji,
+          })
         ).unwrap();
         router.push(`group/${group.id}`);
       }
     }
   }
+
+  if (groups.create.status === DataStatus.LOADING || hasSubmitted)
+    return <Spinner />;
 
   return (
     <PageWrapper title='Ny gruppe' backPath='/'>
@@ -50,11 +62,16 @@ export default function CreateGroupPage() {
           </div>
           <div className={styles.emojiContainer}>
             <Input
+              defaultValue={emoji}
               required
               className={styles.emojiStyle}
               type='text'
               placeholder=''
-              onInput={setEmoji}
+              onInput={(input) => {
+                if (input.match(/\p{Emoji}/gu) || input === "") {
+                  setEmoji(input);
+                }
+              }}
               maxLength={2}
             />
           </div>
@@ -64,7 +81,7 @@ export default function CreateGroupPage() {
               variant={ButtonVariant.Round}
               color={ButtonColor.Green}
               onClick={onSubmit}
-              type="button"
+              type='button'
             >
               Opprett gruppe
             </Button>
