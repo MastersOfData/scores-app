@@ -18,10 +18,14 @@ import PageWrapper from "src/components/PageWrapper";
 import { useGetGroupsForCurrentUser } from "../store/hooks";
 import { DataStatus } from "../store/store.types";
 import { useRouter } from "next/navigation";
+import { getCurrentUser } from "../fire-base/auth";
+import Spinner from "../components/Spinner";
 
 export default function Home() {
   const groupsWithStatus = useGetGroupsForCurrentUser();
   const router = useRouter();
+
+  const user = getCurrentUser();
 
   //Mock groups
   // const groups: Group[] = [
@@ -35,7 +39,7 @@ export default function Home() {
     !groupsWithStatus.data ||
     groupsWithStatus.status === DataStatus.LOADING
   ) {
-    return <p>Loading...</p>;
+    return <Spinner />;
   }
 
   const cardItemsGroups: CardItem[] = mapGroupsToCardItems(
@@ -97,11 +101,11 @@ export default function Home() {
           <Button
             variant={ButtonVariant.Action}
             withLink
-            href='/?pressed=profile'
+            href={user ? "/profile" : "/sign-in"}
           >
             <PersonIcon />
           </Button>
-          <p className={styles.label}>Profil</p>
+          <p className={styles.label}>{user ? "Profil" : "Logg inn"}</p>
         </div>
         <div className={styles["button-container"]}>
           <Button
@@ -138,9 +142,13 @@ export default function Home() {
         </Button>
       </div>
       <h2 className={styles.title}>Dine grupper</h2>
-      <div className={styles["cards-container"]}>
-        <ScrollableLargeCards items={cardItemsGroups} />
-      </div>
+      {user ? (
+        <div className={styles["cards-container"]}>
+          <ScrollableLargeCards items={cardItemsGroups} />
+        </div>
+      ) : (
+        <p>Logg inn for å se dine grupper</p>
+      )}
       <h2 className={styles.title}>Nylige spill</h2>
       <div className={styles["cards-container"]}>
         <ScrollableLargeCards items={cardItemsGames} />
