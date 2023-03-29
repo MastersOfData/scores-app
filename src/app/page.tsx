@@ -19,6 +19,7 @@ import { useGetGroupsForCurrentUser } from "../store/hooks";
 import { DataStatus } from "../store/store.types";
 import { useRouter } from "next/navigation";
 import { getCurrentUser } from "../fire-base/auth";
+import Spinner from "../components/Spinner";
 
 export default function Home() {
   const groupsWithStatus = useGetGroupsForCurrentUser();
@@ -38,7 +39,7 @@ export default function Home() {
     !groupsWithStatus.data ||
     groupsWithStatus.status === DataStatus.LOADING
   ) {
-    return <p>Loading...</p>;
+    return <Spinner />;
   }
 
   const cardItemsGroups: CardItem[] = mapGroupsToCardItems(

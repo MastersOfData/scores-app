@@ -12,6 +12,7 @@ import {
 import { createGameTypeAction } from "../../../../store/groupsInternal.reducer";
 import { DataStatus } from "../../../../store/store.types";
 import { useRouter } from "next/navigation";
+import Spinner from "../../../../components/Spinner";
 
 interface CreateGameTypePageProps {
   params: { groupId: string };
@@ -49,7 +50,7 @@ const CreateGameTypePage: FC<CreateGameTypePageProps> = ({ params }) => {
     groups.update.status === DataStatus.LOADING ||
     hasSubmitted
   ) {
-    return <p>Loading...</p>;
+    return <Spinner />;
   }
 
   return (

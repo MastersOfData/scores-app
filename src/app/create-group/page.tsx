@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useGetGroupsForCurrentUser } from "src/store/hooks";
 import { createGroupAction } from "src/store/groupsInternal.reducer";
 import { DataStatus } from "../../store/store.types";
+import Spinner from "../../components/Spinner";
 
 export default function CreateGroupPage() {
   const router = useRouter();
@@ -40,7 +41,7 @@ export default function CreateGroupPage() {
   }
 
   if (groups.create.status === DataStatus.LOADING || hasSubmitted)
-    return <p>Loading...</p>;
+    return <Spinner />;
 
   return (
     <PageWrapper title='Ny gruppe' backPath='/'>

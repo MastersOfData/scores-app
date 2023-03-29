@@ -15,6 +15,7 @@ import { ScrollableLargeCards } from "../../../components/ScrollableLargeCards";
 import { CardItem } from "../../../components/Card";
 import { mapGameTypesToCardItems } from "../../../utils/util";
 import { useRouter } from "next/navigation";
+import Spinner from "../../../components/Spinner";
 
 interface GroupPageProps {
   params: { groupId: string };
@@ -25,11 +26,8 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
   const groupsWithStatus = useGetGroupsForCurrentUser();
   const router = useRouter();
 
-  if (
-    !groupsWithStatus.data ||
-    groupsWithStatus.status === DataStatus.LOADING
-  ) {
-    return <p>Loading...</p>;
+  if (groupsWithStatus.status === DataStatus.LOADING) {
+    return <Spinner />;
   }
 
   const group = groupsWithStatus.data?.find((group) => group.id === groupId);
