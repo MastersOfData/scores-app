@@ -5,7 +5,7 @@ import { subscribeToDoc } from "src/fire-base/db"
 
 
 export function useCurrentUserData() {
-  const [userData, setUserData] = useState<User | null>()
+  const [userData, setUserData] = useState<User | null>(null)
 
   useEffect(() => {
     let unsubscribeFromUser: (() => void) | null = null

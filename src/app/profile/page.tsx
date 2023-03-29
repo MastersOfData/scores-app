@@ -1,7 +1,7 @@
 "use client"
 
 import Input from "src/components/Input"
-import { useState, FormEvent } from "react"
+import { useState, FormEvent, useRef } from "react"
 import { validatePassword } from "src/utils/validation"
 import { getCurrentUser, signOut, updatePassword } from "src/fire-base/auth"
 import styles from "src/styles/Account.module.css"
@@ -9,18 +9,50 @@ import { Button, ButtonColor, ButtonVariant } from "src/components/Button"
 import PageWrapper from "src/components/PageWrapper"
 import { usePathname, useRouter } from "next/navigation"
 import { useCurrentUserData } from "src/services/user.service"
+import { updateDocument } from "src/fire-base/db"
+import { User } from "src/fire-base/models"
 
 export default function AccountPage() {
-  const [password, setPassword] = useState<string>("")
-  const [confPassword, setConfPassword] = useState<string>("")
-  const [infoComponent, setInfoComponent] = useState<React.ReactNode>(null) 
   const userData = useCurrentUserData()
   const router = useRouter()
   const pathname = usePathname()
 
+  const [infoComponent, setInfoComponent] = useState<React.ReactNode>(null)
+  const usernameRef = useRef(userData?.username ?? "")
+  const passwordRef = useRef("")
+  const confPasswordRef = useRef("")
+
+  async function handleUpdateUser(e: FormEvent) {
+    e.preventDefault()
+    
+    const username = usernameRef.current
+    if (!username) return
+
+    const user = getCurrentUser()
+    if (!user) {
+      router.push("/sign-in")
+      return
+    }
+    
+    try {
+      await updateDocument<User>("users", user.uid, {
+        username,
+      })
+
+      setInfoComponent(<p className={`${styles.info} ${styles.success}`}>Brukernavn ble oppdatert</p>)
+    }
+    catch (err) {
+      console.error(err)
+      setInfoComponent(<p className={`${styles.info} ${styles.error}`}>Noe gikk galt!</p>)
+    }
+  }
+
   async function handleChangePassword(e: FormEvent) {
     e.preventDefault()
     const form = e.target as HTMLFormElement
+
+    const password = passwordRef.current
+    const confPassword = confPasswordRef.current
 
     if (confPassword !== password) {
       setInfoComponent(<p className={`${styles.info} ${styles.error}`}>Passordene samsvarer ikke!</p>)
@@ -53,26 +85,37 @@ export default function AccountPage() {
   }
 
   return (
-    <PageWrapper title="Profil" authenticated={true}>
+    <PageWrapper title="Profil" authenticated={true} backPath="/">
       <main className={styles.main}>
-        <div>
-          <strong>Brukernavn: </strong>
-          <p>{userData?.username}</p>
-        </div>
+        {infoComponent}
+        <form className={styles.form} onSubmit={handleUpdateUser}>
+          <div>
+            <strong>Brukernavn</strong>
+            <Input
+              type="text"
+              valueRef={usernameRef}
+              defaultValue={userData?.username}
+            />
+          </div>
+          <div>
+            <strong>E-post</strong>
+            <p>{userData?.email}</p>
+          </div>
+          <Button variant={ButtonVariant.Round} color={ButtonColor.Green}>Lagre endringer</Button>
+        </form>
         <form className={styles.form} onSubmit={handleChangePassword}>
-          {infoComponent}
           <div>
             <strong>Endre password</strong>
             <Input
               type="password"
               placeholder="Nytt passord"
-              onInput={setPassword}
+              valueRef={passwordRef}
             />
           </div>
           <Input
             type="password"
             placeholder="Bekreft passord"
-            onInput={setConfPassword}
+            valueRef={passwordRef}
           />
           <Button variant={ButtonVariant.Round} color={ButtonColor.Green}>Endre passord</Button>
           <span className={styles["button-container"]}>
