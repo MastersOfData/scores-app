@@ -2,8 +2,9 @@ import { useEffect } from "react";
 import { useDispatch, TypedUseSelectorHook, useSelector } from "react-redux";
 import { AppDispatch, StoreType } from "./store";
 import { DataStatus } from "./store.types";
-import { getGamesAction, updateGameAction } from "./game.reducer";
+import { getGamesAction } from "./game.reducer";
 import { getAllGroupsAction } from "./groupsInternal.reducer";
+import { getCurrentUser } from "../fire-base/auth";
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<StoreType> = useSelector;
@@ -12,13 +13,15 @@ export const useGetGroupsForCurrentUser = () => {
   const dispatch = useAppDispatch();
   const groups = useAppSelector((state) => state.groups);
 
-  const user = { id: "123" };
+  const user = getCurrentUser();
+  console.log("user", user);
 
   useEffect(() => {
-    if (user && !groups.data && groups.status !== DataStatus.LOADING) {
-      dispatch(getAllGroupsAction(user.id));
+    if (!groups.data && groups.status !== DataStatus.LOADING) {
+      dispatch(getAllGroupsAction(user?.uid));
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, groups]);
 
   return groups;
 };
