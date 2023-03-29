@@ -29,7 +29,8 @@ const initialState: GroupsInternalState = {
 
 export const getAllGroupsAction = createAsyncThunk(
   "groups/getAll",
-  async (userId: string) => {
+  async (userId?: string) => {
+    if (!userId) return [];
     const res = await getGroupsInternalForCurrentUser(userId);
     return res;
   }
