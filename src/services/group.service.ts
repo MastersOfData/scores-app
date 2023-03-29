@@ -10,9 +10,9 @@ import {
   membershipsCol,
   usersCol,
 } from "src/fire-base/db";
-import { Group, User, Membership, GameType } from "src/fire-base/models";
+import { Group, User, Membership } from "src/fire-base/models";
 import { generateMembershipDocumentId } from "src/utils/util";
-import { GroupInternal } from "../types/types";
+import { GameType, GroupInternal } from "../types/types";
 import { mapGroupAndUsersToGroupInternal } from "../utils/mappers";
 
 export const getGroupsForCurrentUser = async (userId: string) => {
