@@ -6,7 +6,7 @@ import { Button, ButtonColor, ButtonVariant } from "../../components/Button";
 import PageWrapper from "../../components/PageWrapper";
 import homeStyles from "../../styles/Home.module.css";
 
-export default function PlayPage() {
+export default function GamePage() {
   return (
     <PageWrapper title="Spill" backPath="/">
       <div className={homeStyles["buttons-container"]}>

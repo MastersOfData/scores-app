@@ -15,27 +15,6 @@ import { generateMembershipDocumentId } from "src/utils/util";
 import { GroupInternal } from "../types/types";
 import { mapGroupAndUsersToGroupInternal } from "../utils/mappers";
 
-export const createGroup = async (
-  currentUserId: string,
-  groupName: string,
-  emoji: string
-) => {
-  const group: Group = {
-    name: groupName,
-    emoji: emoji,
-    games: [],
-    invitationCode: "", // TODO: Generate invite code
-    gameTypes: [],
-  };
-  const groupRef = await addDocument(groupsCol, group);
-  const createdGroup = await getDocument<Group>(groupsCol, groupRef.id);
-
-  if (!createdGroup) return Promise.reject();
-
-  await joinGroup(createdGroup.id, currentUserId);
-  return createdGroup;
-};
-
 export const getGroupsForCurrentUser = async (userId: string) => {
   const groupIds = await getDocuments<Membership>({
     collectionId: membershipsCol,
@@ -69,7 +48,7 @@ const joinGroup = async (groupId: string, userId: string) => {
   return await getDocument<Group>(groupsCol, docId);
 };
 
-export const createGroupNew = async (
+export const createGroup = async (
   currentUserId: string,
   groupName: string,
   emoji: string

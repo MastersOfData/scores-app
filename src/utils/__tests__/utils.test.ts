@@ -6,7 +6,7 @@ import {
 import { Timestamp } from "firebase/firestore";
 import { Game } from "src/fire-base/models";
 
-describe("generateUserGroupStatisticDocumentId", () => {
+describe("generateMembershipDocumentId", () => {
   it.each([
     ["asd", "123", "asd-123"],
     ["a", "b", "a-b"],

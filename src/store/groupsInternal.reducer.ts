@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { GameType } from "../fire-base/models";
 import {
   createGameTypeForGroup,
-  createGroupNew,
+  createGroup,
   getGroupsInternalForCurrentUser,
   joinGroupByInvitationCode,
   removeUserFromGroup,
@@ -59,7 +59,7 @@ export const createGroupAction = createAsyncThunk(
     groupName: string;
     groupEmoji: string;
   }) => {
-    const res = await createGroupNew(currentUserId, groupName, groupEmoji);
+    const res = await createGroup(currentUserId, groupName, groupEmoji);
     return res;
   }
 );

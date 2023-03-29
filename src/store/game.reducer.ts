@@ -1,5 +1,4 @@
-import { createAsyncThunk, createSlice, Update } from "@reduxjs/toolkit";
-import { create } from "domain";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Game } from "src/fire-base/models";
 import {
   createGame,
@@ -64,6 +63,7 @@ const gamesSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Create game
       .addCase(createGameAction.pending, (state) => {
         state.create.status = DataStatus.LOADING;
       })
@@ -80,6 +80,7 @@ const gamesSlice = createSlice({
       .addCase(createGameAction.rejected, (state) => {
         state.create.status = DataStatus.ERROR;
       })
+      // Get games
       .addCase(getGamesAction.pending, (state) => {
         state.status = DataStatus.LOADING;
       })
@@ -97,6 +98,7 @@ const gamesSlice = createSlice({
         state.status = DataStatus.ERROR;
         state.data = {};
       })
+      // Update game
       .addCase(updateGameAction.pending, (state, action) => {
         state.update.status = DataStatus.LOADING;
         state.update.dataId = action.meta.arg.gameId;
@@ -121,7 +123,7 @@ const gamesSlice = createSlice({
           }
         } else {
           throw Error(
-            "Game updated but doesn't exist: " + action.meta.arg.gameId
+            "Called for game update, but game doesn't exist: " + action.meta.arg.gameId
           );
         }
       })
