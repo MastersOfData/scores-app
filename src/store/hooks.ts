@@ -16,8 +16,8 @@ export const useGetGroupsForCurrentUser = () => {
   const user = useCurrentUser();
 
   useEffect(() => {
-    if (user && !groups.data && groups.status !== DataStatus.LOADING) {
-      dispatch(getAllGroupsAction(user.uid));
+    if (!groups.data && groups.status !== DataStatus.LOADING) {
+      dispatch(getAllGroupsAction(user?.uid));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, groups]);
