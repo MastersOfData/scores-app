@@ -97,7 +97,7 @@ export default function Home() {
           <Button
             variant={ButtonVariant.Action}
             withLink
-            href='/?pressed=profile'
+            href='/profile'
           >
             <PersonIcon />
           </Button>
