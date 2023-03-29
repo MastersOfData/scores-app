@@ -7,11 +7,10 @@ import { GamesBannerIcon } from "src/assets/icons/GamesBannerIcon";
 import { Button, ButtonVariant } from "src/components/Button";
 import Input from "src/components/Input";
 import styles from "../../styles/Register.module.css";
-import { useHeader } from "src/components/Header";
+import PageWrapper from "src/components/PageWrapper";
 
 export default function RegisterPage() {
   const router = useRouter();
-  useHeader("Register", "/")
 
   const [email, setEmail] = useState<string>("");
   const [username, setUsername] = useState<string>("");
@@ -30,7 +29,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className={styles.container}>
+    <PageWrapper title="Registrer" backPath="/">
       <div className={styles.banner}>
         <GamesBannerIcon />
       </div>
@@ -71,6 +70,6 @@ export default function RegisterPage() {
           </Button>
         </form>
       </div>
-    </main>
+    </PageWrapper>
   );
 }

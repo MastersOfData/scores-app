@@ -17,10 +17,16 @@ import {
   setDoc
 } from "firebase/firestore"
 
+// Constants
+export const usersCol = "users";
+export const groupsCol = "groups";
+export const gamesCol = "games";
+export const membershipsCol = "memberships";
+
 // Types
 type Document<T extends DocumentData> = T & { id: string }
 
-type Collection = "users" | "groups" | "games" | "user_group_statistics"
+type Collection = typeof usersCol | typeof groupsCol | typeof gamesCol | typeof membershipsCol
 
 type QueryDefinition = {
   collectionId: Collection,

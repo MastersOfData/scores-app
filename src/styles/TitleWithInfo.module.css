@@ -1,0 +1,16 @@
+.title-centered {
+  text-align: center;
+  display: flex;
+  align-items: center;
+}
+
+.infobox-container {
+  display: flex;
+  justify-content: center;
+}
+
+.text-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: -0.5rem;
+}

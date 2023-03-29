@@ -1,6 +1,7 @@
 import { auth } from "./config"
 import { setDocument } from "./db"
 import { User } from "./models"
+export { updateProfile, updatePassword } from "firebase/auth"
 import { 
   signInWithEmailAndPassword, 
   signOut as _signOut, 
@@ -9,9 +10,7 @@ import {
   onAuthStateChanged as _onAuthStateChanged, 
   NextOrObserver, 
   User as FirebaseUser, 
-  GoogleAuthProvider } from "firebase/auth"
-
-export { updatePassword, updateProfile } from "firebase/auth"
+  GoogleAuthProvider} from "firebase/auth"
 
 export async function signIn(email: string, password: string) {
   return await signInWithEmailAndPassword(auth, email, password)
@@ -41,4 +40,8 @@ export function onAuthStateChanged(observer: NextOrObserver<FirebaseUser>) {
 
 export function getCurrentUser() {
   return auth.currentUser
+}
+
+export function isSignedIn() {
+  return auth.currentUser !== null
 }
