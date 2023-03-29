@@ -13,52 +13,50 @@ import { useAppDispatch, useGetGroupsForCurrentUser } from "src/store/hooks";
 import { useRouter } from "next/navigation";
 import { createGameAction } from "src/store/game.reducer";
 import { DataStatus } from "src/store/store.types";
+import { GameType, WithId } from "src/types/types";
 
 const CreateGamePage: FC = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const groupsWithStatus = useGetGroupsForCurrentUser();
 
-  //Dont have a type for this
-  type GameType = {
-    name: string;
-    emoji: string;
-  };
-
   //Mock games
-  const gameTypes: GameType[] = [
-    { name: "Bingo", emoji: "🎰" },
-    { name: "Tennis", emoji: "🎾" },
-    { name: "Yatzy", emoji: "🎲" },
+  const gameTypes: WithId<GameType>[] = [
+    { id: "bingo0", name: "Bingo", emoji: "🎰" },
+    { id: "tennis0", name: "Tennis", emoji: "🎾" },
+    { id: "yatzy0", name: "Yatzy", emoji: "🎲" },
   ];
 
   //Mock users
-  const users: User[] = [
-    { email: "birger@gmail.com", username: "xXbirgerXx" },
-    { email: "lars@gmail.com", username: "lars123" },
-    { email: "anders@gmail.com", username: "mr_bean" },
+  const users: WithId<User>[] = [
+    { id: "123", email: "birger@hvl.no", username: "xXbirgerXx" },
+    { id: "911", email: "atle@hvl.no", username: "atle" },
+    { id: "NUGO74z5Z5dA2lW71UCshMYIF2D3", email: "asd@asd.com", username: "atlebirger" },
   ];
 
   const [isGroupGame, setIsGroupGame] = useState(true);
-  const [selectedGroup, setSelectedGroup] = useState<string>("");
-  const [selectedGame, setSelectedGame] = useState<string>("");
+  const [selectedGroup, setSelectedGroup] = useState<string | undefined>();
+  const [selectedGame, setSelectedGame] = useState<string | undefined>();
   const [participants, setParticipants] = useState<string[]>([]);
   const [allowTeams, setAllowTeams] = useState<boolean>(false);
 
   const onSubmit = async () => {
-    const game = await dispatch(
-      createGameAction({
-        gameData: {
-          groupId: selectedGroup,
-          gameTypeId: selectedGame,
-          allowTeams: allowTeams,
-          participants: participants,
-        }
-      })
-    ).unwrap();
-
-    router.push(`game/${game.id}`);
-  }
+    if (selectedGroup && selectedGame) {
+      const game = await dispatch(
+        createGameAction({
+          gameData: {
+            groupId: selectedGroup,
+            gameTypeId: selectedGame,
+            allowTeams: allowTeams,
+            participants: participants,
+          },
+        })
+      ).unwrap();
+      router.push(`game/${game.groupId}/${game.id}`);
+    } else {
+      alert(`Mangler verdier for: ${selectedGroup ?? "Gruppe"} ${selectedGame ?? "Spill"}`);
+    }
+  };
 
   if (
     !groupsWithStatus.data ||
@@ -66,7 +64,6 @@ const CreateGamePage: FC = () => {
   ) {
     return <p>Loading...</p>;
   }
-
 
   return (
     <PageWrapper title="Start spill" backPath="/">
@@ -93,13 +90,16 @@ const CreateGamePage: FC = () => {
               <RadioCards
                 items={groupsWithStatus.data.map((group, i) => ({
                   title: group.emoji + " " + group.name,
-                  key: i.toString(),
+                  key: group.id,
                 }))}
                 selected={selectedGroup}
                 setSelected={setSelectedGroup}
               />
             ) : (
-              <p>Du er ikke medlem i noen grupper eller så finner vi ikke gruppene dine for øyeblikket.</p>
+              <p>
+                Du er ikke medlem i noen grupper eller så finner vi ikke
+                gruppene dine for øyeblikket.
+              </p>
             )}
           </div>
         </div>
@@ -112,7 +112,7 @@ const CreateGamePage: FC = () => {
         <RadioCards
           items={gameTypes.map((gameType, i) => ({
             title: gameType.emoji + " " + gameType.name,
-            key: i.toString(),
+            key: gameType.id,
           }))}
           selected={selectedGame}
           setSelected={setSelectedGame}
@@ -157,6 +157,6 @@ const CreateGamePage: FC = () => {
       </div>
     </PageWrapper>
   );
-}
+};
 
 export default CreateGamePage;

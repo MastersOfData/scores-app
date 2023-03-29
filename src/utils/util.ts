@@ -2,8 +2,7 @@ import { Timestamp } from "firebase/firestore";
 import { Game } from "src/fire-base/models";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import { CardItem } from "src/components/Card";
-import { GameType } from "../fire-base/models";
-import { GroupInternal } from "../types/types";
+import { GameType, GroupInternal } from "../types/types";
 
 export const testFunc = () => true;
 
@@ -30,7 +29,7 @@ export const calculateDuration = (game: Game): number => {
   // current time. Duration is calculated in seconds.
 
   if (game.status === "ONGOING") {
-    const startTime = game.timestamp.toDate().getTime();
+    const startTime = new Date(game.timestamp.seconds).getTime();
     const currentTime = new Date().getTime();
     return Math.abs((currentTime - startTime) / 1000);
   }

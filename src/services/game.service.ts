@@ -1,4 +1,5 @@
 import { Timestamp, where } from "firebase/firestore";
+import { getCurrentUser, isSignedIn } from "src/fire-base/auth";
 import {
   addDocument,
   gamesCol,
@@ -20,9 +21,9 @@ export interface CreateGameData {
 export type UpdateGameData = Pick<Game, "winner" | "status">;
 
 export const createGame = async (data: CreateGameData) => {
-  const user = {
-    id: "",
-  }; // TODO fetch user from context or pass a prop
+  const user = getCurrentUser();
+
+  if (!user) return Promise.reject();
 
   const players = data.participants.map((participantId) => ({
     playerId: participantId,
@@ -30,9 +31,11 @@ export const createGame = async (data: CreateGameData) => {
   }));
 
   const game: Game = {
-    ...data,
-    adminId: user.id,
-    players: players,
+    groupId: data.groupId,
+    gameTypeId: data.gameTypeId,
+    allowTeams: data.allowTeams,
+    adminId: user.uid,
+    players: [...players, { playerId: user.uid, points: 0 }],
     timestamp: Timestamp.fromDate(new Date()),
     status: "ONGOING",
     duration: 0,
@@ -58,14 +61,17 @@ export const updateGame = async (gameId: string, data: UpdateGameData) => {
 };
 
 export const getGamesForGroup = async (groupId: string) => {
-  const user = {
-    id: "",
-  }; // TODO fetch from context or pass as prop
-  
+  const user = getCurrentUser();
+
+  if (!user) return Promise.reject();
+
   const membership = await getDocuments<Membership>({
     collectionId: membershipsCol,
-    constraints: [where("userId", "==", user.id), where("groupId", "==", groupId)],
-  })
+    constraints: [
+      where("userId", "==", user.uid),
+      where("groupId", "==", groupId),
+    ],
+  });
 
   if (membership.length === 0) return Promise.reject();
 

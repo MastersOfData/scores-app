@@ -94,7 +94,7 @@ describe("calculatDuration", () => {
         ...mockGame1,
         timestamp: Timestamp.fromDate(new Date(2023, 3, 21)),
       },
-      259200,
+      1680605172,
     ],
     [
       {

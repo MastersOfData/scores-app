@@ -10,10 +10,10 @@ import {
 import { WithId } from "src/types/types";
 import { DataStatus, DataWithStatus } from "./store.types";
 
-type GameState = DataWithStatus<Record<string, WithId<Game>[]>>;
+type GameState = DataWithStatus<WithId<Game>[]>;
 
 const initialState: GameState = {
-  data: {},
+  data: undefined,
   status: DataStatus.COMPLETED,
   create: {
     status: DataStatus.COMPLETED,
@@ -35,8 +35,8 @@ export const createGameAction = createAsyncThunk(
   }
 );
 
-export const getGamesAction = createAsyncThunk(
-  "games/get",
+export const getAllGamesAction = createAsyncThunk(
+  "games/getAll",
   async (groupId: string) => {
     const res = await getGamesForGroup(groupId);
     return res;
@@ -68,35 +68,31 @@ const gamesSlice = createSlice({
         state.create.status = DataStatus.LOADING;
       })
       .addCase(createGameAction.fulfilled, (state, action) => {
-        const groupId = action.payload.groupId;
         state.create.status = DataStatus.COMPLETED;
-
         if (state.data) {
-          state.data[groupId] = [...state.data[groupId], action.payload];
+          state.data.push(action.payload);
         } else {
-          state.data = { [groupId]: [action.payload] };
+          state.data = [action.payload];
         }
       })
       .addCase(createGameAction.rejected, (state) => {
         state.create.status = DataStatus.ERROR;
       })
       // Get games
-      .addCase(getGamesAction.pending, (state) => {
+      .addCase(getAllGamesAction.pending, (state) => {
         state.status = DataStatus.LOADING;
       })
-      .addCase(getGamesAction.fulfilled, (state, action) => {
-        const groupId = action.meta.arg;
+      .addCase(getAllGamesAction.fulfilled, (state, action) => {
         state.status = DataStatus.COMPLETED;
-
         if (state.data) {
-          state.data[groupId] = state.data[groupId].concat(action.payload);
+          state.data.concat(action.payload);
         } else {
-          state.data = { [groupId]: action.payload };
+        state.data = action.payload;
         }
       })
-      .addCase(getGamesAction.rejected, (state) => {
+      .addCase(getAllGamesAction.rejected, (state, action) => {
         state.status = DataStatus.ERROR;
-        state.data = {};
+        state.data = [];
       })
       // Update game
       .addCase(updateGameAction.pending, (state, action) => {
@@ -110,20 +106,17 @@ const gamesSlice = createSlice({
         state.update.dataId = undefined;
 
         if (state.data) {
-          for (const group in state.data) {
-            const games = state.data[group];
-            const gameIndex = games.findIndex((g) => g.id === gameId);
+            const gameIndex = state.data.findIndex((g) => g.id === gameId);
             if (gameIndex > -1) {
-              state.data[group][gameIndex] = Object.assign(
-                state.data[group][gameIndex],
+              state.data[gameIndex] = Object.assign(
+                state.data[gameIndex],
                 action.meta.arg.gameData
               );
-              break;
             }
-          }
         } else {
           throw Error(
-            "Called for game update, but game doesn't exist: " + action.meta.arg.gameId
+            "Called for game update, but game doesn't exist: " +
+              action.meta.arg.gameId
           );
         }
       })

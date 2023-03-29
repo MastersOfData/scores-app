@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { GameType } from "../fire-base/models";
 import {
   createGameTypeForGroup,
   createGroup,
@@ -7,7 +6,7 @@ import {
   joinGroupByInvitationCode,
   removeUserFromGroup,
 } from "../services/group.service";
-import { GroupInternal } from "../types/types";
+import { GameType, GroupInternal } from "../types/types";
 import { DataStatus, DataWithStatus } from "./store.types";
 
 type GroupsInternalState = DataWithStatus<GroupInternal[]>;
