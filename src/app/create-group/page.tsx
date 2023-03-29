@@ -62,7 +62,7 @@ export default function CreateGroupPage() {
           </div>
           <div className={styles.emojiContainer}>
             <Input
-              value={emoji}
+              defaultValue={emoji}
               required
               className={styles.emojiStyle}
               type='text'
