@@ -1,26 +1,31 @@
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+import { mockFirebase } from "firestore-jest-mock";
+import { groupsCol, usersCol, gamesCol, userGroupStatisticsCol } from "../fire-base/db"
+import { Group, User, Membership } from "src/fire-base/models";
 
-jest.mock('firebase/app');
 
-const mockFirestore = {
-  collection: jest.fn().mockReturnThis(),
-  doc: jest.fn().mockReturnThis(),
-  set: jest.fn(),
-  get: jest.fn(),
-  update: jest.fn(),
-  delete: jest.fn(),
-  add: jest.fn(),
-  where: jest.fn().mockReturnThis(),
-  orderBy: jest.fn().mockReturnThis(),
-  limit: jest.fn().mockReturnThis(),
+
+const group1: Group = {
+  name: "BestGroup",
+  emoji: "🤓",
+  games: ["sjakk"],
+  invitationCode: "", 
+  gameTypes: [],
 };
 
-const mockFirebase = {
-  firestore: jest.fn().mockReturnValue(mockFirestore),
+const group2: Group =  {
+  name: "SecondBestGroup", 
+  emoji: "🤪", 
+  games: ["Stigespill"], 
+  invitationCode: "", 
+  gameType: []
 };
 
-firebase.initializeApp = jest.fn();
-firebase.firestore = jest.fn().mockReturnValue(mockFirestore);
-
-export { mockFirebase, mockFirestore };
+mockFirebase({
+  database: {
+    groupsCol: [
+      {group: group1, id: "123"},
+     {group: group2, id: "456"}
+    ]
+    //Kan legge inn flere documents her
+  }
+});
