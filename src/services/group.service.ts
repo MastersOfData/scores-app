@@ -78,7 +78,8 @@ export const joinGroupByInvitationCode = async (
     constraints: [where("invitationCode", "==", invitationCode)],
   });
 
-  if (groupArray.length === 0 || groupArray.length > 1) return Promise.reject();
+  if (groupArray.length === 0 || groupArray.length > 1)
+    return Promise.reject(`Gruppe med kode ${invitationCode} finnes ikke.`);
 
   const membership = await getDocuments<Membership>({
     collectionId: membershipsCol,
@@ -90,7 +91,7 @@ export const joinGroupByInvitationCode = async (
 
   const userIsAlreadyMember = membership.length > 0;
   if (userIsAlreadyMember)
-    return Promise.reject("User is already a member of the group");
+    return Promise.reject("Du er allerede medlem i gruppen");
 
   const groupId = groupArray[0].id;
   const docId = generateMembershipDocumentId(userId, groupId);

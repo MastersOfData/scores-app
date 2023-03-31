@@ -93,7 +93,9 @@ export const createGameTypeAction = createAsyncThunk(
 const groups = createSlice({
   name: "groups",
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    clearGroupState: (state) => (state.data = undefined),
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getAllGroupsAction.pending, (state) => {
@@ -178,3 +180,4 @@ const groups = createSlice({
 });
 
 export const groupsReducer = groups.reducer;
+export const { clearGroupState } = groups.actions;
