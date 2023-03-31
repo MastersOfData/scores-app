@@ -23,6 +23,7 @@ export interface GroupInternal {
 }
 
 export interface GameType {
+  id: string;
   name: string;
   emoji: string;
 }
