@@ -11,7 +11,6 @@ interface GamePageProps {
 
 const GamePage: FC<GamePageProps> = ({ params }) => {
   const { groupdId, gameId } = params;
-
   const gamesWithStatus = useGetGamesForGroup(groupdId);
 
   console.log({ gamesWithStatus });

@@ -17,7 +17,6 @@ import Medal, { MedalType } from "../../../components/Medal";
 import { ScrollableLargeCards } from "../../../components/ScrollableLargeCards";
 import { CardItem } from "../../../components/Card";
 import {
-  mapGameToCardItem,
   mapGameTypesToCardItems,
 } from "../../../utils/util";
 import { useRouter } from "next/navigation";
@@ -29,10 +28,14 @@ interface GroupPageProps {
 
 const GroupPage: FC<GroupPageProps> = ({ params }) => {
   const { groupId } = params;
-  const groupsWithStatus = useGetGroupsForCurrentUser();
   const router = useRouter();
+  const groupsWithStatus = useGetGroupsForCurrentUser();
+  const gamesWithStatus = useGetGamesForGroup(groupId);
 
-  if (groupsWithStatus.status === DataStatus.LOADING) {
+  if (
+    groupsWithStatus.status === DataStatus.LOADING ||
+    gamesWithStatus.status === DataStatus.LOADING
+  ) {
     return <Spinner />;
   }
 
@@ -41,16 +44,6 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
   if (!group) {
     return <p>Ingen tilgang</p>;
   }
-
-  const gamesWithStatus = useGetGamesForGroup(group.id);
-
-  if (gamesWithStatus.status === DataStatus.LOADING) {
-    return <Spinner />;
-  }
-  const gameHistory: CardItem[] =
-    gamesWithStatus.data
-      ?.filter((game) => game.status === "FINISHED")
-      .map(mapGameToCardItem) ?? [];
 
   const gameHistoryMock: CardItem[] = [
     {
@@ -68,7 +61,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
   ];
 
   return (
-    <PageWrapper title={group.name} backPath='/' authenticated={true} >
+    <PageWrapper title={group.name} backPath="/" authenticated={true}>
       <div className={homeStyles["buttons-container"]}>
         <div className={homeStyles["button-container"]}>
           <Button

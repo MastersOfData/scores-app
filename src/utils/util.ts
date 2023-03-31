@@ -79,7 +79,7 @@ export const mapGameToCardItem = (
 ) => {
   return {
     key: game.id,
-    title: `${differenceBetweenFirestoreTimestampsInDays(Timestamp.fromMillis(game.duration!), Timestamp.fromDate(new Date()))} dager siden`,
+    title: `${differenceBetweenFirestoreTimestampsInDays(Timestamp.fromMillis(game.duration ?? new Date()), Timestamp.fromDate(new Date()))} dager siden`,
     labels: [game.gameTypeId, `${game.winner} vant! 🎉`],
     emoji: game.gameTypeId,
   };

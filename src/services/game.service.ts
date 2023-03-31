@@ -9,7 +9,6 @@ import {
 } from "src/fire-base/db";
 import { Game, Membership } from "src/fire-base/models";
 import { calculateDuration } from "src/utils/util";
-import { useCurrentUser } from "./user.service";
 
 export interface CreateGameData {
   groupId: string;
