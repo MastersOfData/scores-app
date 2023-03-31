@@ -6,14 +6,22 @@ import { PeopleIcon } from "../../../assets/icons/PeopleIcon";
 import { ResultsIcon } from "../../../assets/icons/ResultsIcon";
 import { Button, ButtonColor, ButtonVariant } from "../../../components/Button";
 import PageWrapper from "../../../components/PageWrapper";
-import { useGetGroupsForCurrentUser } from "../../../store/hooks";
+import {
+  useAppSelector,
+  useGetGamesForGroup,
+  useGetGroupsForCurrentUser,
+} from "../../../store/hooks";
 import { DataStatus } from "../../../store/store.types";
 import homeStyles from "../../../styles/Home.module.css";
 import styles from "../../../styles/Group.module.css";
 import Medal, { MedalType } from "../../../components/Medal";
 import { ScrollableLargeCards } from "../../../components/ScrollableLargeCards";
 import { CardItem } from "../../../components/Card";
-import { mapGameTypesToCardItems } from "../../../utils/util";
+import {
+  calculateGroupLeaderboard,
+  mapGamesToCardItems,
+  mapGameTypesToCardItems,
+} from "../../../utils/util";
 import { useRouter } from "next/navigation";
 import Spinner from "../../../components/Spinner";
 
@@ -24,9 +32,17 @@ interface GroupPageProps {
 const GroupPage: FC<GroupPageProps> = ({ params }) => {
   const { groupId } = params;
   const groupsWithStatus = useGetGroupsForCurrentUser();
+  const gamesStatus = useAppSelector((state) => state.games);
+  const games = useGetGamesForGroup(groupId);
   const router = useRouter();
 
-  if (groupsWithStatus.status === DataStatus.LOADING) {
+  console.log(games);
+
+  if (
+    groupsWithStatus.status === DataStatus.LOADING ||
+    gamesStatus.status === DataStatus.LOADING ||
+    groupsWithStatus.data === undefined
+  ) {
     return <Spinner />;
   }
 
@@ -36,23 +52,11 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
     return <p>Ingen tilgang</p>;
   }
 
-  const gameHistoryMock: CardItem[] = [
-    {
-      key: "1",
-      title: "2 dager siden",
-      labels: ["Yatzy", "Ikke fullført"],
-      emoji: "🎲",
-    },
-    {
-      key: "2",
-      title: "8 dager siden",
-      labels: ["Tennis", "Lars vant! 🎉"],
-      emoji: "🎾",
-    },
-  ];
+  const leaderboardStats = calculateGroupLeaderboard(group.members);
+  const gameHistory: CardItem[] = mapGamesToCardItems(games, group);
 
   return (
-    <PageWrapper title={group.name} backPath='/'>
+    <PageWrapper title={group.name} backPath='/' authenticated>
       <div className={homeStyles["buttons-container"]}>
         <div className={homeStyles["button-container"]}>
           <Button
@@ -104,10 +108,9 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
             </tr>
           </thead>
           <tbody>
-            {group.members.map((member, index) => {
-              const gamesPlayed = member.wins + member.draws + member.losses;
+            {leaderboardStats.map((member, index) => {
               return (
-                <tr key={member.id}>
+                <tr key={member.userId}>
                   <td>
                     {index < 3 ? (
                       <Medal type={Object.values(MedalType)[index]} />
@@ -118,15 +121,11 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
                   <td className={styles["text-align-left"]}>
                     {member.username}
                   </td>
-                  <td>{gamesPlayed}</td>
+                  <td>{member.gamesPlayed}</td>
                   <td className={styles["wins-col"]}>{member.wins}</td>
                   <td className={styles["draws-col"]}>{member.draws}</td>
                   <td className={styles["losses-col"]}>{member.losses}</td>
-                  <td>
-                    {gamesPlayed
-                      ? ((member.wins / gamesPlayed) * 100).toFixed(0)
-                      : 0}
-                  </td>
+                  <td>{member.winRatio.toFixed(0)}</td>
                 </tr>
               );
             })}
@@ -135,7 +134,11 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
         <div className={styles["section-container"]}>
           <h2>Spillhistorikk</h2>
           <div className={styles["spacing"]} />
-          <ScrollableLargeCards items={gameHistoryMock} />
+          {gameHistory.length > 0 ? (
+            <ScrollableLargeCards items={gameHistory} />
+          ) : (
+            <p>Ingen historikk</p>
+          )}
         </div>
         <div className={styles["section-container"]}>
           <h2>Egendefinerte spill</h2>

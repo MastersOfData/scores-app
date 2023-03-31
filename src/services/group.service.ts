@@ -97,6 +97,18 @@ export const joinGroupByInvitationCode = async (
   });
   if (groupArray.length === 0 || groupArray.length > 1) return Promise.reject();
 
+  const membership = await getDocuments<Membership>({
+    collectionId: membershipsCol,
+    constraints: [
+      where("userId", "==", userId),
+      where("groupId", "==", groupArray[0].id),
+    ],
+  });
+
+  const userIsAlreadyMember = membership.length > 0;
+  if (userIsAlreadyMember)
+    return Promise.reject("User is already a member of the group");
+
   const groupId = groupArray[0].invitationCode;
   const docId = generateMembershipDocumentId(userId, groupId);
 
@@ -186,6 +198,15 @@ export const createGameTypeForGroup = async (
 ) => {
   const group = await getDocument<Group>(groupsCol, groupId);
   if (!group) return Promise.reject();
+
+  const nextId =
+    group.gameTypes && group.gameTypes.length > 0
+      ? group.gameTypes.map((gt) => Number(gt.id)).sort()[
+          group.gameTypes.length - 1
+        ] + 1
+      : 1;
+
+  gameType.id = nextId.toString();
 
   const updatedGroup: Group = {
     ...group,

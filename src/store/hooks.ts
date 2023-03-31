@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, TypedUseSelectorHook, useSelector } from "react-redux";
 import { AppDispatch, StoreType } from "./store";
 import { DataStatus } from "./store.types";
@@ -16,7 +16,10 @@ export const useGetGroupsForCurrentUser = () => {
   const user = useCurrentUser();
 
   useEffect(() => {
-    if (!groups.data && groups.status !== DataStatus.LOADING) {
+    if (
+      (groups.data === null && user) ||
+      (groups.data === undefined && groups.status !== DataStatus.LOADING)
+    ) {
       dispatch(getAllGroupsAction(user?.uid));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -33,7 +36,7 @@ export const useGetGamesForGroup = (groupId: string) => {
     if (!games.data![groupId] && games.status !== DataStatus.LOADING) {
       dispatch(getGamesAction(groupId));
     }
-  });
+  }, [games]);
 
   return games.data![groupId];
 };

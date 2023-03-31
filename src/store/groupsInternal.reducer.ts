@@ -10,7 +10,7 @@ import {
 import { GroupInternal } from "../types/types";
 import { DataStatus, DataWithStatus } from "./store.types";
 
-type GroupsInternalState = DataWithStatus<GroupInternal[]>;
+type GroupsInternalState = DataWithStatus<GroupInternal[] | null>;
 
 const initialState: GroupsInternalState = {
   data: undefined,
@@ -30,7 +30,7 @@ const initialState: GroupsInternalState = {
 export const getAllGroupsAction = createAsyncThunk(
   "groups/getAll",
   async (userId?: string) => {
-    if (!userId) return [];
+    if (!userId) return null;
     const res = await getGroupsInternalForCurrentUser(userId);
     return res;
   }

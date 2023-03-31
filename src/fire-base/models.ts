@@ -36,6 +36,7 @@ export interface Membership extends DocumentData {
 }
 
 export interface GameType {
+  id: string;
   name: string;
   emoji: string;
 }
