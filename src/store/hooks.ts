@@ -4,7 +4,7 @@ import { AppDispatch, StoreType } from "./store";
 import { DataStatus } from "./store.types";
 import { getAllGamesAction } from "./game.reducer";
 import { getAllGroupsAction } from "./groupsInternal.reducer";
-import { useCurrentUser } from "../services/user.service";
+import { useUser } from "src/services/user.service";
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<StoreType> = useSelector;
@@ -13,12 +13,12 @@ export const useGetGroupsForCurrentUser = () => {
   const dispatch = useAppDispatch();
   const groups = useAppSelector((state) => state.groups);
 
-  const user = useCurrentUser();
+  const { user, loading } = useUser()
 
   useEffect(() => {
     if (
-      (groups.data === null && user) ||
-      (groups.data === undefined && groups.status !== DataStatus.LOADING)
+      (!loading && groups.data === null && user) ||
+      (!loading && groups.data === undefined && groups.status !== DataStatus.LOADING)
     ) {
       dispatch(getAllGroupsAction(user?.uid));
     }
@@ -31,7 +31,7 @@ export const useGetGroupsForCurrentUser = () => {
 export const useGetGamesForGroup = (groupId: string) => {
   const dispatch = useAppDispatch();
   const games = useAppSelector((state) => state.games);
-  const user = useCurrentUser();
+  const { user } = useUser()
 
   useEffect(() => {
     if (user && !games.data && games.status !== DataStatus.LOADING) {

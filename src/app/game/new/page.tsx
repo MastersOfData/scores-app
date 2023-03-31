@@ -14,13 +14,13 @@ import { useRouter } from "next/navigation";
 import { createGameAction } from "src/store/game.reducer";
 import { DataStatus } from "src/store/store.types";
 import { WithId } from "src/types/types";
-import { useCurrentUser } from "src/services/user.service";
+import { useUser } from "src/services/user.service";
 
 const CreateGamePage: FC = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const groupsWithStatus = useGetGroupsForCurrentUser();
-  const user = useCurrentUser();
+  const { user } = useUser()
 
   //Mock users
   const users: WithId<User>[] = [

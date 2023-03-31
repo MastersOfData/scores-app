@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { Card, CardItemSmall } from "./Card";
 import styles from "../styles/Card.module.css";
 

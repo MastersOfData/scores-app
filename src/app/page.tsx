@@ -14,17 +14,24 @@ import { useAppDispatch, useGetGroupsForCurrentUser } from "../store/hooks";
 import { DataStatus } from "../store/store.types";
 import { useRouter } from "next/navigation";
 import Spinner from "../components/Spinner";
+import { useUser } from "src/services/user.service";
 import { joinGroupByInvitationCodeAction } from "src/store/groupsInternal.reducer";
 import { useState } from "react";
-import { getCurrentUser } from "src/fire-base/auth";
 
 export default function Home() {
   const groupsWithStatus = useGetGroupsForCurrentUser();
   const router = useRouter();
   const dispatch = useAppDispatch();
-
   const [invitationCode, setInvitationCode] = useState<string | undefined>();
-  const user = getCurrentUser();
+  const { user } = useUser()
+
+  //Mock groups
+  // const groups: Group[] = [
+  //   { name: "SnømannGutta", emoji: "⛄", games: [], invitationCode: "5673" },
+  //   { name: "GolfGjengen", emoji: "⛳", games: [], invitationCode: "4822" },
+  //   { name: "BasketBALLERS", emoji: "⛹", games: [], invitationCode: "5721" },
+  //   { name: "Pubgruppen", emoji: "✨", games: [], invitationCode: "9031" },
+  // ];
 
   if (
     !groupsWithStatus.data ||
@@ -34,9 +41,8 @@ export default function Home() {
   }
 
   const cardItemsGroups: CardItem[] = mapGroupsToCardItems(
-    groupsWithStatus.data ?? [],
-    true,
-    router
+    groupsWithStatus.data,
+    true
   );
 
   const onJoinGroupClick = async () => {
