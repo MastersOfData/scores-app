@@ -1,8 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { GameType } from "../fire-base/models";
 import {
   createGameTypeForGroup,
-  createGroupNew,
+  createGroup,
   getGroupsInternalForCurrentUser,
   joinGroupByInvitationCode,
   removeUserFromGroup,
@@ -10,7 +9,7 @@ import {
 import { GroupInternal } from "../types/types";
 import { DataStatus, DataWithStatus } from "./store.types";
 
-type GroupsInternalState = DataWithStatus<GroupInternal[]>;
+type GroupsInternalState = DataWithStatus<GroupInternal[] | null>;
 
 const initialState: GroupsInternalState = {
   data: undefined,
@@ -30,7 +29,7 @@ const initialState: GroupsInternalState = {
 export const getAllGroupsAction = createAsyncThunk(
   "groups/getAll",
   async (userId?: string) => {
-    if (!userId) return [];
+    if (!userId) return null;
     const res = await getGroupsInternalForCurrentUser(userId);
     return res;
   }
@@ -60,7 +59,7 @@ export const createGroupAction = createAsyncThunk(
     groupName: string;
     groupEmoji: string;
   }) => {
-    const res = await createGroupNew(currentUserId, groupName, groupEmoji);
+    const res = await createGroup(currentUserId, groupName, groupEmoji);
     return res;
   }
 );
@@ -78,9 +77,16 @@ export const removeUserFromGroupAction = createAsyncThunk(
 
 export const createGameTypeAction = createAsyncThunk(
   "groups/newGameType",
-  async ({ gameType, groupId }: { gameType: GameType; groupId: string }) => {
-    await createGameTypeForGroup(groupId, gameType);
-    return gameType;
+  async ({
+    gameTypeName,
+    gameTypeEmoji,
+    groupId,
+  }: {
+    gameTypeName: string;
+    gameTypeEmoji: string;
+    groupId: string;
+  }) => {
+    return await createGameTypeForGroup(groupId, gameTypeName, gameTypeEmoji);
   }
 );
 
@@ -106,7 +112,12 @@ const groups = createSlice({
       })
       .addCase(joinGroupByInvitationCodeAction.fulfilled, (state, action) => {
         state.update.status = DataStatus.COMPLETED;
-        if (state.data) state.data.push(action.payload);
+        const index = state.data?.findIndex(
+          (group) => group.id === action.payload.id
+        );
+
+        if (state.data && index === -1)
+          state.data = [...state.data, action.payload];
         else state.data = [action.payload];
       })
       .addCase(joinGroupByInvitationCodeAction.rejected, (state) => {
@@ -117,7 +128,7 @@ const groups = createSlice({
       })
       .addCase(createGroupAction.fulfilled, (state, action) => {
         state.create.status = DataStatus.COMPLETED;
-        if (state.data) state.data.push(action.payload);
+        if (state.data) state.data = [...state.data, action.payload];
         else state.data = [action.payload];
       })
       .addCase(createGroupAction.rejected, (state) => {

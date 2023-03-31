@@ -1,6 +1,10 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import { gamesReducer } from "./game.reducer";
 import { groupsReducer } from "./groupsInternal.reducer";
+
+const customizedMiddleware = getDefaultMiddleware({
+  serializableCheck: false,
+});
 
 export const store = configureStore({
   reducer: {
@@ -8,6 +12,7 @@ export const store = configureStore({
     games: gamesReducer,
   },
   devTools: process.env.NODE_ENV !== "production",
+  middleware: customizedMiddleware,
 });
 
 export type StoreType = ReturnType<typeof store.getState>;

@@ -28,7 +28,7 @@ type CheckBoxInputProps = CommonInputProps<boolean> & {
 };
 
 type ToggleInputProps = CommonInputProps<boolean> & {
-  startingState?: boolean;
+  initialValue?: boolean;
   onInput?: (value: boolean) => void;
 };
 
@@ -164,8 +164,8 @@ function CheckBoxInput({ onInput, valueRef, defaultValue, ...props }: CheckBoxIn
   )
 }
 
-function ToggleInput({ onInput, className, defaultValue, valueRef }: ToggleInputProps) {
-  const [yes, setYes] = useState<boolean>(defaultValue ?? true)
+function ToggleInput({ onInput, initialValue, className, valueRef }: ToggleInputProps) {
+  const [yes, setYes] = useState<boolean>(initialValue ?? true);
 
   function handleToggle(value: boolean) {
     setYes(value);

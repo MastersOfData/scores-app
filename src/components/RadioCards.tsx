@@ -3,16 +3,20 @@ import { Card, CardItemSmall } from "./Card";
 import styles from "../styles/Card.module.css";
 
 interface RadioCardsProps {
-  items: CardItemSmall[];
+  items: CardItemSmall[] | undefined;
   selected: string | undefined;
   setSelected: (x: string) => void;
+  fallbackMessage?: string;
 }
 
 export const RadioCards: FC<RadioCardsProps> = ({
   items,
   selected,
   setSelected,
+  fallbackMessage,
 }) => {
+  if (!items) return <p>{fallbackMessage}</p>;
+
   return (
     <div className={styles["center-cards"]}>
       {items.map((item) => (

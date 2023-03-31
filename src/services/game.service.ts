@@ -19,20 +19,18 @@ export interface CreateGameData {
 
 export type UpdateGameData = Pick<Game, "winner" | "status">;
 
-export const createGame = async (data: CreateGameData) => {
-  const user = {
-    id: "",
-  }; // TODO fetch user from context or pass a prop
-
+export const createGame = async (userId: string, data: CreateGameData) => {
   const players = data.participants.map((participantId) => ({
     playerId: participantId,
     points: 0,
   }));
 
   const game: Game = {
-    ...data,
-    adminId: user.id,
-    players: players,
+    groupId: data.groupId,
+    gameTypeId: data.gameTypeId,
+    allowTeams: data.allowTeams,
+    adminId: userId,
+    players: [...players, { playerId: userId, points: 0 }],
     timestamp: Timestamp.fromDate(new Date()),
     status: "ONGOING",
     duration: 0,
@@ -49,7 +47,7 @@ export const createGame = async (data: CreateGameData) => {
 export const updateGame = async (gameId: string, data: UpdateGameData) => {
   const game = await getDocument<Game>(gamesCol, gameId);
 
-  if (!game) return Promise.reject();
+  if (!game) return Promise.reject(`Game not found: ${gameId}`);
 
   return await updateDocument<Game>(gamesCol, gameId, {
     ...data,
@@ -57,17 +55,17 @@ export const updateGame = async (gameId: string, data: UpdateGameData) => {
   });
 };
 
-export const getGamesForGroup = async (groupId: string) => {
-  const user = {
-    id: "",
-  }; // TODO fetch from context or pass as prop
-  
+export const getGamesForGroup = async (userId: string, groupId: string) => {
   const membership = await getDocuments<Membership>({
     collectionId: membershipsCol,
-    constraints: [where("userId", "==", user.id), where("groupId", "==", groupId)],
-  })
+    constraints: [
+      where("userId", "==", userId),
+      where("groupId", "==", groupId),
+    ],
+  });
 
-  if (membership.length === 0) return Promise.reject();
+  if (membership.length === 0)
+    return Promise.reject(`User is not a member of the group: ${groupId}`);
 
   const games = await getDocuments<Game>({
     collectionId: gamesCol,

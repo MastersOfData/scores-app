@@ -49,7 +49,7 @@ export const Button: FC<ButtonProps> = (props) => {
   } = props;
 
   return withLink ? (
-    <Link href={{pathname: href}}>
+    <Link href={{ pathname: href }}>
       <button
         {...rest}
         className={`${styles[variant]} ${styles[color]} ${className}`}

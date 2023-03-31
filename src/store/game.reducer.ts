@@ -1,5 +1,4 @@
-import { createAsyncThunk, createSlice, Update } from "@reduxjs/toolkit";
-import { create } from "domain";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Game } from "src/fire-base/models";
 import {
   createGame,
@@ -11,10 +10,10 @@ import {
 import { WithId } from "src/types/types";
 import { DataStatus, DataWithStatus } from "./store.types";
 
-type GameState = DataWithStatus<Record<string, WithId<Game>[]>>;
+type GameState = DataWithStatus<WithId<Game>[]>;
 
 const initialState: GameState = {
-  data: {},
+  data: undefined,
   status: DataStatus.COMPLETED,
   create: {
     status: DataStatus.COMPLETED,
@@ -30,16 +29,22 @@ const initialState: GameState = {
 
 export const createGameAction = createAsyncThunk(
   "games/create",
-  async ({ gameData }: { gameData: CreateGameData }) => {
-    const res = await createGame(gameData);
+  async ({
+    userId,
+    gameData,
+  }: {
+    userId: string;
+    gameData: CreateGameData;
+  }) => {
+    const res = await createGame(userId, gameData);
     return res;
   }
 );
 
-export const getGamesAction = createAsyncThunk(
-  "games/get",
-  async (groupId: string) => {
-    const res = await getGamesForGroup(groupId);
+export const getAllGamesAction = createAsyncThunk(
+  "games/getAll",
+  async ({ userId, groupId }: { userId: string; groupId: string }) => {
+    const res = await getGamesForGroup(userId, groupId);
     return res;
   }
 );
@@ -64,39 +69,44 @@ const gamesSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Create game
       .addCase(createGameAction.pending, (state) => {
         state.create.status = DataStatus.LOADING;
       })
       .addCase(createGameAction.fulfilled, (state, action) => {
-        const groupId = action.payload.groupId;
         state.create.status = DataStatus.COMPLETED;
+        const index = state.data?.findIndex((g) => g.id === action.payload.id);
 
-        if (state.data) {
-          state.data[groupId] = [...state.data[groupId], action.payload];
+        if (state.data && index === -1) {
+          state.data = [...state.data, action.payload];
         } else {
-          state.data = { [groupId]: [action.payload] };
+          state.data = [action.payload];
         }
       })
       .addCase(createGameAction.rejected, (state) => {
         state.create.status = DataStatus.ERROR;
       })
-      .addCase(getGamesAction.pending, (state) => {
+      // Get games
+      .addCase(getAllGamesAction.pending, (state) => {
         state.status = DataStatus.LOADING;
       })
-      .addCase(getGamesAction.fulfilled, (state, action) => {
-        const groupId = action.meta.arg;
+      .addCase(getAllGamesAction.fulfilled, (state, action) => {
         state.status = DataStatus.COMPLETED;
+        const newGames = action.payload.filter(
+          (game) => state.data?.findIndex((g) => g.id === game.id) === -1
+        );
 
         if (state.data) {
-          state.data[groupId] = state.data[groupId].concat(action.payload);
+          state.data = [...state.data, ...newGames];
         } else {
-          state.data = { [groupId]: action.payload };
+          state.data = action.payload;
         }
       })
-      .addCase(getGamesAction.rejected, (state) => {
+      .addCase(getAllGamesAction.rejected, (state) => {
         state.status = DataStatus.ERROR;
-        state.data = {};
+        state.data = [];
       })
+      // Update game
       .addCase(updateGameAction.pending, (state, action) => {
         state.update.status = DataStatus.LOADING;
         state.update.dataId = action.meta.arg.gameId;
@@ -108,20 +118,17 @@ const gamesSlice = createSlice({
         state.update.dataId = undefined;
 
         if (state.data) {
-          for (const group in state.data) {
-            const games = state.data[group];
-            const gameIndex = games.findIndex((g) => g.id === gameId);
-            if (gameIndex > -1) {
-              state.data[group][gameIndex] = Object.assign(
-                state.data[group][gameIndex],
-                action.meta.arg.gameData
-              );
-              break;
-            }
+          const gameIndex = state.data.findIndex((g) => g.id === gameId);
+          if (gameIndex > -1) {
+            state.data[gameIndex] = Object.assign(
+              state.data[gameIndex],
+              action.meta.arg.gameData
+            );
           }
         } else {
           throw Error(
-            "Game updated but doesn't exist: " + action.meta.arg.gameId
+            "Called for game update, but game doesn't exist: " +
+              action.meta.arg.gameId
           );
         }
       })

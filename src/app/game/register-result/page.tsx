@@ -9,6 +9,7 @@ import TitleWithInfo from "src/components/TitleWithInfo";
 import { CheckboxCards } from "src/components/CheckboxCards";
 import Input from "src/components/Input";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
+import { GameType } from "src/types/types";
 
 export default function RegisterResultPage() {
   //Mock groups
@@ -18,17 +19,11 @@ export default function RegisterResultPage() {
     { name: "Yatzy for life", emoji: "🎲", games: [], invitationCode: "5721" },
   ];
 
-  //Dont have a type for this
-  type GameType = {
-    name: string;
-    emoji: string;
-  };
-
   //Mock games
   const gameTypes: GameType[] = [
-    { name: "Bingo", emoji: "🎰" },
-    { name: "Tennis", emoji: "🎾" },
-    { name: "Yatzy", emoji: "🎲" },
+    { id: "", name: "Bingo", emoji: "🎰" },
+    { id: "", name: "Tennis", emoji: "🎾" },
+    { id: "", name: "Yatzy", emoji: "🎲" },
   ];
 
   //Mock users
@@ -45,7 +40,11 @@ export default function RegisterResultPage() {
   const [wantTeams, setWantTeams] = useState<boolean>(false);
 
   return (
-    <PageWrapper title="Registrer resultat" backPath="/play" authenticated={true} >
+    <PageWrapper
+      title='Registrer resultat'
+      backPath='/game'
+      authenticated={true}
+    >
       <div>
         <h2 className={styles["title-centered"]}>Velg gruppe</h2>
         <div className={styles["groups-container"]}>
@@ -60,8 +59,8 @@ export default function RegisterResultPage() {
         </div>
       </div>
       <TitleWithInfo
-        title="Velg spill"
-        infoText="Velg typen spill du ønsker å registrere et nytt resultat for."
+        title='Velg spill'
+        infoText='Velg typen spill du ønsker å registrere et nytt resultat for.'
       />
       <div className={styles["groups-container"]}>
         <RadioCards
@@ -85,17 +84,17 @@ export default function RegisterResultPage() {
         />
       </div>
       <TitleWithInfo
-        title="Ønsker du lag?"
-        infoText="Ønsker du at deltagerne skal deles inn i lag?"
+        title='Ønsker du lag?'
+        infoText='Ønsker du at deltagerne skal deles inn i lag?'
       />
       <div className={styles["toggle-container"]}>
         <div className={styles["toggle-section"]}>
-          <Input type="toggle" onInput={setWantTeams} />
+          <Input type='toggle' onInput={setWantTeams} />
         </div>
       </div>
       <TitleWithInfo
-        title="Hvem vant?"
-        infoText="Flere vinnere kan velges. Alle vinnere får resultat uavgjort mens resten får tap"
+        title='Hvem vant?'
+        infoText='Flere vinnere kan velges. Alle vinnere får resultat uavgjort mens resten får tap'
       />
       <div className={styles["groups-container"]}>
         <CheckboxCards
