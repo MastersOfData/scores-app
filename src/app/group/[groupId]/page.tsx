@@ -36,12 +36,11 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
   const games = useGetGamesForGroup(groupId);
   const router = useRouter();
 
-  console.log(games);
-
   if (
     groupsWithStatus.status === DataStatus.LOADING ||
     gamesStatus.status === DataStatus.LOADING ||
-    groupsWithStatus.data === undefined
+    groupsWithStatus.data === undefined ||
+    games.data === undefined
   ) {
     return <Spinner />;
   }
@@ -53,7 +52,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
   }
 
   const leaderboardStats = calculateGroupLeaderboard(group.members);
-  const gameHistory: CardItem[] = mapGamesToCardItems(games, group);
+  const gameHistory: CardItem[] = mapGamesToCardItems(games.data, group);
 
   return (
     <PageWrapper title={group.name} backPath='/' authenticated>

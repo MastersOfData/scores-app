@@ -34,14 +34,22 @@ export const calculateDuration = (game: Game): number => {
   // Calculate duration between Game timestamp (when game started) and
   // current time. Duration is calculated in seconds.
 
-  console.log("utils", game, game.timestamp.toDate());
-
   if (game.status === "ONGOING") {
     const startTime = game.timestamp.toDate().getTime();
     const currentTime = new Date().getTime();
     return Math.abs((currentTime - startTime) / 1000);
   }
   return game.duration || 0;
+};
+
+export const convertSecondsToMinutesAndSeconds = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60);
+  const secondsRemainder = Math.round(seconds % 60);
+
+  return {
+    minutes,
+    seconds: secondsRemainder,
+  };
 };
 
 export const mapGroupsToCardItems = (
@@ -130,12 +138,20 @@ export const mapGamesToCardItems = (
     }
 
     if (game.status === "ONGOING" && game.duration) {
-      labels.push(`Spilt i ${game.duration.toFixed(0).toString()} sekunder`);
+      const { minutes, seconds } = convertSecondsToMinutesAndSeconds(
+        game.duration
+      );
+      labels.push(`Varighet: ${minutes}:${seconds}`);
     }
 
-    if (game.status === "FINISHED" && game.winner) {
+    if (game.status === "PAUSED") {
+      labels.push("Ikke fullført");
+    }
+
+    if (game.status === "FINISHED") {
       const winner = group.members.find((u) => u.userId === game.winner);
       if (winner) labels.push(`${winner.username} vant! 🎉`);
+      else labels.push("Fullført");
     }
 
     return {

@@ -1,5 +1,6 @@
 import {
   calculateDuration,
+  convertSecondsToMinutesAndSeconds,
   differenceBetweenFirestoreTimestampsInDays,
   generateMembershipDocumentId,
 } from "../util";
@@ -57,11 +58,11 @@ describe("calculatDuration", () => {
   beforeAll(() => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date(2023, 3, 24));
-  })
+  });
 
   afterAll(() => {
     jest.useRealTimers();
-  })
+  });
 
   const mockGame1: Game = {
     adminId: "",
@@ -81,12 +82,12 @@ describe("calculatDuration", () => {
   const mockGame2: Game = {
     ...mockGame1,
     status: "FINISHED",
-  }
+  };
 
   const mockGame3: Game = {
     ...mockGame1,
     status: "PAUSED",
-  }
+  };
 
   it.each([
     [
@@ -118,5 +119,28 @@ describe("calculatDuration", () => {
     ],
   ])("calculates the correct duration", (game, expected) => {
     expect(calculateDuration(game)).toBe(expected);
+  });
+});
+
+describe("Convert seconds to minutes and seconds", () => {
+  const testCases = [
+    {
+      input: 360,
+      return: { minutes: 6, seconds: 0 },
+    },
+    {
+      input: 50,
+      return: { minutes: 0, seconds: 50 },
+    },
+    {
+      input: 130,
+      return: { minutes: 2, seconds: 10 },
+    },
+  ];
+
+  it.each(testCases)("Calculate correct minutes and seconds", (testCase) => {
+    expect(convertSecondsToMinutesAndSeconds(testCase.input)).toEqual(
+      testCase.return
+    );
   });
 });
