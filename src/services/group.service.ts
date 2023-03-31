@@ -122,7 +122,6 @@ export const getStatsForAllUsersInGroup = async (groupId: string) => {
 
 export const getGroupInternal = async (groupId: string) => {
   const group = await getDocument<Group>(groupsCol, groupId);
-  console.log({ group });
   if (!group) return Promise.reject();
 
   const stats = await getStatsForAllUsersInGroup(groupId);
