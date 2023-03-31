@@ -64,7 +64,8 @@ export const getGamesForGroup = async (userId: string, groupId: string) => {
     ],
   });
 
-  if (membership.length === 0) return Promise.reject(`User is not a member of the group: ${groupId}`);
+  if (membership.length === 0)
+    return Promise.reject(`User is not a member of the group: ${groupId}`);
 
   const games = await getDocuments<Game>({
     collectionId: gamesCol,

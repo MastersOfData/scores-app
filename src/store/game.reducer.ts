@@ -29,7 +29,13 @@ const initialState: GameState = {
 
 export const createGameAction = createAsyncThunk(
   "games/create",
-  async ({ userId, gameData }: { userId: string, gameData: CreateGameData }) => {
+  async ({
+    userId,
+    gameData,
+  }: {
+    userId: string;
+    gameData: CreateGameData;
+  }) => {
     const res = await createGame(userId, gameData);
     return res;
   }
@@ -37,7 +43,7 @@ export const createGameAction = createAsyncThunk(
 
 export const getAllGamesAction = createAsyncThunk(
   "games/getAll",
-  async ({userId, groupId}: {userId: string, groupId: string}) => {
+  async ({ userId, groupId }: { userId: string; groupId: string }) => {
     const res = await getGamesForGroup(userId, groupId);
     return res;
   }

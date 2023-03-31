@@ -19,17 +19,17 @@ import { useAppDispatch, useGetGroupsForCurrentUser } from "../store/hooks";
 import { DataStatus } from "../store/store.types";
 import { useRouter } from "next/navigation";
 import Spinner from "../components/Spinner";
-import { useCurrentUser } from "src/services/user.service";
 import { joinGroupByInvitationCodeAction } from "src/store/groupsInternal.reducer";
 import { useState } from "react";
+import { getCurrentUser } from "src/fire-base/auth";
 
 export default function Home() {
   const groupsWithStatus = useGetGroupsForCurrentUser();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const user = useCurrentUser();
 
   const [invitationCode, setInvitationCode] = useState<string | undefined>();
+  const user = getCurrentUser();
 
   if (
     groupsWithStatus.data === undefined ||
