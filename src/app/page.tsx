@@ -24,11 +24,17 @@ export default function Home() {
   const dispatch = useAppDispatch();
 
   const [invitationCode, setInvitationCode] = useState<string | undefined>();
+  const [joinGroupIsLoading, setJoinGroupIsLoading] = useState(false);
+  const [joinGroupError, setJoinGroupError] = useState<string | undefined>(
+    undefined
+  );
+
   const user = getCurrentUser();
 
   if (
     !groupsWithStatus.data ||
-    groupsWithStatus.status === DataStatus.LOADING
+    groupsWithStatus.status === DataStatus.LOADING ||
+    joinGroupIsLoading
   ) {
     return <Spinner />;
   }
@@ -41,13 +47,23 @@ export default function Home() {
 
   const onJoinGroupClick = async () => {
     if (invitationCode && user) {
-      const group = await dispatch(
+      setJoinGroupIsLoading(true);
+      await dispatch(
         joinGroupByInvitationCodeAction({
           invitationCode: invitationCode,
           userId: user.uid,
         })
-      ).unwrap();
-      router.push(`group/${group.id}`);
+      )
+        .unwrap()
+        .then((group) => {
+          setJoinGroupIsLoading(false);
+          setJoinGroupError(undefined);
+          router.push(`group/${group.id}`);
+        })
+        .catch((err) => {
+          setJoinGroupIsLoading(false);
+          setJoinGroupError(err.message);
+        });
     }
   };
 
@@ -99,6 +115,11 @@ export default function Home() {
           Bli med
         </Button>
       </div>
+      {joinGroupError && (
+        <div className='center-items'>
+          <p className='error-text'>{joinGroupError}</p>
+        </div>
+      )}
       <h2 className={styles.title}>Dine grupper</h2>
       {user ? (
         <div className={styles["cards-container"]}>
