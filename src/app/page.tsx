@@ -15,16 +15,20 @@ import {
   mapGroupsToCardItems,
 } from "src/utils/util";
 import PageWrapper from "src/components/PageWrapper";
-import { useGetGroupsForCurrentUser } from "../store/hooks";
+import { useAppDispatch, useGetGroupsForCurrentUser } from "../store/hooks";
 import { DataStatus } from "../store/store.types";
 import { useRouter } from "next/navigation";
-import { getCurrentUser } from "../fire-base/auth";
 import Spinner from "../components/Spinner";
+import { joinGroupByInvitationCodeAction } from "src/store/groupsInternal.reducer";
+import { useState } from "react";
+import { getCurrentUser } from "src/fire-base/auth";
 
 export default function Home() {
   const groupsWithStatus = useGetGroupsForCurrentUser();
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
+  const [invitationCode, setInvitationCode] = useState<string | undefined>();
   const user = getCurrentUser();
 
   if (
@@ -85,9 +89,22 @@ export default function Home() {
         emoji: "",
       };
     });
+
+  const onJoinGroupClick = async () => {
+    if (invitationCode && user) {
+      const group = await dispatch(
+        joinGroupByInvitationCodeAction({
+          invitationCode: invitationCode,
+          userId: user.uid,
+        })
+      ).unwrap();
+      router.push(`group/${group.id}`);
+    }
+  };
+
   //Must update paths
   return (
-    <PageWrapper title='Velkommen!' authenticated={true}>
+    <PageWrapper title="Velkommen!" authenticated={true}>
       <div className={styles["buttons-container"]}>
         <div className={styles["button-container"]}>
           <Button
@@ -104,7 +121,7 @@ export default function Home() {
             variant={ButtonVariant.Action}
             color={ButtonColor.Orange}
             withLink
-            href='/play'
+            href="/game/new"
           >
             <ControllerIcon />
           </Button>
@@ -115,7 +132,7 @@ export default function Home() {
             variant={ButtonVariant.Action}
             color={ButtonColor.Pink}
             withLink
-            href='/create-group'
+            href="/create-group"
           >
             <GroupIcon />
           </Button>
@@ -125,11 +142,16 @@ export default function Home() {
       <h2 className={styles["title-centered"]}>Bli med i en gruppe</h2>
       <div className={styles["group-input-container"]}>
         <Input
-          type='text'
+          type="text"
           className={styles["text-input"]}
-          placeholder='Invitasjons-kode...'
+          placeholder="Invitasjons-kode..."
+          onInput={setInvitationCode}
         />
-        <Button variant={ButtonVariant.Medium} color={ButtonColor.Red}>
+        <Button
+          variant={ButtonVariant.Medium}
+          color={ButtonColor.Red}
+          onClick={onJoinGroupClick}
+        >
           Bli med
         </Button>
       </div>

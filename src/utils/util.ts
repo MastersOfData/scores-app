@@ -2,8 +2,8 @@ import { Timestamp } from "firebase/firestore";
 import { Game } from "src/fire-base/models";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import { CardItem } from "src/components/Card";
-import { GameType } from "../fire-base/models";
 import {
+  GameType,
   GroupInternal,
   LeaderboardStats,
   Member,
@@ -34,8 +34,10 @@ export const calculateDuration = (game: Game): number => {
   // Calculate duration between Game timestamp (when game started) and
   // current time. Duration is calculated in seconds.
 
+  console.log("utils", game, game.timestamp.toDate());
+
   if (game.status === "ONGOING") {
-    const startTime = game.timestamp.toDate().getTime();
+    const startTime = new Date(game.timestamp.seconds).getTime();
     const currentTime = new Date().getTime();
     return Math.abs((currentTime - startTime) / 1000);
   }
@@ -89,6 +91,28 @@ export const mapGameTypesToCardItems = (
     ...gameTypeCards.sort((a, b) => a.title.localeCompare(b.title)),
   ];
 };
+
+export const mapGameToCardItem = (
+  game: WithId<Game>,
+) => {
+  const endDate = game.duration ? Timestamp.fromMillis(game.duration) : Timestamp.fromDate(new Date());
+
+  return {
+    key: game.id,
+    title: `${differenceBetweenFirestoreTimestampsInDays(endDate, Timestamp.fromDate(new Date()))} dager siden`,
+    labels: [game.gameTypeId, `${game.winner} vant! 🎉`],
+    emoji: game.gameTypeId,
+  };
+}
+
+export const generatePincode = () => {
+  const digits = "0123456789";
+  let pin = "";
+  for (let i = 0; i < 6; i++) {
+    pin += digits[Math.floor(Math.random() * 10)];
+  }
+  return pin;  
+}
 
 export const calculateGroupLeaderboard = (
   members: Member[]

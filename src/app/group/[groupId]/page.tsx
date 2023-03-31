@@ -7,7 +7,6 @@ import { ResultsIcon } from "../../../assets/icons/ResultsIcon";
 import { Button, ButtonColor, ButtonVariant } from "../../../components/Button";
 import PageWrapper from "../../../components/PageWrapper";
 import {
-  useAppSelector,
   useGetGamesForGroup,
   useGetGroupsForCurrentUser,
 } from "../../../store/hooks";
@@ -32,15 +31,14 @@ interface GroupPageProps {
 const GroupPage: FC<GroupPageProps> = ({ params }) => {
   const { groupId } = params;
   const groupsWithStatus = useGetGroupsForCurrentUser();
-  const gamesStatus = useAppSelector((state) => state.games);
-  const games = useGetGamesForGroup(groupId);
+  const gamesWithStatus = useGetGamesForGroup(groupId);
   const router = useRouter();
 
   if (
     groupsWithStatus.status === DataStatus.LOADING ||
-    gamesStatus.status === DataStatus.LOADING ||
+    gamesWithStatus.status === DataStatus.LOADING ||
     groupsWithStatus.data === undefined ||
-    games.data === undefined
+    gamesWithStatus.data === undefined
   ) {
     return <Spinner />;
   }
@@ -52,7 +50,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
   }
 
   const leaderboardStats = calculateGroupLeaderboard(group.members);
-  const gameHistory: CardItem[] = mapGamesToCardItems(games.data, group);
+  const gameHistory: CardItem[] = mapGamesToCardItems(gamesWithStatus.data, group);
 
   return (
     <PageWrapper title={group.name} backPath='/' authenticated>
@@ -62,7 +60,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
             variant={ButtonVariant.Action}
             color={ButtonColor.Green}
             withLink
-            href='/'
+            href="/"
           >
             <ResultsIcon />
           </Button>
@@ -73,7 +71,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
             variant={ButtonVariant.Action}
             color={ButtonColor.Orange}
             withLink
-            href='/'
+            href="/"
           >
             <ControllerIcon />
           </Button>
@@ -84,7 +82,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
             variant={ButtonVariant.Action}
             color={ButtonColor.Pink}
             withLink
-            href='/'
+            href="/"
           >
             <PeopleIcon />
           </Button>
