@@ -21,9 +21,9 @@ export default function RegisterResultPage() {
 
   //Mock games
   const gameTypes: GameType[] = [
-    { name: "Bingo", emoji: "🎰" },
-    { name: "Tennis", emoji: "🎾" },
-    { name: "Yatzy", emoji: "🎲" },
+    { id: "", name: "Bingo", emoji: "🎰" },
+    { id: "", name: "Tennis", emoji: "🎾" },
+    { id: "", name: "Yatzy", emoji: "🎲" },
   ];
 
   //Mock users
