@@ -77,7 +77,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
             variant={ButtonVariant.Action}
             color={ButtonColor.Green}
             withLink
-            href='/'
+            href={"/game/register-result"}
           >
             <ResultsIcon />
           </Button>
@@ -88,7 +88,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
             variant={ButtonVariant.Action}
             color={ButtonColor.Orange}
             withLink
-            href='/'
+            href={`/game/new`}
           >
             <ControllerIcon />
           </Button>
@@ -99,7 +99,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
             variant={ButtonVariant.Action}
             color={ButtonColor.Pink}
             withLink
-            href='/'
+            href={`/group/${groupId}/edit`}
           >
             <PeopleIcon />
           </Button>

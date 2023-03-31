@@ -65,7 +65,7 @@ export default function Home() {
             variant={ButtonVariant.Action}
             color={ButtonColor.Orange}
             withLink
-            href='/game/new'
+            href='/game'
           >
             <ControllerIcon />
           </Button>

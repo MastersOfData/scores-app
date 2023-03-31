@@ -70,16 +70,16 @@ const CreateGamePage: FC = () => {
   }
 
   return (
-    <PageWrapper title="Start spill" backPath="/">
+    <PageWrapper title='Start spill' backPath='/game'>
       <div>
         <TitleWithInfo
-          title="Vil du spille med en gruppe?"
-          infoText="Om du velger å spille uten gruppe vil ikke resultatene lagres"
+          title='Vil du spille med en gruppe?'
+          infoText='Om du velger å spille uten gruppe vil ikke resultatene lagres'
         />
         <div className={styles["toggle-container"]}>
           <div className={styles["toggle-section"]}>
             <Input
-              type="toggle"
+              type='toggle'
               onInput={setIsGroupGame}
               initialValue={isGroupGame}
             />
@@ -111,8 +111,8 @@ const CreateGamePage: FC = () => {
       {selectedGroup ? (
         <>
           <TitleWithInfo
-            title="Velg spill"
-            infoText="Velg spillet det skal føres poeng for"
+            title='Velg spill'
+            infoText='Velg spillet det skal føres poeng for'
           />
           <div className={styles["groups-container"]}>
             <RadioCards
@@ -124,22 +124,20 @@ const CreateGamePage: FC = () => {
                 }))}
               selected={selectedGame}
               setSelected={setSelectedGame}
-              fallbackMessage="Fant ingen spill for den valgte gruppen."
+              fallbackMessage='Fant ingen spill for den valgte gruppen.'
             />
           </div>
         </>
-      ) : (
-        null
-      )}
+      ) : null}
       <div>
         <TitleWithInfo
-          title="Ønsker du lag?"
-          infoText="Ønsker du at deltagerne skal deles inn i lag?"
+          title='Ønsker du lag?'
+          infoText='Ønsker du at deltagerne skal deles inn i lag?'
         />
         <div className={styles["toggle-container"]}>
           <div className={styles["toggle-section"]}>
             <Input
-              type="toggle"
+              type='toggle'
               onInput={setAllowTeams}
               initialValue={allowTeams}
             />
