@@ -68,7 +68,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
   ];
 
   return (
-    <PageWrapper title={group.name} backPath="/">
+    <PageWrapper title={group.name} backPath='/' authenticated={true} >
       <div className={homeStyles["buttons-container"]}>
         <div className={homeStyles["button-container"]}>
           <Button

@@ -20,11 +20,7 @@ export interface CreateGameData {
 
 export type UpdateGameData = Pick<Game, "winner" | "status">;
 
-export const createGame = async (data: CreateGameData) => {
-  const user = useCurrentUser();
-
-  if (!user) return Promise.reject("User is not logged in");
-
+export const createGame = async (userId: string, data: CreateGameData) => {
   const players = data.participants.map((participantId) => ({
     playerId: participantId,
     points: 0,
@@ -34,8 +30,8 @@ export const createGame = async (data: CreateGameData) => {
     groupId: data.groupId,
     gameTypeId: data.gameTypeId,
     allowTeams: data.allowTeams,
-    adminId: user.uid,
-    players: [...players, { playerId: user.uid, points: 0 }],
+    adminId: userId,
+    players: [...players, { playerId: userId, points: 0 }],
     timestamp: Timestamp.fromDate(new Date()),
     status: "ONGOING",
     duration: 0,
@@ -60,15 +56,11 @@ export const updateGame = async (gameId: string, data: UpdateGameData) => {
   });
 };
 
-export const getGamesForGroup = async (groupId: string) => {
-  const user = useCurrentUser();
-
-  if (!user) return Promise.reject("User is not logged in.");
-
+export const getGamesForGroup = async (userId: string, groupId: string) => {
   const membership = await getDocuments<Membership>({
     collectionId: membershipsCol,
     constraints: [
-      where("userId", "==", user.uid),
+      where("userId", "==", userId),
       where("groupId", "==", groupId),
     ],
   });

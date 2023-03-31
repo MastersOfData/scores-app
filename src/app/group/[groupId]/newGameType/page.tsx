@@ -54,7 +54,7 @@ const CreateGameTypePage: FC<CreateGameTypePageProps> = ({ params }) => {
   }
 
   return (
-    <PageWrapper title='Lag spilltype' backPath={`group/${groupId}`}>
+    <PageWrapper title='Lag spilltype' backPath={`group/${groupId}`} authenticated={true} >
       <div>
         <form className={styles.form} onSubmit={onSubmit}>
           <div className={styles.inputContainer}>

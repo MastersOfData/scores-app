@@ -40,7 +40,7 @@ export default function RegisterResultPage() {
   const [wantTeams, setWantTeams] = useState<boolean>(false);
 
   return (
-    <PageWrapper title="Registrer resultat" backPath="/play">
+    <PageWrapper title="Registrer resultat" backPath="/play" authenticated={true} >
       <div>
         <h2 className={styles["title-centered"]}>Velg gruppe</h2>
         <div className={styles["groups-container"]}>

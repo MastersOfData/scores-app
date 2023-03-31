@@ -42,7 +42,7 @@ export default function CreateGroupPage() {
     return <Spinner />;
 
   return (
-    <PageWrapper title='Ny gruppe' backPath='/'>
+    <PageWrapper title='Ny gruppe' backPath='/' authenticated={true} >
       <div>
         <form className={styles.form}>
           <div className={styles.inputContainer}>

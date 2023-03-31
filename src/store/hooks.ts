@@ -31,8 +31,8 @@ export const useGetGamesForGroup = (groupId: string) => {
   const user = useCurrentUser();
 
   useEffect(() => {
-    if (!games.data! && games.status !== DataStatus.LOADING) {
-      dispatch(getAllGamesAction(groupId));
+    if (user && !games.data! && games.status !== DataStatus.LOADING) {
+      dispatch(getAllGamesAction({ userId: user.uid, groupId: groupId }));
     }
   }, [user]);
 
