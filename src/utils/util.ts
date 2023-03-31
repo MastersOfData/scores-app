@@ -40,7 +40,6 @@ export const calculateDuration = (game: Game): number => {
 export const mapGroupsToCardItems = (
   groups: GroupInternal[],
   includeLabels: boolean,
-  router: AppRouterInstance
 ): CardItem[] => {
   return groups.map((group) => {
     return {
@@ -48,7 +47,7 @@ export const mapGroupsToCardItems = (
       title: group.name,
       labels: includeLabels ? ["Noe relevant info", "Annen info"] : undefined,
       emoji: group.emoji,
-      onClick: () => router.push(`/group/${group.id}`),
+      href: `/group/${group.id}`,
     };
   });
 };

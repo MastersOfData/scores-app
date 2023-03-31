@@ -17,15 +17,12 @@ import {
 import PageWrapper from "src/components/PageWrapper";
 import { useGetGroupsForCurrentUser } from "../store/hooks";
 import { DataStatus } from "../store/store.types";
-import { useRouter } from "next/navigation";
-import { getCurrentUser } from "../fire-base/auth";
 import Spinner from "../components/Spinner";
+import { useUser } from "src/services/user.service";
 
 export default function Home() {
   const groupsWithStatus = useGetGroupsForCurrentUser();
-  const router = useRouter();
-
-  const user = getCurrentUser();
+  const { user } = useUser()
 
   //Mock groups
   // const groups: Group[] = [
@@ -44,8 +41,7 @@ export default function Home() {
 
   const cardItemsGroups: CardItem[] = mapGroupsToCardItems(
     groupsWithStatus.data,
-    true,
-    router
+    true
   );
 
   //Mock games

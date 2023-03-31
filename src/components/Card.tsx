@@ -1,4 +1,5 @@
-import React, { FC } from "react";
+import Link from "next/link";
+import { FC } from "react";
 import styles from "../styles/Card.module.css";
 
 enum CardSize {
@@ -19,6 +20,7 @@ interface CardProps {
   title: string;
   selected?: boolean;
   onClick?: () => void;
+  href?: string,
   labels?: string[];
   emoji?: string;
 }
@@ -27,10 +29,12 @@ export const Card: FC<CardProps> = ({
   title,
   selected,
   onClick,
+  href,
   labels,
   emoji,
-}) => (
-  <div
+}) => {
+  const component = (
+    <div
     className={`${styles["card"]} ${
       styles[labels ? CardSize.Large : CardSize.Small]
     } ${selected ? styles["card-selected"] : ""} ${
@@ -56,4 +60,9 @@ export const Card: FC<CardProps> = ({
       </div>
     )}
   </div>
-);
+  )
+
+  if (href) return <Link href={{ pathname: href }}>{component}</Link>
+  
+  return component
+}
