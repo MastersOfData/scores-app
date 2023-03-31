@@ -7,7 +7,6 @@ import { ResultsIcon } from "../../../assets/icons/ResultsIcon";
 import { Button, ButtonColor, ButtonVariant } from "../../../components/Button";
 import PageWrapper from "../../../components/PageWrapper";
 import {
-  useAppSelector,
   useGetGamesForGroup,
   useGetGroupsForCurrentUser,
 } from "../../../store/hooks";
@@ -24,6 +23,7 @@ import {
 } from "../../../utils/util";
 import { useRouter } from "next/navigation";
 import Spinner from "../../../components/Spinner";
+import { useCurrentUser } from "../../../services/user.service";
 
 interface GroupPageProps {
   params: { groupId: string };
@@ -31,28 +31,43 @@ interface GroupPageProps {
 
 const GroupPage: FC<GroupPageProps> = ({ params }) => {
   const { groupId } = params;
-  const groupsWithStatus = useGetGroupsForCurrentUser();
-  const gamesStatus = useAppSelector((state) => state.games);
-  const games = useGetGamesForGroup(groupId);
   const router = useRouter();
 
+  const groupsWithStatus = useGetGroupsForCurrentUser();
+  const gamesWithStatus = useGetGamesForGroup(groupId);
+  const user = useCurrentUser();
+
   if (
-    groupsWithStatus.status === DataStatus.LOADING ||
-    gamesStatus.status === DataStatus.LOADING ||
-    groupsWithStatus.data === undefined ||
-    games.data === undefined
+    user &&
+    (groupsWithStatus.status === DataStatus.LOADING ||
+      groupsWithStatus.data === undefined ||
+      gamesWithStatus.status === DataStatus.LOADING ||
+      gamesWithStatus.data === undefined)
   ) {
     return <Spinner />;
   }
 
   const group = groupsWithStatus.data?.find((group) => group.id === groupId);
 
+  if (!user) {
+    return <PageWrapper title='' backPath='/' authenticated />;
+  }
+
   if (!group) {
-    return <p>Ingen tilgang</p>;
+    return (
+      <PageWrapper title='' backPath='/' authenticated>
+        <div className='center-items'>
+          <p>Gruppen finnes ikke! 🚨</p>
+        </div>
+      </PageWrapper>
+    );
   }
 
   const leaderboardStats = calculateGroupLeaderboard(group.members);
-  const gameHistory: CardItem[] = mapGamesToCardItems(games.data, group);
+  const gameHistory: CardItem[] = mapGamesToCardItems(
+    gamesWithStatus.data ?? [],
+    group
+  );
 
   return (
     <PageWrapper title={group.name} backPath='/' authenticated>
