@@ -34,5 +34,3 @@ export interface Membership extends DocumentData {
   draws: number;
   losses: number;
 }
-
-

@@ -16,7 +16,10 @@ export const useGetGroupsForCurrentUser = () => {
   const user = useCurrentUser();
 
   useEffect(() => {
-    if (!groups.data && groups.status !== DataStatus.LOADING) {
+    if (
+      (groups.data === null && user) ||
+      (groups.data === undefined && groups.status !== DataStatus.LOADING)
+    ) {
       dispatch(getAllGroupsAction(user?.uid));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -34,7 +37,7 @@ export const useGetGamesForGroup = (groupId: string) => {
     if (user && !games.data && games.status !== DataStatus.LOADING) {
       dispatch(getAllGamesAction({ userId: user.uid, groupId: groupId }));
     }
-  });
+  }, [games]);
 
   return {
     ...games,

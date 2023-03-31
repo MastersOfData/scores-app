@@ -9,7 +9,7 @@ import {
 import { GameType, GroupInternal } from "../types/types";
 import { DataStatus, DataWithStatus } from "./store.types";
 
-type GroupsInternalState = DataWithStatus<GroupInternal[]>;
+type GroupsInternalState = DataWithStatus<GroupInternal[] | null>;
 
 const initialState: GroupsInternalState = {
   data: undefined,
@@ -29,7 +29,7 @@ const initialState: GroupsInternalState = {
 export const getAllGroupsAction = createAsyncThunk(
   "groups/getAll",
   async (userId?: string) => {
-    if (!userId) return [];
+    if (!userId) return null;
     const res = await getGroupsInternalForCurrentUser(userId);
     return res;
   }
@@ -77,9 +77,16 @@ export const removeUserFromGroupAction = createAsyncThunk(
 
 export const createGameTypeAction = createAsyncThunk(
   "groups/newGameType",
-  async ({ gameType, groupId }: { gameType: GameType; groupId: string }) => {
-    await createGameTypeForGroup(groupId, gameType);
-    return gameType;
+  async ({
+    gameTypeName,
+    gameTypeEmoji,
+    groupId,
+  }: {
+    gameTypeName: string;
+    gameTypeEmoji: string;
+    groupId: string;
+  }) => {
+    return await createGameTypeForGroup(groupId, gameTypeName, gameTypeEmoji);
   }
 );
 

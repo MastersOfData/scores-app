@@ -26,3 +26,13 @@ export interface GameType {
   name: string;
   emoji: string;
 }
+
+export interface LeaderboardStats {
+  userId: string;
+  username: string;
+  wins: number;
+  draws: number;
+  losses: number;
+  winRatio: number;
+  gamesPlayed: number;
+}

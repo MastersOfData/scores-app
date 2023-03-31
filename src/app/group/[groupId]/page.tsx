@@ -17,6 +17,8 @@ import Medal, { MedalType } from "../../../components/Medal";
 import { ScrollableLargeCards } from "../../../components/ScrollableLargeCards";
 import { CardItem } from "../../../components/Card";
 import {
+  calculateGroupLeaderboard,
+  mapGamesToCardItems,
   mapGameTypesToCardItems,
 } from "../../../utils/util";
 import { useRouter } from "next/navigation";
@@ -28,13 +30,15 @@ interface GroupPageProps {
 
 const GroupPage: FC<GroupPageProps> = ({ params }) => {
   const { groupId } = params;
-  const router = useRouter();
   const groupsWithStatus = useGetGroupsForCurrentUser();
   const gamesWithStatus = useGetGamesForGroup(groupId);
+  const router = useRouter();
 
   if (
     groupsWithStatus.status === DataStatus.LOADING ||
-    gamesWithStatus.status === DataStatus.LOADING
+    gamesWithStatus.status === DataStatus.LOADING ||
+    groupsWithStatus.data === undefined ||
+    gamesWithStatus.data === undefined
   ) {
     return <Spinner />;
   }
@@ -45,23 +49,11 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
     return <p>Ingen tilgang</p>;
   }
 
-  const gameHistoryMock: CardItem[] = [
-    {
-      key: "1",
-      title: "2 dager siden",
-      labels: ["Yatzy", "Ikke fullført"],
-      emoji: "🎲",
-    },
-    {
-      key: "2",
-      title: "8 dager siden",
-      labels: ["Tennis", "Lars vant! 🎉"],
-      emoji: "🎾",
-    },
-  ];
+  const leaderboardStats = calculateGroupLeaderboard(group.members);
+  const gameHistory: CardItem[] = mapGamesToCardItems(gamesWithStatus.data, group);
 
   return (
-    <PageWrapper title={group.name} backPath="/" authenticated={true}>
+    <PageWrapper title={group.name} backPath='/' authenticated>
       <div className={homeStyles["buttons-container"]}>
         <div className={homeStyles["button-container"]}>
           <Button
@@ -113,10 +105,9 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
             </tr>
           </thead>
           <tbody>
-            {group.members.map((member, index) => {
-              const gamesPlayed = member.wins + member.draws + member.losses;
+            {leaderboardStats.map((member, index) => {
               return (
-                <tr key={member.id}>
+                <tr key={member.userId}>
                   <td>
                     {index < 3 ? (
                       <Medal type={Object.values(MedalType)[index]} />
@@ -127,15 +118,11 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
                   <td className={styles["text-align-left"]}>
                     {member.username}
                   </td>
-                  <td>{gamesPlayed}</td>
+                  <td>{member.gamesPlayed}</td>
                   <td className={styles["wins-col"]}>{member.wins}</td>
                   <td className={styles["draws-col"]}>{member.draws}</td>
                   <td className={styles["losses-col"]}>{member.losses}</td>
-                  <td>
-                    {gamesPlayed
-                      ? ((member.wins / gamesPlayed) * 100).toFixed(0)
-                      : 0}
-                  </td>
+                  <td>{member.winRatio.toFixed(0)}</td>
                 </tr>
               );
             })}
@@ -144,7 +131,11 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
         <div className={styles["section-container"]}>
           <h2>Spillhistorikk</h2>
           <div className={styles["spacing"]} />
-          <ScrollableLargeCards items={gameHistoryMock} />
+          {gameHistory.length > 0 ? (
+            <ScrollableLargeCards items={gameHistory} />
+          ) : (
+            <p>Ingen historikk</p>
+          )}
         </div>
         <div className={styles["section-container"]}>
           <h2>Egendefinerte spill</h2>
