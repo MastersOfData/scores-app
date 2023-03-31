@@ -10,11 +10,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { updateDocument } from "src/fire-base/db";
 import { User } from "src/fire-base/models";
 import { useUser } from "src/services/user.service";
+import { useAppDispatch } from "../../store/hooks";
+import { clearGroupState } from "../../store/groupsInternal.reducer";
 
 export default function AccountPage() {
   const { user, userData } = useUser();
   const router = useRouter();
   const pathname = usePathname();
+  const dispatch = useAppDispatch();
 
   const [infoComponent, setInfoComponent] = useState<React.ReactNode>(null);
   const usernameRef = useRef(userData?.username ?? "");
@@ -100,6 +103,7 @@ export default function AccountPage() {
   async function handleSignOut() {
     const { signOut } = await import("src/fire-base/auth");
     await signOut();
+    dispatch(clearGroupState());
   }
 
   return (
