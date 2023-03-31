@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { GameType } from "../fire-base/models";
 import {
   createGameTypeForGroup,
   createGroupNew,
@@ -78,9 +77,16 @@ export const removeUserFromGroupAction = createAsyncThunk(
 
 export const createGameTypeAction = createAsyncThunk(
   "groups/newGameType",
-  async ({ gameType, groupId }: { gameType: GameType; groupId: string }) => {
-    await createGameTypeForGroup(groupId, gameType);
-    return gameType;
+  async ({
+    gameTypeName,
+    gameTypeEmoji,
+    groupId,
+  }: {
+    gameTypeName: string;
+    gameTypeEmoji: string;
+    groupId: string;
+  }) => {
+    return await createGameTypeForGroup(groupId, gameTypeName, gameTypeEmoji);
   }
 );
 

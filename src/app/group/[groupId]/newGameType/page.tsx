@@ -34,10 +34,8 @@ const CreateGameTypePage: FC<CreateGameTypePageProps> = ({ params }) => {
 
     await dispatch(
       createGameTypeAction({
-        gameType: {
-          name: gameTypeName,
-          emoji: emoji,
-        },
+        gameTypeName,
+        gameTypeEmoji: emoji,
         groupId,
       })
     ).unwrap();
@@ -54,7 +52,11 @@ const CreateGameTypePage: FC<CreateGameTypePageProps> = ({ params }) => {
   }
 
   return (
-    <PageWrapper title='Lag spilltype' backPath={`group/${groupId}`} authenticated={true} >
+    <PageWrapper
+      title='Lag spilltype'
+      backPath={`group/${groupId}`}
+      authenticated={true}
+    >
       <div>
         <form className={styles.form} onSubmit={onSubmit}>
           <div className={styles.inputContainer}>
