@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   createGameTypeForGroup,
-  createGroupNew,
+  createGroup,
   getGroupsInternalForCurrentUser,
   joinGroupByInvitationCode,
   removeUserFromGroup,
@@ -59,7 +59,7 @@ export const createGroupAction = createAsyncThunk(
     groupName: string;
     groupEmoji: string;
   }) => {
-    const res = await createGroupNew(currentUserId, groupName, groupEmoji);
+    const res = await createGroup(currentUserId, groupName, groupEmoji);
     return res;
   }
 );
@@ -112,7 +112,12 @@ const groups = createSlice({
       })
       .addCase(joinGroupByInvitationCodeAction.fulfilled, (state, action) => {
         state.update.status = DataStatus.COMPLETED;
-        if (state.data) state.data.push(action.payload);
+        const index = state.data?.findIndex(
+          (group) => group.id === action.payload.id
+        );
+
+        if (state.data && index === -1)
+          state.data = [...state.data, action.payload];
         else state.data = [action.payload];
       })
       .addCase(joinGroupByInvitationCodeAction.rejected, (state) => {
@@ -123,7 +128,7 @@ const groups = createSlice({
       })
       .addCase(createGroupAction.fulfilled, (state, action) => {
         state.create.status = DataStatus.COMPLETED;
-        if (state.data) state.data.push(action.payload);
+        if (state.data) state.data = [...state.data, action.payload];
         else state.data = [action.payload];
       })
       .addCase(createGroupAction.rejected, (state) => {

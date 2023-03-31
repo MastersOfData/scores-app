@@ -14,27 +14,7 @@ import { Group, User, Membership } from "src/fire-base/models";
 import { generateMembershipDocumentId } from "src/utils/util";
 import { GroupInternal } from "../types/types";
 import { mapGroupAndUsersToGroupInternal } from "../utils/mappers";
-
-export const createGroup = async (
-  currentUserId: string,
-  groupName: string,
-  emoji: string
-) => {
-  const group: Group = {
-    name: groupName,
-    emoji: emoji,
-    games: [],
-    invitationCode: "", // TODO: Generate invite code
-    gameTypes: [],
-  };
-  const groupRef = await addDocument(groupsCol, group);
-  const createdGroup = await getDocument<Group>(groupsCol, groupRef.id);
-
-  if (!createdGroup) return Promise.reject();
-
-  await joinGroup(createdGroup.id, currentUserId);
-  return createdGroup;
-};
+import { createPincode } from "./pin.service";
 
 export const getGroupsForCurrentUser = async (userId: string) => {
   const groupIds = await getDocuments<Membership>({
@@ -69,16 +49,18 @@ const joinGroup = async (groupId: string, userId: string) => {
   return await getDocument<Group>(groupsCol, docId);
 };
 
-export const createGroupNew = async (
+export const createGroup = async (
   currentUserId: string,
   groupName: string,
   emoji: string
 ) => {
+  const invitationCode = await createPincode();
+
   const group: Group = {
     name: groupName,
     emoji: emoji,
     games: [],
-    invitationCode: "", // TODO: Generate invite code
+    invitationCode: invitationCode,
     gameTypes: [],
   };
   const groupRef = await addDocument(groupsCol, group);
@@ -95,6 +77,7 @@ export const joinGroupByInvitationCode = async (
     collectionId: groupsCol,
     constraints: [where("invitationCode", "==", invitationCode)],
   });
+
   if (groupArray.length === 0 || groupArray.length > 1) return Promise.reject();
 
   const membership = await getDocuments<Membership>({
@@ -109,7 +92,7 @@ export const joinGroupByInvitationCode = async (
   if (userIsAlreadyMember)
     return Promise.reject("User is already a member of the group");
 
-  const groupId = groupArray[0].invitationCode;
+  const groupId = groupArray[0].id;
   const docId = generateMembershipDocumentId(userId, groupId);
 
   const userGroupStatistic: Membership = {
@@ -139,6 +122,7 @@ export const getStatsForAllUsersInGroup = async (groupId: string) => {
 
 export const getGroupInternal = async (groupId: string) => {
   const group = await getDocument<Group>(groupsCol, groupId);
+  console.log({ group });
   if (!group) return Promise.reject();
 
   const stats = await getStatsForAllUsersInGroup(groupId);
