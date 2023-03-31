@@ -13,12 +13,14 @@ import { useAppDispatch, useGetGroupsForCurrentUser } from "src/store/hooks";
 import { useRouter } from "next/navigation";
 import { createGameAction } from "src/store/game.reducer";
 import { DataStatus } from "src/store/store.types";
-import { GameType, WithId } from "src/types/types";
+import { WithId } from "src/types/types";
+import { useCurrentUser } from "src/services/user.service";
 
 const CreateGamePage: FC = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const groupsWithStatus = useGetGroupsForCurrentUser();
+  const user = useCurrentUser();
 
   //Mock users
   const users: WithId<User>[] = [
@@ -38,9 +40,10 @@ const CreateGamePage: FC = () => {
   const [allowTeams, setAllowTeams] = useState<boolean>(false);
 
   const onSubmit = async () => {
-    if (selectedGroup && selectedGame) {
+    if (user && selectedGroup && selectedGame) {
       const game = await dispatch(
         createGameAction({
+          userId: user.uid,
           gameData: {
             groupId: selectedGroup,
             gameTypeId: selectedGame,

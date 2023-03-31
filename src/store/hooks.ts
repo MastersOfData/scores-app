@@ -31,10 +31,10 @@ export const useGetGamesForGroup = (groupId: string) => {
   const user = useCurrentUser();
 
   useEffect(() => {
-    if (user && !games.data! && games.status !== DataStatus.LOADING) {
+    if (user && !games.data && games.status !== DataStatus.LOADING) {
       dispatch(getAllGamesAction({ userId: user.uid, groupId: groupId }));
     }
-  }, [user]);
+  });
 
   return {
     ...games,
