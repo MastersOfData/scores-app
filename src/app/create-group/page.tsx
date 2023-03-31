@@ -10,12 +10,12 @@ import { useAppDispatch, useGetGroupsForCurrentUser } from "src/store/hooks";
 import { createGroupAction } from "src/store/groupsInternal.reducer";
 import { DataStatus } from "../../store/store.types";
 import Spinner from "../../components/Spinner";
-import { useCurrentUser } from "src/services/user.service";
+import { useUser } from "src/services/user.service";
 
 export default function CreateGroupPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const user = useCurrentUser();
+  const { user } = useUser()
   const groups = useGetGroupsForCurrentUser();
 
   const [groupName, setGroupName] = useState<string>("");
