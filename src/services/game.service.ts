@@ -1,5 +1,4 @@
 import { Timestamp, where } from "firebase/firestore";
-import { getCurrentUser, isSignedIn } from "src/fire-base/auth";
 import {
   addDocument,
   gamesCol,
@@ -10,6 +9,7 @@ import {
 } from "src/fire-base/db";
 import { Game, Membership } from "src/fire-base/models";
 import { calculateDuration } from "src/utils/util";
+import { useCurrentUser } from "./user.service";
 
 export interface CreateGameData {
   groupId: string;
@@ -21,9 +21,9 @@ export interface CreateGameData {
 export type UpdateGameData = Pick<Game, "winner" | "status">;
 
 export const createGame = async (data: CreateGameData) => {
-  const user = getCurrentUser();
+  const user = useCurrentUser();
 
-  if (!user) return Promise.reject();
+  if (!user) return Promise.reject("User is not logged in");
 
   const players = data.participants.map((participantId) => ({
     playerId: participantId,
@@ -52,7 +52,7 @@ export const createGame = async (data: CreateGameData) => {
 export const updateGame = async (gameId: string, data: UpdateGameData) => {
   const game = await getDocument<Game>(gamesCol, gameId);
 
-  if (!game) return Promise.reject();
+  if (!game) return Promise.reject(`Game not found: ${gameId}`);
 
   return await updateDocument<Game>(gamesCol, gameId, {
     ...data,
@@ -61,9 +61,9 @@ export const updateGame = async (gameId: string, data: UpdateGameData) => {
 };
 
 export const getGamesForGroup = async (groupId: string) => {
-  const user = getCurrentUser();
+  const user = useCurrentUser();
 
-  if (!user) return Promise.reject();
+  if (!user) return Promise.reject("User is not logged in.");
 
   const membership = await getDocuments<Membership>({
     collectionId: membershipsCol,
@@ -73,7 +73,7 @@ export const getGamesForGroup = async (groupId: string) => {
     ],
   });
 
-  if (membership.length === 0) return Promise.reject();
+  if (membership.length === 0) return Promise.reject(`User is not a member of the group: ${groupId}`);
 
   const games = await getDocuments<Game>({
     collectionId: gamesCol,

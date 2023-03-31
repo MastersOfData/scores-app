@@ -14,6 +14,7 @@ import { Group, User, Membership } from "src/fire-base/models";
 import { generateMembershipDocumentId } from "src/utils/util";
 import { GameType, GroupInternal } from "../types/types";
 import { mapGroupAndUsersToGroupInternal } from "../utils/mappers";
+import { createPincode } from "./pin.service";
 
 export const getGroupsForCurrentUser = async (userId: string) => {
   const groupIds = await getDocuments<Membership>({
@@ -53,11 +54,13 @@ export const createGroup = async (
   groupName: string,
   emoji: string
 ) => {
+  const invitationCode = await createPincode();
+
   const group: Group = {
     name: groupName,
     emoji: emoji,
     games: [],
-    invitationCode: "", // TODO: Generate invite code
+    invitationCode: invitationCode,
     gameTypes: [],
   };
   const groupRef = await addDocument(groupsCol, group);
@@ -74,9 +77,10 @@ export const joinGroupByInvitationCode = async (
     collectionId: groupsCol,
     constraints: [where("invitationCode", "==", invitationCode)],
   });
+
   if (groupArray.length === 0 || groupArray.length > 1) return Promise.reject();
 
-  const groupId = groupArray[0].invitationCode;
+  const groupId = groupArray[0].id;
   const docId = generateMembershipDocumentId(userId, groupId);
 
   const userGroupStatistic: Membership = {
@@ -106,6 +110,7 @@ export const getStatsForAllUsersInGroup = async (groupId: string) => {
 
 export const getGroupInternal = async (groupId: string) => {
   const group = await getDocument<Group>(groupsCol, groupId);
+  console.log({ group });
   if (!group) return Promise.reject();
 
   const stats = await getStatsForAllUsersInGroup(groupId);

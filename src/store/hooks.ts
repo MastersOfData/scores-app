@@ -28,12 +28,13 @@ export const useGetGroupsForCurrentUser = () => {
 export const useGetGamesForGroup = (groupId: string) => {
   const dispatch = useAppDispatch();
   const games = useAppSelector((state) => state.games);
+  const user = useCurrentUser();
 
   useEffect(() => {
     if (!games.data! && games.status !== DataStatus.LOADING) {
       dispatch(getAllGamesAction(groupId));
     }
-  });
+  }, [user]);
 
   return {
     ...games,

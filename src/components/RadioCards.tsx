@@ -3,7 +3,7 @@ import { Card, CardItemSmall } from "./Card";
 import styles from "../styles/Card.module.css";
 
 interface RadioCardsProps {
-  items: CardItemSmall[];
+  items: CardItemSmall[] | undefined;
   selected: string | undefined;
   setSelected: (x: string) => void;
 }
@@ -13,6 +13,8 @@ export const RadioCards: FC<RadioCardsProps> = ({
   selected,
   setSelected,
 }) => {
+  if (!items) return null;
+
   return (
     <div className={styles["center-cards"]}>
       {items.map((item) => (

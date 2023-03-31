@@ -22,6 +22,7 @@ export const usersCol = "users";
 export const groupsCol = "groups";
 export const gamesCol = "games";
 export const membershipsCol = "memberships";
+export const pincodesDocumentId = "usedPincodes";
 
 // Types
 type Document<T extends DocumentData> = T & { id: string }

@@ -69,8 +69,10 @@ const gamesSlice = createSlice({
       })
       .addCase(createGameAction.fulfilled, (state, action) => {
         state.create.status = DataStatus.COMPLETED;
-        if (state.data) {
-          state.data.push(action.payload);
+        const index = state.data?.findIndex((g) => g.id === action.payload.id);
+
+        if (state.data && index === -1) {
+          state.data = [...state.data, action.payload];
         } else {
           state.data = [action.payload];
         }
@@ -84,13 +86,17 @@ const gamesSlice = createSlice({
       })
       .addCase(getAllGamesAction.fulfilled, (state, action) => {
         state.status = DataStatus.COMPLETED;
+        const newGames = action.payload.filter(
+          (game) => state.data?.findIndex((g) => g.id === game.id) === -1
+        );
+
         if (state.data) {
-          state.data.concat(action.payload);
+          state.data = [...state.data, ...newGames];
         } else {
-        state.data = action.payload;
+          state.data = action.payload;
         }
       })
-      .addCase(getAllGamesAction.rejected, (state, action) => {
+      .addCase(getAllGamesAction.rejected, (state) => {
         state.status = DataStatus.ERROR;
         state.data = [];
       })
@@ -106,13 +112,13 @@ const gamesSlice = createSlice({
         state.update.dataId = undefined;
 
         if (state.data) {
-            const gameIndex = state.data.findIndex((g) => g.id === gameId);
-            if (gameIndex > -1) {
-              state.data[gameIndex] = Object.assign(
-                state.data[gameIndex],
-                action.meta.arg.gameData
-              );
-            }
+          const gameIndex = state.data.findIndex((g) => g.id === gameId);
+          if (gameIndex > -1) {
+            state.data[gameIndex] = Object.assign(
+              state.data[gameIndex],
+              action.meta.arg.gameData
+            );
+          }
         } else {
           throw Error(
             "Called for game update, but game doesn't exist: " +

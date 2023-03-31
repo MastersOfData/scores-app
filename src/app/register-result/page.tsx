@@ -9,6 +9,7 @@ import TitleWithInfo from "src/components/TitleWithInfo";
 import { CheckboxCards } from "src/components/CheckboxCards";
 import Input from "src/components/Input";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
+import { GameType } from "src/types/types";
 
 export default function RegisterResultPage() {
   //Mock groups
@@ -17,12 +18,6 @@ export default function RegisterResultPage() {
     { name: "Tennis-gutta", emoji: "🎾", games: [], invitationCode: "4822" },
     { name: "Yatzy for life", emoji: "🎲", games: [], invitationCode: "5721" },
   ];
-
-  //Dont have a type for this
-  type GameType = {
-    name: string;
-    emoji: string;
-  };
 
   //Mock games
   const gameTypes: GameType[] = [

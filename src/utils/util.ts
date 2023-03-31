@@ -2,7 +2,7 @@ import { Timestamp } from "firebase/firestore";
 import { Game } from "src/fire-base/models";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import { CardItem } from "src/components/Card";
-import { GameType, GroupInternal } from "../types/types";
+import { GameType, GroupInternal, WithId } from "../types/types";
 
 export const testFunc = () => true;
 
@@ -73,3 +73,23 @@ export const mapGameTypesToCardItems = (
     ...gameTypeCards.sort((a, b) => a.title.localeCompare(b.title)),
   ];
 };
+
+export const mapGameToCardItem = (
+  game: WithId<Game>,
+) => {
+  return {
+    key: game.id,
+    title: `${differenceBetweenFirestoreTimestampsInDays(Timestamp.fromMillis(game.duration!), Timestamp.fromDate(new Date()))} dager siden`,
+    labels: [game.gameTypeId, `${game.winner} vant! 🎉`],
+    emoji: game.gameTypeId,
+  };
+}
+
+export const generatePincode = () => {
+  const digits = "0123456789";
+  let pin = "";
+  for (let i = 0; i < 6; i++) {
+    pin += digits[Math.floor(Math.random() * 10)];
+  }
+  return pin;  
+}

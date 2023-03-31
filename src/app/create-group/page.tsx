@@ -5,16 +5,17 @@ import Input from "src/components/Input";
 import { useState } from "react";
 import { Button, ButtonVariant, ButtonColor } from "src/components/Button";
 import PageWrapper from "../../components/PageWrapper";
-import { getCurrentUser } from "src/fire-base/auth";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useGetGroupsForCurrentUser } from "src/store/hooks";
 import { createGroupAction } from "src/store/groupsInternal.reducer";
 import { DataStatus } from "../../store/store.types";
 import Spinner from "../../components/Spinner";
+import { useCurrentUser } from "src/services/user.service";
 
 export default function CreateGroupPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const user = useCurrentUser();
   const groups = useGetGroupsForCurrentUser();
 
   const [groupName, setGroupName] = useState<string>("");
@@ -23,9 +24,6 @@ export default function CreateGroupPage() {
 
   async function onSubmit() {
     if (groupName && emoji) {
-      //Linjen under må endres når vi har ordnet access control
-      const user = getCurrentUser();
-
       if (user) {
         setHasSubmitted(true);
         const group = await dispatch(

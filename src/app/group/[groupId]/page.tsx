@@ -6,14 +6,20 @@ import { PeopleIcon } from "../../../assets/icons/PeopleIcon";
 import { ResultsIcon } from "../../../assets/icons/ResultsIcon";
 import { Button, ButtonColor, ButtonVariant } from "../../../components/Button";
 import PageWrapper from "../../../components/PageWrapper";
-import { useGetGroupsForCurrentUser } from "../../../store/hooks";
+import {
+  useGetGamesForGroup,
+  useGetGroupsForCurrentUser,
+} from "../../../store/hooks";
 import { DataStatus } from "../../../store/store.types";
 import homeStyles from "../../../styles/Home.module.css";
 import styles from "../../../styles/Group.module.css";
 import Medal, { MedalType } from "../../../components/Medal";
 import { ScrollableLargeCards } from "../../../components/ScrollableLargeCards";
 import { CardItem } from "../../../components/Card";
-import { mapGameTypesToCardItems } from "../../../utils/util";
+import {
+  mapGameToCardItem,
+  mapGameTypesToCardItems,
+} from "../../../utils/util";
 import { useRouter } from "next/navigation";
 import Spinner from "../../../components/Spinner";
 
@@ -36,6 +42,16 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
     return <p>Ingen tilgang</p>;
   }
 
+  const gamesWithStatus = useGetGamesForGroup(group.id);
+
+  if (gamesWithStatus.status === DataStatus.LOADING) {
+    return <Spinner />;
+  }
+  const gameHistory: CardItem[] =
+    gamesWithStatus.data
+      ?.filter((game) => game.status === "FINISHED")
+      .map(mapGameToCardItem) ?? [];
+
   const gameHistoryMock: CardItem[] = [
     {
       key: "1",
@@ -52,14 +68,14 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
   ];
 
   return (
-    <PageWrapper title={group.name} backPath='/'>
+    <PageWrapper title={group.name} backPath="/">
       <div className={homeStyles["buttons-container"]}>
         <div className={homeStyles["button-container"]}>
           <Button
             variant={ButtonVariant.Action}
             color={ButtonColor.Green}
             withLink
-            href='/'
+            href="/"
           >
             <ResultsIcon />
           </Button>
@@ -70,7 +86,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
             variant={ButtonVariant.Action}
             color={ButtonColor.Orange}
             withLink
-            href='/'
+            href="/"
           >
             <ControllerIcon />
           </Button>
@@ -81,7 +97,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
             variant={ButtonVariant.Action}
             color={ButtonColor.Pink}
             withLink
-            href='/'
+            href="/"
           >
             <PeopleIcon />
           </Button>

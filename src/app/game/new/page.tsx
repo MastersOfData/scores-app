@@ -20,18 +20,15 @@ const CreateGamePage: FC = () => {
   const dispatch = useAppDispatch();
   const groupsWithStatus = useGetGroupsForCurrentUser();
 
-  //Mock games
-  const gameTypes: WithId<GameType>[] = [
-    { id: "bingo0", name: "Bingo", emoji: "🎰" },
-    { id: "tennis0", name: "Tennis", emoji: "🎾" },
-    { id: "yatzy0", name: "Yatzy", emoji: "🎲" },
-  ];
-
   //Mock users
   const users: WithId<User>[] = [
     { id: "123", email: "birger@hvl.no", username: "xXbirgerXx" },
     { id: "911", email: "atle@hvl.no", username: "atle" },
-    { id: "NUGO74z5Z5dA2lW71UCshMYIF2D3", email: "asd@asd.com", username: "atlebirger" },
+    {
+      id: "NUGO74z5Z5dA2lW71UCshMYIF2D3",
+      email: "asd@asd.com",
+      username: "atlebirger",
+    },
   ];
 
   const [isGroupGame, setIsGroupGame] = useState(true);
@@ -52,9 +49,13 @@ const CreateGamePage: FC = () => {
           },
         })
       ).unwrap();
-      router.push(`game/${game.groupId}/${game.id}`);
+      router.push(`group/${game.groupId}/${game.id}`);
     } else {
-      alert(`Mangler verdier for: ${selectedGroup ?? "Gruppe"} ${selectedGame ?? "Spill"}`);
+      alert(
+        `Mangler verdier for: ${selectedGroup ?? "Gruppe"} ${
+          selectedGame ?? "Spill"
+        }`
+      );
     }
   };
 
@@ -88,7 +89,7 @@ const CreateGamePage: FC = () => {
           <div className={styles["groups-container"]}>
             {groupsWithStatus.data.length > 0 ? (
               <RadioCards
-                items={groupsWithStatus.data.map((group, i) => ({
+                items={groupsWithStatus.data.map((group) => ({
                   title: group.emoji + " " + group.name,
                   key: group.id,
                 }))}
@@ -108,16 +109,22 @@ const CreateGamePage: FC = () => {
         title="Velg spill"
         infoText="Velg spillet det skal føres poeng for"
       />
-      <div className={styles["groups-container"]}>
-        <RadioCards
-          items={gameTypes.map((gameType, i) => ({
-            title: gameType.emoji + " " + gameType.name,
-            key: gameType.id,
-          }))}
-          selected={selectedGame}
-          setSelected={setSelectedGame}
-        />
-      </div>
+      {selectedGroup ? (
+        <div className={styles["groups-container"]}>
+          <RadioCards
+            items={groupsWithStatus.data
+              .find((g) => g.id === selectedGroup)
+              ?.gameTypes?.map((gameType) => ({
+                title: gameType.emoji + " " + gameType.name,
+                key: gameType.emoji + " " + gameType.name,
+              }))}
+            selected={selectedGame}
+            setSelected={setSelectedGame}
+          />
+        </div>
+      ) : (
+        <p>Fant ingen spill for gruppen.</p>
+      )}
       <div>
         <TitleWithInfo
           title="Ønsker du lag?"
