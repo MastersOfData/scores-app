@@ -9,6 +9,7 @@ describe("mapGroupAndUsersToGroupInternal", () => {
     emoji: "🎮",
     gameTypes: [
       {
+        id: "1",
         emoji: "🎱",
         name: "Biljard",
       },
@@ -59,6 +60,7 @@ describe("mapGroupAndUsersToGroupInternal", () => {
       games: [],
       gameTypes: [
         {
+          id: "1",
           emoji: "🎱",
           name: "Biljard",
         },

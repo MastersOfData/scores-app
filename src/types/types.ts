@@ -9,7 +9,7 @@ export type GameStatus = "FINISHED" | "PAUSED" | "ONGOING";
 export type PlayerScore = {
   playerId: string;
   points: number;
-}
+};
 export type Member = WithId<Membership> & User;
 
 export interface GroupInternal {
@@ -20,4 +20,14 @@ export interface GroupInternal {
   invitationCode: string;
   gameTypes?: GameType[];
   members: Member[];
+}
+
+export interface LeaderboardStats {
+  userId: string;
+  username: string;
+  wins: number;
+  draws: number;
+  losses: number;
+  winRatio: number;
+  gamesPlayed: number;
 }

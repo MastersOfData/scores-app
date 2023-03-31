@@ -27,23 +27,15 @@ export default function Home() {
 
   const user = getCurrentUser();
 
-  //Mock groups
-  // const groups: Group[] = [
-  //   { name: "SnømannGutta", emoji: "⛄", games: [], invitationCode: "5673" },
-  //   { name: "GolfGjengen", emoji: "⛳", games: [], invitationCode: "4822" },
-  //   { name: "BasketBALLERS", emoji: "⛹", games: [], invitationCode: "5721" },
-  //   { name: "Pubgruppen", emoji: "✨", games: [], invitationCode: "9031" },
-  // ];
-
   if (
-    !groupsWithStatus.data ||
+    groupsWithStatus.data === undefined ||
     groupsWithStatus.status === DataStatus.LOADING
   ) {
     return <Spinner />;
   }
 
   const cardItemsGroups: CardItem[] = mapGroupsToCardItems(
-    groupsWithStatus.data,
+    groupsWithStatus.data ?? [],
     true,
     router
   );
