@@ -6,7 +6,6 @@ import { GamesBannerIcon } from "src/assets/icons/GamesBannerIcon";
 import Input from "src/components/Input";
 import styles from "../../styles/SignIn.module.css";
 import { FormEvent, useState } from "react";
-import { signIn } from "../../fire-base/auth";
 import PageWrapper from "src/components/PageWrapper";
 
 export default function SignInPage() {
@@ -17,6 +16,8 @@ export default function SignInPage() {
 
   async function handleSignIn(e: FormEvent) {
     e.preventDefault();
+    const { signIn } = await import("../../fire-base/auth")
+
     try {
       await signIn(username, password);
       const callbackUrl = searchParams.get("callbackUrl");

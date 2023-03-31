@@ -23,7 +23,7 @@ import {
 } from "../../../utils/util";
 import { useRouter } from "next/navigation";
 import Spinner from "../../../components/Spinner";
-import { useCurrentUser } from "../../../services/user.service";
+import { useUser } from "src/services/user.service";
 
 interface GroupPageProps {
   params: { groupId: string };
@@ -35,7 +35,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
 
   const groupsWithStatus = useGetGroupsForCurrentUser();
   const gamesWithStatus = useGetGamesForGroup(groupId);
-  const user = useCurrentUser();
+  const { user } = useUser()
 
   if (
     user &&

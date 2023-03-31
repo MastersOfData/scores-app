@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { ButtonHTMLAttributes, FC, ReactNode } from "react";
+import { ButtonHTMLAttributes, FC, ReactNode } from "react";
 import styles from "../styles/Button.module.css";
 
 export enum ButtonColor {

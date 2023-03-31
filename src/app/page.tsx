@@ -14,9 +14,9 @@ import { useAppDispatch, useGetGroupsForCurrentUser } from "../store/hooks";
 import { DataStatus } from "../store/store.types";
 import { useRouter } from "next/navigation";
 import Spinner from "../components/Spinner";
+import { useUser } from "src/services/user.service";
 import { joinGroupByInvitationCodeAction } from "src/store/groupsInternal.reducer";
 import { useState } from "react";
-import { getCurrentUser } from "src/fire-base/auth";
 
 export default function Home() {
   const groupsWithStatus = useGetGroupsForCurrentUser();
@@ -29,7 +29,7 @@ export default function Home() {
     undefined
   );
 
-  const user = getCurrentUser();
+  const { user } = useUser();
 
   if (
     !groupsWithStatus.data ||
@@ -40,9 +40,8 @@ export default function Home() {
   }
 
   const cardItemsGroups: CardItem[] = mapGroupsToCardItems(
-    groupsWithStatus.data ?? [],
-    true,
-    router
+    groupsWithStatus.data,
+    true
   );
 
   const onJoinGroupClick = async () => {

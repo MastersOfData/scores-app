@@ -2,10 +2,9 @@
 
 import styles from "src/styles/PageWrapper.module.css";
 import Header from "src/components/Header";
-import { onAuthStateChanged } from "src/fire-base/auth";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import Spinner from "./Spinner";
+import { useUser } from "src/services/user.service";
 
 export type PageWrapperProps = {
   children?: React.ReactNode;
@@ -22,23 +21,13 @@ export default function PageWrapper({
 }: PageWrapperProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [loading, setLoading] = useState(true);
-  const [isSignedIn, setIsSignedIn] = useState(false);
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged((user) => {
-      setIsSignedIn(user !== null);
-      setLoading(false);
-    });
-
-    return unsub;
-  }, []);
+  const { loading, user } = useUser()
 
   if (loading) return <Spinner />;
 
-  if (!isSignedIn && authenticated) {
+  if (!user && authenticated) {
     router.push(`/sign-in?callbackUrl=${pathname}`);
-    return <div>Redirecting...</div>;
+    return <Spinner />;
   }
 
   return (

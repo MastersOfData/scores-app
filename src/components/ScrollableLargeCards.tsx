@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { Card, CardItem } from "./Card";
 import styles from "../styles/Card.module.css";
 
@@ -13,11 +13,8 @@ export const ScrollableLargeCards: FC<ScrollableLargeCardsProps> = ({
     <div className={styles["scrollable-cards"]}>
       {items.map((item) => (
         <Card
+          {...item}
           key={item.key}
-          title={item.title}
-          labels={item.labels}
-          emoji={item.emoji}
-          onClick={item.onClick}
         />
       ))}
     </div>

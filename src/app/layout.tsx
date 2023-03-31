@@ -1,5 +1,5 @@
 import type { Metadata } from "next/types";
-import { StateProvider } from "./provider";
+import Providers from "./providers";
 import { Poppins } from "next/font/google";
 import "../styles/globals.css";
 
@@ -23,9 +23,9 @@ export default function RootLayout({
   return (
     <html lang='en' className={poppins.className}>
       <body>
-        <StateProvider>
+        <Providers>
           {children}
-        </StateProvider>
+        </Providers>
       </body>
     </html>
   );

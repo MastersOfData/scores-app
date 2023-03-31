@@ -3,22 +3,18 @@
 import Input from "src/components/Input";
 import { useState, FormEvent, useRef } from "react";
 import { validatePassword } from "src/utils/validation";
-import { getCurrentUser, signOut, updatePassword } from "src/fire-base/auth";
 import styles from "src/styles/Account.module.css";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
 import PageWrapper from "src/components/PageWrapper";
 import { usePathname, useRouter } from "next/navigation";
-import { useCurrentUserData } from "src/services/user.service";
 import { updateDocument } from "src/fire-base/db";
 import { User } from "src/fire-base/models";
-import { useAppDispatch } from "../../store/hooks";
-import { clearGroupState } from "../../store/groupsInternal.reducer";
+import { useUser } from "src/services/user.service";
 
 export default function AccountPage() {
-  const userData = useCurrentUserData();
+  const { user, userData } = useUser();
   const router = useRouter();
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
 
   const [infoComponent, setInfoComponent] = useState<React.ReactNode>(null);
   const usernameRef = useRef(userData?.username ?? "");
@@ -28,14 +24,13 @@ export default function AccountPage() {
   async function handleUpdateUser(e: FormEvent) {
     e.preventDefault();
 
-    const username = usernameRef.current;
-    if (!username) return;
-
-    const user = getCurrentUser();
     if (!user) {
       router.push("/sign-in");
       return;
     }
+
+    const username = usernameRef.current;
+    if (!username) return;
 
     try {
       await updateDocument<User>("users", user.uid, {
@@ -57,7 +52,14 @@ export default function AccountPage() {
 
   async function handleChangePassword(e: FormEvent) {
     e.preventDefault();
+
+    if (!user) {
+      router.push("/sign-in");
+      return;
+    }
+
     const form = e.target as HTMLFormElement;
+    const { updatePassword } = await import("src/fire-base/auth");
 
     const password = passwordRef.current;
     const confPassword = confPasswordRef.current;
@@ -79,12 +81,6 @@ export default function AccountPage() {
       return;
     }
 
-    const user = getCurrentUser();
-    if (!user) {
-      router.push("/sign-in");
-      return;
-    }
-
     try {
       await updatePassword(user, password);
     } catch (err) {
@@ -99,6 +95,11 @@ export default function AccountPage() {
         Ditt passord ble oppdattert!
       </p>
     );
+  }
+
+  async function handleSignOut() {
+    const { signOut } = await import("src/fire-base/auth");
+    await signOut();
   }
 
   return (
@@ -134,7 +135,7 @@ export default function AccountPage() {
           <Input
             type='password'
             placeholder='Bekreft passord'
-            valueRef={passwordRef}
+            valueRef={confPasswordRef}
           />
           <Button variant={ButtonVariant.Round} color={ButtonColor.Green}>
             Endre passord
@@ -143,7 +144,7 @@ export default function AccountPage() {
             <Button
               variant={ButtonVariant.Medium}
               color={ButtonColor.Red}
-              onClick={() => signOut(() => dispatch(clearGroupState()))}
+              onClick={handleSignOut}
             >
               Logg ut
             </Button>
