@@ -108,25 +108,28 @@ const CreateGamePage: FC = () => {
           </div>
         </div>
       )}
-      <TitleWithInfo
-        title="Velg spill"
-        infoText="Velg spillet det skal føres poeng for"
-      />
       {selectedGroup ? (
-        <div className={styles["groups-container"]}>
-          <RadioCards
-            items={groupsWithStatus.data
-              .find((g) => g.id === selectedGroup)
-              ?.gameTypes?.map((gameType) => ({
-                title: gameType.emoji + " " + gameType.name,
-                key: gameType.emoji + " " + gameType.name,
-              }))}
-            selected={selectedGame}
-            setSelected={setSelectedGame}
+        <>
+          <TitleWithInfo
+            title="Velg spill"
+            infoText="Velg spillet det skal føres poeng for"
           />
-        </div>
+          <div className={styles["groups-container"]}>
+            <RadioCards
+              items={groupsWithStatus.data
+                .find((g) => g.id === selectedGroup)
+                ?.gameTypes?.map((gameType) => ({
+                  title: gameType.emoji + " " + gameType.name,
+                  key: gameType.emoji + " " + gameType.name,
+                }))}
+              selected={selectedGame}
+              setSelected={setSelectedGame}
+              fallbackMessage="Fant ingen spill for den valgte gruppen."
+            />
+          </div>
+        </>
       ) : (
-        <p>Fant ingen spill for gruppen.</p>
+        null
       )}
       <div>
         <TitleWithInfo

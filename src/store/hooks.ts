@@ -37,7 +37,8 @@ export const useGetGamesForGroup = (groupId: string) => {
     if (user && !games.data && games.status !== DataStatus.LOADING) {
       dispatch(getAllGamesAction({ userId: user.uid, groupId: groupId }));
     }
-  }, [games]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, games]);
 
   return {
     ...games,

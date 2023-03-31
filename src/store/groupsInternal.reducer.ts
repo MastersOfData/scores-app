@@ -6,7 +6,7 @@ import {
   joinGroupByInvitationCode,
   removeUserFromGroup,
 } from "../services/group.service";
-import { GameType, GroupInternal } from "../types/types";
+import { GroupInternal } from "../types/types";
 import { DataStatus, DataWithStatus } from "./store.types";
 
 type GroupsInternalState = DataWithStatus<GroupInternal[] | null>;
