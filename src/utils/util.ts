@@ -34,8 +34,6 @@ export const calculateDuration = (game: Game): number => {
   // Calculate duration between Game timestamp (when game started) and
   // current time. Duration is calculated in seconds.
 
-  console.log("utils", game, game.timestamp.toDate());
-
   if (game.status === "ONGOING") {
     const startTime = new Date(game.timestamp.seconds).getTime();
     const currentTime = new Date().getTime();
@@ -92,18 +90,21 @@ export const mapGameTypesToCardItems = (
   ];
 };
 
-export const mapGameToCardItem = (
-  game: WithId<Game>,
-) => {
-  const endDate = game.duration ? Timestamp.fromMillis(game.duration) : Timestamp.fromDate(new Date());
+export const mapGameToCardItem = (game: WithId<Game>) => {
+  const endDate = game.duration
+    ? Timestamp.fromMillis(game.duration)
+    : Timestamp.fromDate(new Date());
 
   return {
     key: game.id,
-    title: `${differenceBetweenFirestoreTimestampsInDays(endDate, Timestamp.fromDate(new Date()))} dager siden`,
+    title: `${differenceBetweenFirestoreTimestampsInDays(
+      endDate,
+      Timestamp.fromDate(new Date())
+    )} dager siden`,
     labels: [game.gameTypeId, `${game.winner} vant! 🎉`],
     emoji: game.gameTypeId,
   };
-}
+};
 
 export const generatePincode = () => {
   const digits = "0123456789";
@@ -111,8 +112,8 @@ export const generatePincode = () => {
   for (let i = 0; i < 6; i++) {
     pin += digits[Math.floor(Math.random() * 10)];
   }
-  return pin;  
-}
+  return pin;
+};
 
 export const calculateGroupLeaderboard = (
   members: Member[]
