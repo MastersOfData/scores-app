@@ -13,17 +13,19 @@ export const useGetGroupsForCurrentUser = () => {
   const dispatch = useAppDispatch();
   const groups = useAppSelector((state) => state.groups);
 
-  const { user, loading } = useUser()
+  const { user, loading } = useUser();
 
   useEffect(() => {
     if (
       (!loading && groups.data === null && user) ||
-      (!loading && groups.data === undefined && groups.status !== DataStatus.LOADING)
+      (!loading &&
+        groups.data === undefined &&
+        groups.status !== DataStatus.LOADING)
     ) {
       dispatch(getAllGroupsAction(user?.uid));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, groups]);
+  }, [user, groups, loading]);
 
   return groups;
 };
@@ -31,7 +33,7 @@ export const useGetGroupsForCurrentUser = () => {
 export const useGetGamesForGroup = (groupId: string) => {
   const dispatch = useAppDispatch();
   const games = useAppSelector((state) => state.games);
-  const { user } = useUser()
+  const { user } = useUser();
 
   useEffect(() => {
     if (user && !games.data && games.status !== DataStatus.LOADING) {

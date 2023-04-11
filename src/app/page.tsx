@@ -32,11 +32,15 @@ export default function Home() {
   const { user } = useUser();
 
   if (
-    !groupsWithStatus.data ||
+    groupsWithStatus.data === undefined ||
     groupsWithStatus.status === DataStatus.LOADING ||
     joinGroupIsLoading
   ) {
     return <Spinner />;
+  }
+
+  if (groupsWithStatus.data === null) {
+    return <PageWrapper authenticated title={""} />;
   }
 
   const cardItemsGroups: CardItem[] = mapGroupsToCardItems(
