@@ -35,7 +35,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
 
   const groupsWithStatus = useGetGroupsForCurrentUser();
   const gamesWithStatus = useGetGamesForGroup(groupId);
-  const { user } = useUser()
+  const { user } = useUser();
 
   if (
     user &&
@@ -162,6 +162,13 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
               router.push(`group/${groupId}/newGameType`)
             )}
           />
+        </div>
+        {/* Temp invitation code view */}
+        <div className='center-items'>
+          <div className={styles["spacing"]} />
+          <div className={styles["spacing"]} />
+          <div className={styles["spacing"]} />
+          <p>Invitasjonskode: {group.invitationCode}</p>
         </div>
       </div>
     </PageWrapper>

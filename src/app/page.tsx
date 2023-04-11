@@ -120,12 +120,12 @@ export default function Home() {
         </div>
       )}
       <h2 className={styles.title}>Dine grupper</h2>
-      {user ? (
+      {groupsWithStatus.data.length > 0 ? (
         <div className={styles["cards-container"]}>
           <ScrollableLargeCards items={cardItemsGroups} />
         </div>
       ) : (
-        <p>Logg inn for å se dine grupper</p>
+        <p>Du har ingen grupper enda</p>
       )}
     </PageWrapper>
   );
