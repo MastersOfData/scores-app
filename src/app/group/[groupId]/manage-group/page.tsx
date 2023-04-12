@@ -26,7 +26,9 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
   }
   const group = groupsWithStatus.data?.find((group) => group.id === groupId);
 
-  const onAdd = async () => {};
+  const onAdd = async () => {
+    console.log("Ikke implementert logikk");
+  };
   return (
     <PageWrapper
       title={group?.name ?? "Din gruppe"}
