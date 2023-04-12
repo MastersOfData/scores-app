@@ -199,7 +199,7 @@ export const createGameTypeForGroup = async (
 
   const updatedGroup: Group = {
     ...group,
-    gameTypes: group.gameTypes?.concat([gameType]),
+    gameTypes: group.gameTypes?.concat([gameType]) ?? [gameType],
   };
 
   await updateDocument<Group>(groupsCol, groupId, updatedGroup);

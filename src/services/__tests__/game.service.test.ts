@@ -1,11 +1,12 @@
 import { Game } from "src/fire-base/models";
-import { createGame, getGamesForGroup, updateGame } from "../game.service";
+import { getGamesForGroup, updateGame } from "../game.service";
 import * as db from "../../fire-base/db";
 import { WithId } from "src/types/types";
-import { DocumentReference, Timestamp } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 
 jest.mock("../../fire-base/db");
-const mockGame: WithId<Game> = {
+
+const gameMock: WithId<Game> = {
   id: "1",
   gameTypeId: "",
   groupId: "",
@@ -15,11 +16,10 @@ const mockGame: WithId<Game> = {
   status: "FINISHED",
 }
 
-
 describe("GameService", () => {
   const mockGetDocument = jest.spyOn(db, "getDocument");
   const mockGetDocuments = jest.spyOn(db, "getDocuments");
-  const mockAddDocument = jest.spyOn(db, "addDocument");
+  // const mockAddDocument = jest.spyOn(db, "addDocument");
   const mockUpdateDocument = jest.spyOn(db, "updateDocument");
 
   afterEach(() => {
@@ -41,8 +41,8 @@ describe("GameService", () => {
   // });
 
   describe("updateGame", () => {
-    it("Should call db", async () => {
-      mockGetDocument.mockResolvedValue(mockGame);
+    it("Should call database", async () => {
+      mockGetDocument.mockResolvedValue(gameMock);
 
       await updateGame("game1", {
         status: "FINISHED"
@@ -50,33 +50,43 @@ describe("GameService", () => {
 
       expect(mockGetDocument).toBeCalled();
       expect(mockUpdateDocument).toBeCalled();
-    })
-    it("Should fail when game is not found", async () => {
+    });
+
+    it("Should reject when game is not found", async () => {
       expect.assertions(1);
       return updateGame("game1", {
         status: "FINISHED"
       }).catch(e => expect(e).toMatch("Game not found: game1"));
-    })
+    });
   });
 
   describe("getGamesForGroup", () => {
-    it("Should call db", async () => {
+    it("Should call database", async () => {
       mockGetDocuments
         .mockResolvedValueOnce([{ id: "1" }])
-        .mockResolvedValueOnce([mockGame]);
+        .mockResolvedValueOnce([gameMock]);
 
       await getGamesForGroup("user1", "group1");
 
       expect(mockGetDocuments).toBeCalledTimes(2);
     });
+
+    it("Should return correctly", async () => {
+      mockGetDocuments
+        .mockResolvedValueOnce([{ id: "1" }])
+        .mockResolvedValueOnce([gameMock]);
+
+      const result = await getGamesForGroup("user1", "group1");
+
+      expect(result).toEqual([gameMock]);
+    });
+
+    it("Should reject when user is not a member of the group", () => {
+      mockGetDocuments.mockResolvedValueOnce([]);
+
+      expect.assertions(1);
+      return getGamesForGroup("user1", "group1")
+        .catch(e => expect(e).toMatch("User is not a member of the group: group1"));
+    });
   });
-  // it("should pass", () => {
-  //   const mockGetDocuments = jest.spyOn(db, "getDocuments")
-  //     .mockResolvedValueOnce([{ id: "1" }])
-  //     .mockResolvedValueOnce([mockGame]);
-
-  //   const res = getGamesForGroup("asd", "asd");
-
-  //   expect(mockGetDocuments).toHaveBeenCalledTimes(2);
-  // });
 })

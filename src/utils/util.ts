@@ -1,6 +1,5 @@
 import { Timestamp } from "firebase/firestore";
 import { Game } from "src/fire-base/models";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 import { CardItem } from "src/components/Card";
 import {
   GameType,
