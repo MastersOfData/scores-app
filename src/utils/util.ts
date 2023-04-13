@@ -2,7 +2,6 @@ import { Timestamp } from "firebase/firestore";
 import { Game } from "src/fire-base/models";
 import { CardItem } from "src/components/Card";
 import {
-  GameType,
   GroupInternal,
   LeaderboardStats,
   Member,
@@ -48,59 +47,6 @@ export const convertSecondsToMinutesAndSeconds = (seconds: number) => {
   return {
     minutes,
     seconds: secondsRemainder,
-  };
-};
-
-export const mapGroupsToCardItems = (
-  groups: GroupInternal[],
-  includeLabels: boolean,
-): CardItem[] => {
-  return groups.map((group) => {
-    return {
-      key: group.id,
-      title: group.name,
-      labels: includeLabels ? ["Noe relevant info", "Annen info"] : undefined,
-      emoji: group.emoji,
-      href: `/group/${group.id}`,
-    };
-  });
-};
-
-export const mapGameTypesToCardItems = (
-  gameTypes?: GameType[],
-  addGameTypeClickEvent?: () => void
-) => {
-  const gameTypeCards: CardItem[] = gameTypes
-    ? gameTypes.map((gt) => ({
-        key: gt.name,
-        title: gt.name,
-        emoji: gt.emoji,
-      }))
-    : [];
-
-  return [
-    {
-      key: "new",
-      title: "+ Legg til",
-      onClick: () => addGameTypeClickEvent?.(),
-    },
-    ...gameTypeCards.sort((a, b) => a.title.localeCompare(b.title)),
-  ];
-};
-
-export const mapGameToCardItem = (game: WithId<Game>) => {
-  const endDate = game.duration
-    ? Timestamp.fromMillis(game.duration)
-    : Timestamp.fromDate(new Date());
-
-  return {
-    key: game.id,
-    title: `${differenceBetweenFirestoreTimestampsInDays(
-      endDate,
-      Timestamp.fromDate(new Date())
-    )} dager siden`,
-    labels: [game.gameTypeId, `${game.winner} vant! 🎉`],
-    emoji: game.gameTypeId,
   };
 };
 

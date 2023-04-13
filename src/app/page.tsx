@@ -8,7 +8,6 @@ import { GroupIcon } from "src/assets/icons/GroupIcon";
 import Input from "src/components/Input";
 import { ScrollableLargeCards } from "src/components/ScrollableLargeCards";
 import { CardItem } from "src/components/Card";
-import { mapGroupsToCardItems } from "src/utils/util";
 import PageWrapper from "src/components/PageWrapper";
 import { useAppDispatch, useGetGroupsForCurrentUser } from "../store/hooks";
 import { DataStatus } from "../store/store.types";
@@ -17,6 +16,7 @@ import Spinner from "../components/Spinner";
 import { useUser } from "src/services/user.service";
 import { joinGroupByInvitationCodeAction } from "src/store/groupsInternal.reducer";
 import { useState } from "react";
+import { mapGroupsToCardItems } from "src/utils/mappers";
 
 export default function Home() {
   const groupsWithStatus = useGetGroupsForCurrentUser();
