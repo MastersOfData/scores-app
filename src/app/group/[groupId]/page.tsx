@@ -35,7 +35,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
 
   const groupsWithStatus = useGetGroupsForCurrentUser();
   const gamesWithStatus = useGetGamesForGroup(groupId);
-  const { user } = useUser()
+  const { user } = useUser();
 
   if (
     user &&
@@ -50,13 +50,13 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
   const group = groupsWithStatus.data?.find((group) => group.id === groupId);
 
   if (!user) {
-    return <PageWrapper title='' backPath='/' authenticated />;
+    return <PageWrapper title="" backPath="/" authenticated />;
   }
 
   if (!group) {
     return (
-      <PageWrapper title='' backPath='/' authenticated>
-        <div className='center-items'>
+      <PageWrapper title="" backPath="/" authenticated>
+        <div className="center-items">
           <p>Gruppen finnes ikke! 🚨</p>
         </div>
       </PageWrapper>
@@ -70,7 +70,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
   );
 
   return (
-    <PageWrapper title={group.name} backPath='/' authenticated>
+    <PageWrapper title={group.name} backPath="/" authenticated>
       <div className={homeStyles["buttons-container"]}>
         <div className={homeStyles["button-container"]}>
           <Button
@@ -99,7 +99,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
             variant={ButtonVariant.Action}
             color={ButtonColor.Pink}
             withLink
-            href={`/group/${groupId}/edit`}
+            href={`/group/${groupId}/manage-group`}
           >
             <PeopleIcon />
           </Button>
@@ -162,6 +162,13 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
               router.push(`group/${groupId}/newGameType`)
             )}
           />
+        </div>
+        {/* Temp invitation code view */}
+        <div className="center-items">
+          <div className={styles["spacing"]} />
+          <div className={styles["spacing"]} />
+          <div className={styles["spacing"]} />
+          <p>Invitasjonskode: {group.invitationCode}</p>
         </div>
       </div>
     </PageWrapper>

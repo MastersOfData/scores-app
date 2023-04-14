@@ -19,6 +19,7 @@ export const differenceBetweenFirestoreTimestampsInDays = (
   t1: Timestamp,
   t2: Timestamp
 ): number => {
+  // Fix bug: Sett date-klokkeslett til 00:00:00
   const unixTimestamp1 = t1.toMillis() / 1000;
   const unixTimestamp2 = t2.toMillis() / 1000;
 
@@ -93,41 +94,43 @@ export const mapGamesToCardItems = (
 ): CardItem[] => {
   if (!games) return [];
 
-  return games.map((game) => {
-    const diffDays = differenceBetweenFirestoreTimestampsInDays(
-      game.timestamp,
-      Timestamp.fromDate(new Date())
-    );
-
-    const labels: string[] = [];
-
-    const gameType = group.gameTypes?.find((gt) => gt.id === game.gameTypeId);
-    if (gameType) {
-      labels.push(`${gameType.name} ${gameType.emoji}`);
-    }
-
-    if (game.status === "ONGOING" && game.duration) {
-      const { minutes, seconds } = convertSecondsToMinutesAndSeconds(
-        game.duration
+  return games
+    .sort((a, b) => b.timestamp.toMillis() - a.timestamp.toMillis())
+    .map((game) => {
+      const diffDays = differenceBetweenFirestoreTimestampsInDays(
+        game.timestamp,
+        Timestamp.fromDate(new Date())
       );
-      labels.push(`Varighet: ${minutes}:${seconds}`);
-    }
 
-    if (game.status === "PAUSED") {
-      labels.push("Ikke fullført");
-    }
+      const labels: string[] = [];
 
-    if (game.status === "FINISHED") {
-      const winner = group.members.find((u) => u.userId === game.winner);
-      if (winner) labels.push(`${winner.username} vant! 🎉`);
-      else labels.push("Fullført");
-    }
+      const gameType = group.gameTypes?.find((gt) => gt.id === game.gameTypeId);
+      if (gameType) {
+        labels.push(`${gameType.name} ${gameType.emoji}`);
+      }
 
-    return {
-      key: game.id,
-      title: diffDays === 0 ? "I dag" : `${diffDays} dager siden`,
-      labels: labels,
-      emoji: group.emoji,
-    };
-  });
+      if (game.status === "ONGOING" && game.duration) {
+        const { minutes, seconds } = convertSecondsToMinutesAndSeconds(
+          game.duration
+        );
+        labels.push(`Varighet: ${minutes}:${seconds}`);
+      }
+
+      if (game.status === "PAUSED") {
+        labels.push("Ikke fullført");
+      }
+
+      if (game.status === "FINISHED") {
+        const winner = group.members.find((u) => u.userId === game.winner);
+        if (winner) labels.push(`${winner.username} vant! 🎉`);
+        else labels.push("Fullført");
+      }
+
+      return {
+        key: game.id,
+        title: diffDays === 0 ? "I dag" : `${diffDays} dager siden`,
+        labels: labels,
+        emoji: gameType?.emoji,
+      };
+    });
 };
