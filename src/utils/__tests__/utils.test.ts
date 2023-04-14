@@ -74,7 +74,7 @@ describe("calculatDuration", () => {
         points: 420,
       },
     ],
-    winner: "",
+    winners: [],
     timestamp: Timestamp.fromDate(new Date(2023, 2, 21)),
     status: "ONGOING",
   };

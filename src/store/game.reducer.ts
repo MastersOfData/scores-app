@@ -4,6 +4,8 @@ import {
   createGame,
   CreateGameData,
   getGamesForGroup,
+  registerResult,
+  RegisterResultData,
   updateGame,
   UpdateGameData,
 } from "src/services/game.service";
@@ -60,6 +62,20 @@ export const updateGameAction = createAsyncThunk(
   }) => {
     await updateGame(gameId, gameData);
     return gameId;
+  }
+);
+
+export const registerResultAction = createAsyncThunk(
+  "games/register-result",
+  async ({
+    userId,
+    gameData,
+  }: {
+    userId: string;
+    gameData: RegisterResultData;
+  }) => {
+    const res = await registerResult(userId, gameData);
+    return res;
   }
 );
 
@@ -134,6 +150,22 @@ const gamesSlice = createSlice({
       })
       .addCase(updateGameAction.rejected, (state) => {
         state.update.status = DataStatus.ERROR;
+      })
+      // Register result
+      .addCase(registerResultAction.pending, (state) => {
+        state.create.status = DataStatus.LOADING;
+      })
+      .addCase(registerResultAction.fulfilled, (state, action) => {
+        state.create.status = DataStatus.COMPLETED;
+
+        if (state.data) {
+          state.data = [...state.data, action.payload];
+        } else {
+          state.data = [action.payload];
+        }
+      })
+      .addCase(registerResultAction.rejected, (state) => {
+        state.create.status = DataStatus.ERROR;
       });
   },
 });

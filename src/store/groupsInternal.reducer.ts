@@ -1,12 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { Membership } from "../fire-base/models";
 import {
   createGameTypeForGroup,
   createGroup,
   getGroupsInternalForCurrentUser,
   joinGroupByInvitationCode,
   removeUserFromGroup,
+  updateMultipleMemberships,
 } from "../services/group.service";
-import { GroupInternal } from "../types/types";
+import { GroupInternal, WithId } from "../types/types";
 import { DataStatus, DataWithStatus } from "./store.types";
 
 type GroupsInternalState = DataWithStatus<GroupInternal[] | null>;
@@ -87,6 +89,20 @@ export const createGameTypeAction = createAsyncThunk(
     groupId: string;
   }) => {
     return await createGameTypeForGroup(groupId, gameTypeName, gameTypeEmoji);
+  }
+);
+
+export const updateGroupMembershipsAction = createAsyncThunk(
+  "groups/update-memberships",
+  async ({
+    memberships,
+    groupId,
+  }: {
+    memberships: WithId<Membership>[];
+    groupId: string;
+  }) => {
+    const res = await updateMultipleMemberships(memberships, groupId);
+    return res;
   }
 );
 
@@ -173,6 +189,42 @@ const groups = createSlice({
         });
       })
       .addCase(createGameTypeAction.rejected, (state) => {
+        state.update.dataId = undefined;
+        state.update.status = DataStatus.ERROR;
+      })
+      .addCase(updateGroupMembershipsAction.pending, (state, action) => {
+        state.update.dataId = action.meta.arg.groupId;
+        state.update.status = DataStatus.LOADING;
+      })
+      .addCase(updateGroupMembershipsAction.fulfilled, (state, action) => {
+        state.update.dataId = undefined;
+        state.update.status = DataStatus.COMPLETED;
+
+        const updatedMemberships = action.meta.arg.memberships;
+
+        state.data = state.data?.map((group) => {
+          if (group.id === action.meta.arg.groupId) {
+            // Maps original memberships with the updated ones
+            const groupMembers = group.members.map((member) => {
+              const updatedMembership = updatedMemberships.find(
+                (m) => m.userId === member.userId
+              );
+              return {
+                ...member,
+                ...updatedMembership,
+              };
+            });
+
+            return {
+              ...group,
+              members: groupMembers,
+            };
+          } else {
+            return group;
+          }
+        });
+      })
+      .addCase(updateGroupMembershipsAction.rejected, (state) => {
         state.update.dataId = undefined;
         state.update.status = DataStatus.ERROR;
       });
