@@ -63,6 +63,7 @@ export const createGroup = async (
     invitationCode: invitationCode,
     gameTypes: [],
   };
+
   const groupRef = await addDocument(groupsCol, group);
 
   await joinGroup(groupRef.id, currentUserId);

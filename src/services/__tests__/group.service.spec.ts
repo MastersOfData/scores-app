@@ -1,108 +1,116 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Group, Membership, User } from "src/fire-base/models";
 import { GameType, GroupInternal, WithId } from "src/types/types";
 import * as db from "../../fire-base/db";
-import { createGameTypeForGroup, getGroupInternal, getGroupsForCurrentUser, getStatsForAllUsersInGroup, joinGroupByInvitationCode, removeUserFromGroup } from "../group.service";
+import {
+  createGameTypeForGroup,
+  createGroup,
+  getGroupsForCurrentUser,
+  getGroupInternal,
+  getStatsForAllUsersInGroup,
+  joinGroupByInvitationCode,
+  removeUserFromGroup,
+} from "../group.service";
 
 jest.mock("../../fire-base/db");
 
-const userMockBase: User = {
+const baseMockUser: User = {
   email: "",
   username: "",
-}
+};
 
-const groupMockBase: Group = {
+const baseMockGroup: Group = {
   name: "",
   emoji: "",
   games: [],
   invitationCode: "123456",
 };
 
-const membershipMockBase: Membership = {
+const baseMockMembership: Membership = {
   userId: "user1",
   groupId: "group1",
   wins: 0,
   draws: 0,
   losses: 0,
-}
+};
 
-const userMocks: WithId<User>[] = [
+const mockUsers: WithId<User>[] = [
   {
     id: "user1",
-    ...userMockBase,
+    ...baseMockUser,
   },
   {
     id: "user2",
-    ...userMockBase,
+    ...baseMockUser,
   },
   {
     id: "user3",
-    ...userMockBase,
+    ...baseMockUser,
   },
   {
     id: "user4",
-    ...userMockBase,
-  }
+    ...baseMockUser,
+  },
 ];
 
-const groupMocks: WithId<Group>[] = [
+const mockGroups: WithId<Group>[] = [
   {
     id: "group1",
-    ...groupMockBase,
+    ...baseMockGroup,
   },
   {
     id: "group2",
-    ...groupMockBase,
-  }
-  , {
+    ...baseMockGroup,
+  },
+  {
     id: "group3",
-    ...groupMockBase,
-  }
+    ...baseMockGroup,
+  },
 ];
 
-const membershipMocks: WithId<Membership>[] = [
+const mockMemberships: WithId<Membership>[] = [
   {
-    ...membershipMockBase,
+    ...baseMockMembership,
     id: "1",
-    userId: userMocks[0].id,
-    groupId: groupMocks[0].id,
+    userId: mockUsers[0].id,
+    groupId: mockGroups[0].id,
   },
   {
-    ...membershipMockBase,
+    ...baseMockMembership,
     id: "2",
-    userId: userMocks[1].id,
-    groupId: groupMocks[0].id,
+    userId: mockUsers[1].id,
+    groupId: mockGroups[0].id,
   },
   {
-    ...membershipMockBase,
+    ...baseMockMembership,
     id: "3",
-    userId: userMocks[1].id,
-    groupId: groupMocks[1].id,
+    userId: mockUsers[1].id,
+    groupId: mockGroups[1].id,
   },
   {
-    ...membershipMockBase,
+    ...baseMockMembership,
     id: "4",
-    userId: userMocks[2].id,
-    groupId: groupMocks[1].id,
+    userId: mockUsers[2].id,
+    groupId: mockGroups[1].id,
   },
   {
-    ...membershipMockBase,
+    ...baseMockMembership,
     id: "5",
-    userId: userMocks[2].id,
-    groupId: groupMocks[2].id,
+    userId: mockUsers[2].id,
+    groupId: mockGroups[2].id,
   },
   {
-    ...membershipMockBase,
+    ...baseMockMembership,
     id: "6",
-    userId: userMocks[3].id,
-    groupId: groupMocks[2].id,
-  }
+    userId: mockUsers[3].id,
+    groupId: mockGroups[2].id,
+  },
 ];
-
 
 describe("GroupService", () => {
   const mockGetDocument = jest.spyOn(db, "getDocument");
   const mockGetDocuments = jest.spyOn(db, "getDocuments");
-  // const mockAddDocument = jest.spyOn(db, "addDocument");
+  const mockAddDocument = jest.spyOn(db, "addDocument");
   const mockUpdateDocument = jest.spyOn(db, "updateDocument");
   const mockSetDocument = jest.spyOn(db, "setDocument");
   const mockDeleteDocument = jest.spyOn(db, "deleteDocument");
@@ -114,8 +122,8 @@ describe("GroupService", () => {
   describe("getGroupsForCurrentUser", () => {
     it("Should call database", async () => {
       mockGetDocuments
-        .mockResolvedValueOnce([{ id: "1", ...membershipMockBase }])
-        .mockResolvedValueOnce(groupMocks);
+        .mockResolvedValueOnce([{ id: "1", ...baseMockMembership }])
+        .mockResolvedValueOnce(mockGroups);
 
       await getGroupsForCurrentUser("user1");
 
@@ -132,28 +140,75 @@ describe("GroupService", () => {
     });
   });
 
-  // TODO: Mock DocumentReference
-  // describe("createGroup", () => {
-  //   it("Should call database", async () => {
-  //     mockGetDocuments
-  //       .mockResolvedValueOnce([{ id: "1" }])
-  //       .mockResolvedValueOnce([]);
+  describe("createGroup", () => {
+    it("Should call database", async () => {
+      mockAddDocument.mockResolvedValueOnce({ id: "1" } as unknown as any); // groupRef
+      mockGetDocument
+        .mockResolvedValueOnce({ id: "1", pincodes: ["123456"] }) // createPincode
+        .mockResolvedValueOnce(mockGroups[0]) // getGroupInternal
+        .mockResolvedValue(mockGroups[0]); // getGroupInternal
+      mockGetDocuments
+        .mockResolvedValueOnce(mockMemberships) // getGroupInternal
+        .mockResolvedValueOnce(mockUsers); // getGroupInternal
 
-  //     await createGroup("user1", "420", "69");
+      await createGroup("user1", "420", "69");
 
-  //     expect(mockGetDocuments).toBeCalledTimes(2);
-  //   });
-  // });
+      expect(mockAddDocument).toBeCalledTimes(1);
+      expect(mockSetDocument).toBeCalledTimes(2);
+      expect(mockGetDocument).toBeCalledTimes(3);
+      expect(mockGetDocuments).toBeCalledTimes(2);
+    });
+
+    it("Should return correct object", async () => {
+      mockAddDocument.mockResolvedValueOnce({ id: "1" } as unknown as any); // groupRef
+      mockGetDocument
+        .mockResolvedValueOnce({ id: "1", pincodes: ["123456"] }) // createPincode
+        .mockResolvedValueOnce({ ...mockGroups[0], name: "Gutta", emoji: "OG" }) // getGroupInternal
+        .mockResolvedValueOnce({
+          ...mockGroups[0],
+          name: "Gutta",
+          emoji: "OG",
+        }); // getGroupInternal
+      mockGetDocuments
+        .mockResolvedValueOnce([mockMemberships[0]]) // getGroupInternal
+        .mockResolvedValueOnce([
+          { ...mockUsers[0], username: "Birger", email: "birger@hvl.no" },
+        ]); // getGroupInternal
+
+      const res = await createGroup("group1", "Gutta", "OG");
+
+      expect(res).toEqual({
+        id: "group1",
+        name: "Gutta",
+        emoji: "OG",
+        games: [],
+        invitationCode: "123456",
+        gameTypes: undefined,
+        members: [
+          {
+            id: "user1",
+            username: "Birger",
+            email: "birger@hvl.no",
+            wins: 0,
+            draws: 0,
+            losses: 0,
+            groupId: "group1",
+            userId: "user1",
+          },
+        ],
+      });
+    });
+  });
 
   describe("joinGroupByInvitationCode", () => {
     it("Should call database", async () => {
       mockGetDocuments
-        .mockResolvedValueOnce([{ id: "group1", ...groupMockBase }])
+        .mockResolvedValueOnce([{ id: "group1", ...baseMockGroup }])
         .mockResolvedValueOnce([])
-        .mockResolvedValueOnce(membershipMocks)
-        .mockResolvedValueOnce(userMocks);
+        .mockResolvedValueOnce(mockMemberships)
+        .mockResolvedValueOnce(mockUsers);
 
-      mockGetDocument.mockResolvedValueOnce({ id: "group1", ...groupMockBase });
+      mockGetDocument.mockResolvedValueOnce({ id: "group1", ...baseMockGroup });
 
       await joinGroupByInvitationCode("123456", "user1");
 
@@ -164,21 +219,22 @@ describe("GroupService", () => {
 
     it("Should reject when user is already member", async () => {
       mockGetDocuments
-        .mockResolvedValueOnce([{ id: "group1", ...groupMockBase }])
+        .mockResolvedValueOnce([{ id: "group1", ...baseMockGroup }])
         .mockResolvedValueOnce([{ id: "group1" }]);
 
       expect.assertions(1);
-      return joinGroupByInvitationCode("123456", "user1")
-        .catch(e => expect(e).toMatch("Du er allerede medlem i gruppen"))
+      await expect(
+        joinGroupByInvitationCode("123456", "user1")
+      ).rejects.toMatch("Du er allerede medlem i gruppen");
     });
 
     it("Should reject when group doesn't exist", async () => {
-      mockGetDocuments
-        .mockResolvedValueOnce([])
+      mockGetDocuments.mockResolvedValueOnce([]);
 
       expect.assertions(1);
-      return joinGroupByInvitationCode("123456", "user1")
-        .catch(e => expect(e).toMatch("Gruppe med kode 123456 finnes ikke."));
+      await expect(
+        joinGroupByInvitationCode("123456", "user1")
+      ).rejects.toMatch("Gruppe med kode 123456 finnes ikke.");
     });
 
     it("Should set document with correct information", async () => {
@@ -191,16 +247,20 @@ describe("GroupService", () => {
       };
 
       mockGetDocuments
-        .mockResolvedValueOnce([{ id: "group1", ...groupMockBase }])
+        .mockResolvedValueOnce([{ id: "group1", ...baseMockGroup }])
         .mockResolvedValueOnce([])
-        .mockResolvedValueOnce(membershipMocks)
-        .mockResolvedValueOnce(userMocks);
+        .mockResolvedValueOnce(mockMemberships)
+        .mockResolvedValueOnce(mockUsers);
 
-      mockGetDocument.mockResolvedValueOnce({ id: "group1", ...groupMockBase });
+      mockGetDocument.mockResolvedValueOnce({ id: "group1", ...baseMockGroup });
 
       await joinGroupByInvitationCode("123456", "user1");
 
-      expect(mockSetDocument).toBeCalledWith(db.membershipsCol, "user1-group1", mockUserGroupStatistic);
+      expect(mockSetDocument).toBeCalledWith(
+        db.membershipsCol,
+        "user1-group1",
+        mockUserGroupStatistic
+      );
     });
   });
 
@@ -213,7 +273,7 @@ describe("GroupService", () => {
 
   describe("getStatsForAllUsersInGroup", () => {
     it("Should call database", async () => {
-      mockGetDocuments.mockResolvedValueOnce(membershipMocks);
+      mockGetDocuments.mockResolvedValueOnce(mockMemberships);
       await getStatsForAllUsersInGroup("group1");
       expect(mockGetDocuments).toBeCalledTimes(1);
     });
@@ -221,13 +281,12 @@ describe("GroupService", () => {
 
   describe("getGroupInternal", () => {
     it("Should call database", async () => {
-      mockGetDocument
-        .mockResolvedValue(groupMocks[0]);
+      mockGetDocument.mockResolvedValue(mockGroups[0]);
       mockGetDocuments
-        .mockResolvedValueOnce(membershipMocks)
-        .mockResolvedValueOnce(userMocks);
+        .mockResolvedValueOnce(mockMemberships)
+        .mockResolvedValueOnce(mockUsers);
 
-      await getGroupInternal(groupMocks[0].id);
+      await getGroupInternal(mockGroups[0].id);
 
       expect(mockGetDocument).toBeCalledTimes(1);
       expect(mockGetDocuments).toBeCalledTimes(2);
@@ -235,36 +294,42 @@ describe("GroupService", () => {
 
     it("Should return correctly", async () => {
       const expected: GroupInternal = {
-        ...groupMocks[0],
+        ...mockGroups[0],
         members: [
           {
-            ...membershipMocks[0],
-            ...userMocks[0],
+            ...mockMemberships[0],
+            ...mockUsers[0],
           },
           {
-            ...membershipMocks[1],
-            ...userMocks[1],
+            ...mockMemberships[1],
+            ...mockUsers[1],
           },
         ],
-      }
-      mockGetDocument
-        .mockResolvedValue(groupMocks[0]);
+      };
+      mockGetDocument.mockResolvedValue(mockGroups[0]);
       mockGetDocuments
-        .mockResolvedValueOnce([membershipMocks[0], membershipMocks[1]])
-        .mockResolvedValueOnce([userMocks[0], userMocks[1]]);
+        .mockResolvedValueOnce([mockMemberships[0], mockMemberships[1]])
+        .mockResolvedValueOnce([mockUsers[0], mockUsers[1]]);
 
-      const result = await getGroupInternal(groupMocks[0].id);
+      const result = await getGroupInternal(mockGroups[0].id);
 
       expect(result).toEqual(expected);
     });
   });
 
-  // TODO
+  // Need to find out if function is testable. Current test implementation will not wait for nested promises
+  // to resolve or reject leading to data being 'undefined'.
   // describe("getGroupsInternalForCurrentUser", () => {
   //   it("Should call database", async () => {
   //     mockGetDocuments
-  //       .mockResolvedValueOnce([membershipMocks[0], membershipMocks[1], membershipMocks[2], membershipMocks[3]])
-  //       .mockResolvedValueOnce(userMocks);
+  //       .mockResolvedValueOnce([mockMemberships[0], mockMemberships[1]])
+  //       .mockResolvedValueOnce([
+  //         mockMemberships[0],
+  //         mockMemberships[1],
+  //         mockMemberships[2],
+  //         mockMemberships[3],
+  //       ])
+  //       .mockResolvedValueOnce([mockUsers[0], mockUsers[1]]);
 
   //     await getGroupsInternalForCurrentUser("user1");
 
@@ -272,10 +337,9 @@ describe("GroupService", () => {
   //   });
   // });
 
-  // TODO
   describe("createGameTypeForGroup", () => {
     it("Should call database", async () => {
-      mockGetDocument.mockResolvedValueOnce(groupMocks[0]);
+      mockGetDocument.mockResolvedValueOnce(mockGroups[0]);
 
       await createGameTypeForGroup("1", "name", "emoji");
 
@@ -288,35 +352,47 @@ describe("GroupService", () => {
         id: "1",
         name: "name",
         emoji: "emoji",
-      }
-      mockGetDocument.mockResolvedValueOnce(groupMocks[0]);
+      };
+      mockGetDocument.mockResolvedValueOnce(mockGroups[0]);
 
-      const result = await createGameTypeForGroup(groupMocks[0].id, "name", "emoji");
+      const result = await createGameTypeForGroup(
+        mockGroups[0].id,
+        "name",
+        "emoji"
+      );
 
       expect(result).toEqual(expected);
     });
 
-    it("Calls updateDocument with correct values", async () => {
+    it("Should call updateDocument with correct values", async () => {
       const expectedUpdatedGroup = {
-        ...groupMocks[0],
-        gameTypes: [{
-          id: "1",
-          name: "name",
-          emoji: "emoji",
-        }]
-      }
-      mockGetDocument.mockResolvedValueOnce(groupMocks[0]);
+        ...mockGroups[0],
+        gameTypes: [
+          {
+            id: "1",
+            name: "name",
+            emoji: "emoji",
+          },
+        ],
+      };
+      mockGetDocument.mockResolvedValueOnce(mockGroups[0]);
 
-      await createGameTypeForGroup(groupMocks[0].id, "name", "emoji");
+      await createGameTypeForGroup(mockGroups[0].id, "name", "emoji");
 
-      expect(mockUpdateDocument).toBeCalledWith(db.groupsCol, groupMocks[0].id, expectedUpdatedGroup);
+      expect(mockUpdateDocument).toBeCalledWith(
+        db.groupsCol,
+        mockGroups[0].id,
+        expectedUpdatedGroup
+      );
     });
 
-    // it("Should reject when no group exists", () => {
-    //   mockGetDocument.mockResolvedValueOnce(null);
+    it("Should reject when no group exists", async () => {
+      mockGetDocument.mockResolvedValueOnce(null);
 
-    //   expect(createGameTypeForGroup("group1", "X-Men", "x")).rejects
-    //     .toThrowError();
-    // });
+      expect.assertions(1);
+      await expect(
+        createGameTypeForGroup("group1", "X-Men", "x")
+      ).rejects.toEqual(undefined);
+    });
   });
 });

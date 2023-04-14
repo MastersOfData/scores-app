@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Game } from "src/fire-base/models";
-import { getGamesForGroup, updateGame } from "../game.service";
+import { createGame, getGamesForGroup, updateGame } from "../game.service";
 import * as db from "../../fire-base/db";
 import { WithId } from "src/types/types";
 import { Timestamp } from "firebase/firestore";
 
 jest.mock("../../fire-base/db");
 
-const gameMock: WithId<Game> = {
+const mockGame: WithId<Game> = {
   id: "1",
   gameTypeId: "",
   groupId: "",
@@ -14,38 +15,55 @@ const gameMock: WithId<Game> = {
   players: [],
   timestamp: new Timestamp(1, 1),
   status: "FINISHED",
-}
+};
 
 describe("GameService", () => {
   const mockGetDocument = jest.spyOn(db, "getDocument");
   const mockGetDocuments = jest.spyOn(db, "getDocuments");
-  // const mockAddDocument = jest.spyOn(db, "addDocument");
+  const mockAddDocument = jest.spyOn(db, "addDocument");
   const mockUpdateDocument = jest.spyOn(db, "updateDocument");
 
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
-  // TODO: Find a way to mock DocumentReference and CollectionReference
-  // describe("createGame", () => {
-  //   it("Should call addDocument", async () => {
-  //     await createGame("user1", {
-  //       groupId: "group1",
-  //       gameTypeId: "1",
-  //       allowTeams: false,
-  //       participants: []
-  //     });
-  //     expect(mockAddDocument).toBeCalled();
-  //     expect(mockGetDocument).toBeCalled();
-  //   });
-  // });
+  describe("createGame", () => {
+    it("Should call database", async () => {
+      mockAddDocument.mockResolvedValueOnce({ id: "1" } as unknown as any);
+      mockGetDocument.mockResolvedValueOnce(mockGame);
+
+      await createGame("user1", {
+        groupId: "group1",
+        gameTypeId: "1",
+        allowTeams: false,
+        participants: [],
+      });
+
+      expect(mockAddDocument).toBeCalledTimes(1);
+      expect(mockGetDocument).toBeCalledTimes(1);
+    });
+
+    it("Should reject when game is not created", async () => {
+      mockAddDocument.mockResolvedValueOnce({ id: "1" } as unknown as any);
+
+      expect.assertions(1);
+      await expect(
+        createGame("user1", {
+          groupId: "group1",
+          gameTypeId: "1",
+          allowTeams: false,
+          participants: [],
+        })
+      ).rejects.toEqual(undefined);
+    });
+  });
 
   describe("updateGame", () => {
     it("Should call database", async () => {
-      mockGetDocument.mockResolvedValue(gameMock);
+      mockGetDocument.mockResolvedValue(mockGame);
 
       await updateGame("game1", {
-        status: "FINISHED"
+        status: "FINISHED",
       });
 
       expect(mockGetDocument).toBeCalled();
@@ -54,9 +72,11 @@ describe("GameService", () => {
 
     it("Should reject when game is not found", async () => {
       expect.assertions(1);
-      return updateGame("game1", {
-        status: "FINISHED"
-      }).catch(e => expect(e).toMatch("Game not found: game1"));
+      await expect(
+        updateGame("game1", {
+          status: "FINISHED",
+        })
+      ).rejects.toMatch("Game not found: game1");
     });
   });
 
@@ -64,7 +84,7 @@ describe("GameService", () => {
     it("Should call database", async () => {
       mockGetDocuments
         .mockResolvedValueOnce([{ id: "1" }])
-        .mockResolvedValueOnce([gameMock]);
+        .mockResolvedValueOnce([mockGame]);
 
       await getGamesForGroup("user1", "group1");
 
@@ -74,19 +94,20 @@ describe("GameService", () => {
     it("Should return correctly", async () => {
       mockGetDocuments
         .mockResolvedValueOnce([{ id: "1" }])
-        .mockResolvedValueOnce([gameMock]);
+        .mockResolvedValueOnce([mockGame]);
 
       const result = await getGamesForGroup("user1", "group1");
 
-      expect(result).toEqual([gameMock]);
+      expect(result).toEqual([mockGame]);
     });
 
-    it("Should reject when user is not a member of the group", () => {
+    it("Should reject when user is not a member of the group", async () => {
       mockGetDocuments.mockResolvedValueOnce([]);
 
       expect.assertions(1);
-      return getGamesForGroup("user1", "group1")
-        .catch(e => expect(e).toMatch("User is not a member of the group: group1"));
+      await expect(getGamesForGroup("user1", "group1")).rejects.toMatch(
+        "User is not a member of the group: group1"
+      );
     });
   });
-})
+});
