@@ -20,11 +20,21 @@ export const differenceBetweenFirestoreTimestampsInDays = (
   t1: Timestamp,
   t2: Timestamp
 ): number => {
-  // Fix bug: Sett date-klokkeslett til 00:00:00
-  const unixTimestamp1 = t1.toMillis() / 1000;
-  const unixTimestamp2 = t2.toMillis() / 1000;
+  const t1date = t1.toDate();
+  const d1 = new Date(
+    t1date.getFullYear(),
+    t1date.getMonth(),
+    t1date.getDate()
+  );
 
-  const secondsDiff = unixTimestamp2 - unixTimestamp1;
+  const t2date = t2.toDate();
+  const d2 = new Date(
+    t2date.getFullYear(),
+    t2date.getMonth(),
+    t2date.getDate()
+  );
+
+  const secondsDiff = d2.getTime() / 1000 - d1.getTime() / 1000;
   const daysDiff = secondsDiff / (24 * 60 * 60);
 
   return Math.floor(daysDiff);
