@@ -21,7 +21,7 @@ export interface Game extends DocumentData {
   groupId: string;
   adminId: string;
   players: PlayerScore[];
-  winner?: string;
+  winners?: string[];
   timestamp: Timestamp;
   duration?: number;
   status: GameStatus;
