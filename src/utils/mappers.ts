@@ -1,5 +1,8 @@
-import { Group, User, Membership } from "../fire-base/models";
-import { GroupInternal, Member, WithId } from "../types/types";
+import { Timestamp } from "firebase/firestore";
+import { CardItem } from "src/components/Card";
+import { Group, User, Membership, Game } from "../fire-base/models";
+import { GameType, GroupInternal, Member, WithId } from "../types/types";
+import { differenceBetweenFirestoreTimestampsInDays } from "./util";
 
 export const mapGroupAndUsersToGroupInternal = (
   group: WithId<Group>,
@@ -18,5 +21,58 @@ export const mapGroupAndUsersToGroupInternal = (
   return {
     ...group,
     members: statsWithUserInfo,
+  };
+};
+
+export const mapGroupsToCardItems = (
+  groups: GroupInternal[],
+  includeLabels?: boolean,
+): CardItem[] => {
+  return groups.map((group) => {
+    return {
+      key: group.id,
+      title: group.name,
+      labels: includeLabels ? ["Noe relevant info", "Annen info"] : undefined,
+      emoji: group.emoji,
+      href: `/group/${group.id}`,
+    };
+  });
+};
+
+export const mapGameTypesToCardItems = (
+  gameTypes?: GameType[],
+  addGameTypeClickEvent?: () => void
+) => {
+  const gameTypeCards: CardItem[] = gameTypes
+    ? gameTypes.map((gameType) => ({
+      key: gameType.name.concat(gameType.id),
+      title: gameType.name,
+      emoji: gameType.emoji,
+    }))
+    : [];
+
+  return [
+    {
+      key: "new",
+      title: "+ Legg til",
+      onClick: () => addGameTypeClickEvent?.(),
+    },
+    ...gameTypeCards.sort((a, b) => a.title.localeCompare(b.title)),
+  ];
+};
+
+export const mapGameToCardItem = (game: WithId<Game>) => {
+  const endDate = game.duration
+    ? Timestamp.fromMillis(game.duration)
+    : Timestamp.fromDate(new Date());
+
+  return {
+    key: game.id,
+    title: `${differenceBetweenFirestoreTimestampsInDays(
+      endDate,
+      Timestamp.fromDate(new Date())
+    )} dager siden`,
+    labels: [game.gameTypeId, `${game.winner} vant! 🎉`],
+    emoji: game.gameTypeId,
   };
 };

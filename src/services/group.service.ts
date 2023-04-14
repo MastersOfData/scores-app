@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { documentId, where } from "firebase/firestore";
 import {
   addDocument,
@@ -12,7 +13,7 @@ import {
 } from "src/fire-base/db";
 import { Group, User, Membership } from "src/fire-base/models";
 import { generateMembershipDocumentId } from "src/utils/util";
-import { GroupInternal } from "../types/types";
+import { GroupInternal, WithId } from "../types/types";
 import { mapGroupAndUsersToGroupInternal } from "../utils/mappers";
 import { createPincode } from "./pin.service";
 
@@ -63,6 +64,7 @@ export const createGroup = async (
     invitationCode: invitationCode,
     gameTypes: [],
   };
+
   const groupRef = await addDocument(groupsCol, group);
 
   await joinGroup(groupRef.id, currentUserId);
@@ -199,9 +201,43 @@ export const createGameTypeForGroup = async (
 
   const updatedGroup: Group = {
     ...group,
-    gameTypes: group.gameTypes?.concat([gameType]),
+    gameTypes: group.gameTypes?.concat([gameType]) ?? [gameType],
   };
 
   await updateDocument<Group>(groupsCol, groupId, updatedGroup);
   return gameType;
+};
+
+export type UserResult = "WIN" | "DRAW" | "LOSS";
+
+export const updateMultipleMemberships = async (
+  updatedMemberships: WithId<Membership>[],
+  groupId: string
+) => {
+  const updatePromises: Promise<void>[] = [];
+  updatedMemberships.forEach((membership) => {
+    updatePromises.push(
+      new Promise(async (resolve, reject) => {
+        try {
+          updateMembership(
+            generateMembershipDocumentId(membership.userId, groupId),
+            membership
+          );
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      })
+    );
+  });
+  return Promise.all(updatePromises).then((data) => data);
+};
+
+const updateMembership = async (
+  membershipId: string,
+  membership: Membership
+) => {
+  return await updateDocument<Membership>(membershipsCol, membershipId, {
+    ...membership,
+  });
 };

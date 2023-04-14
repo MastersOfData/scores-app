@@ -1,5 +1,5 @@
 import { Timestamp } from "firebase/firestore";
-import { Game } from "src/fire-base/models";
+import { Game, Membership } from "src/fire-base/models";
 import { CardItem } from "src/components/Card";
 import {
   GameType,
@@ -20,11 +20,21 @@ export const differenceBetweenFirestoreTimestampsInDays = (
   t1: Timestamp,
   t2: Timestamp
 ): number => {
-  // Fix bug: Sett date-klokkeslett til 00:00:00
-  const unixTimestamp1 = t1.toMillis() / 1000;
-  const unixTimestamp2 = t2.toMillis() / 1000;
+  const t1date = t1.toDate();
+  const d1 = new Date(
+    t1date.getFullYear(),
+    t1date.getMonth(),
+    t1date.getDate()
+  );
 
-  const secondsDiff = unixTimestamp2 - unixTimestamp1;
+  const t2date = t2.toDate();
+  const d2 = new Date(
+    t2date.getFullYear(),
+    t2date.getMonth(),
+    t2date.getDate()
+  );
+
+  const secondsDiff = d2.getTime() / 1000 - d1.getTime() / 1000;
   const daysDiff = secondsDiff / (24 * 60 * 60);
 
   return Math.floor(daysDiff);
@@ -100,7 +110,7 @@ export const mapGameToCardItem = (game: WithId<Game>) => {
       endDate,
       Timestamp.fromDate(new Date())
     )} dager siden`,
-    labels: [game.gameTypeId, `${game.winner} vant! 🎉`],
+    labels: [game.gameTypeId, `${game.winners} vant! 🎉`],
     emoji: game.gameTypeId,
   };
 };
@@ -160,7 +170,7 @@ export const mapGamesToCardItems = (
 
       const gameType = group.gameTypes?.find((gt) => gt.id === game.gameTypeId);
       if (gameType) {
-        labels.push(`${gameType.name} ${gameType.emoji}`);
+        labels.push(`${gameType.name}`);
       }
 
       if (game.status === "ONGOING" && game.duration) {
@@ -175,9 +185,13 @@ export const mapGamesToCardItems = (
       }
 
       if (game.status === "FINISHED") {
-        const winner = group.members.find((u) => u.userId === game.winner);
-        if (winner) labels.push(`${winner.username} vant! 🎉`);
-        else labels.push("Fullført");
+        if (game.winners && game.winners.length === 1) {
+          const gameWinners = game.winners;
+          const winner = group.members.find((u) => u.userId === gameWinners[0]);
+          if (winner) labels.push(`${winner.username} vant! 🎉`);
+        } else if (game.winners && game.winners.length > 1) {
+          labels.push("Uavgjort");
+        } else labels.push("Fullført");
       }
 
       return {
@@ -187,4 +201,35 @@ export const mapGamesToCardItems = (
         emoji: gameType?.emoji,
       };
     });
+};
+
+export const recalculateMembershipsResults = (
+  memberships: WithId<Membership>[],
+  participants: string[],
+  winners: string[]
+): WithId<Membership>[] => {
+  const multipleWinners = winners.length > 1;
+  const updatedMemberships: WithId<Membership>[] = [];
+
+  participants.forEach((participant) => {
+    const membership = memberships.find(
+      (membership) => membership.userId === participant
+    );
+    if (!membership) return;
+    const isWinner = winners.includes(participant);
+
+    if (isWinner)
+      updatedMemberships.push({
+        ...membership,
+        wins: !multipleWinners ? membership.wins + 1 : membership.wins,
+        draws: multipleWinners ? membership.draws + 1 : membership.draws,
+      });
+    else
+      updatedMemberships.push({
+        ...membership,
+        losses: membership.losses + 1,
+      });
+  });
+
+  return updatedMemberships;
 };
