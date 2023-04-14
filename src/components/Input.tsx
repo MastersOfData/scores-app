@@ -1,13 +1,19 @@
 "use client";
 
-import { FormEvent, MutableRefObject, useEffect, useRef, useState } from "react";
+import {
+  FormEvent,
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import styles from "../styles/Input.module.css";
 
 // Types
 type CommonInputProps<T> = {
   className?: string;
-  valueRef?: MutableRefObject<T>,
-  defaultValue?: T
+  valueRef?: MutableRefObject<T>;
+  defaultValue?: T;
 };
 
 type TextInputProps = CommonInputProps<string> & {
@@ -15,6 +21,7 @@ type TextInputProps = CommonInputProps<string> & {
   onInput?: (value: string) => void;
   maxLength?: number;
   required?: boolean;
+  value?: string;
 };
 
 type NumberInputProps = CommonInputProps<number> & {
@@ -46,18 +53,26 @@ type InputProps =
   | (TextAreaInputProps & { type: "textarea" });
 
 // Input handlers
-function handleTextInput(e: FormEvent, onInput?: (value: string) => void, valueRef?: MutableRefObject<string>) {
-  const elem = e.target as HTMLInputElement | HTMLTextAreaElement
-  const value = elem.value
+function handleTextInput(
+  e: FormEvent,
+  onInput?: (value: string) => void,
+  valueRef?: MutableRefObject<string>
+) {
+  const elem = e.target as HTMLInputElement | HTMLTextAreaElement;
+  const value = elem.value;
   onInput?.(value);
-  if (valueRef) valueRef.current = value
+  if (valueRef) valueRef.current = value;
 }
 
-function handleCheckBoxInput(e: FormEvent, onInput?: (value: boolean) => void, valueRef?: MutableRefObject<boolean>) {
-  const elem = e.target as HTMLInputElement
-  const value = elem.checked
-  onInput?.(value)
-  if (valueRef) valueRef.current = value
+function handleCheckBoxInput(
+  e: FormEvent,
+  onInput?: (value: boolean) => void,
+  valueRef?: MutableRefObject<boolean>
+) {
+  const elem = e.target as HTMLInputElement;
+  const value = elem.checked;
+  onInput?.(value);
+  if (valueRef) valueRef.current = value;
 }
 
 // Input components
@@ -77,13 +92,18 @@ export default function Input({ type, ...props }: InputProps) {
 }
 
 function TextAreaInput({ onInput, valueRef, ...props }: TextAreaInputProps) {
-  return <textarea onInput={(e) => handleTextInput(e, onInput, valueRef)} {...props} />;
+  return (
+    <textarea
+      onInput={(e) => handleTextInput(e, onInput, valueRef)}
+      {...props}
+    />
+  );
 }
 
 function TextInput({ onInput, valueRef, ...props }: TextInputProps) {
   return (
     <input
-      type='text'
+      type="text"
       onInput={(e) => handleTextInput(e, onInput, valueRef)}
       {...props}
     />
@@ -93,7 +113,7 @@ function TextInput({ onInput, valueRef, ...props }: TextInputProps) {
 function EmailInput({ onInput, valueRef, ...props }: TextInputProps) {
   return (
     <input
-      type='email'
+      type="email"
       onInput={(e) => handleTextInput(e, onInput, valueRef)}
       {...props}
     />
@@ -103,7 +123,7 @@ function EmailInput({ onInput, valueRef, ...props }: TextInputProps) {
 function PasswordInput({ onInput, valueRef, ...props }: TextInputProps) {
   return (
     <input
-      type='password'
+      type="password"
       onInput={(e) => handleTextInput(e, onInput, valueRef)}
       {...props}
     />
@@ -142,8 +162,8 @@ function NumberInput({ onInput, defaultValue, ...props }: NumberInputProps) {
 
   return (
     <input
-      type='text'
-      inputMode='numeric'
+      type="text"
+      inputMode="numeric"
       pattern={regexpStr}
       className={styles["number-input"]}
       onInput={handleInput}
@@ -153,24 +173,34 @@ function NumberInput({ onInput, defaultValue, ...props }: NumberInputProps) {
   );
 }
 
-function CheckBoxInput({ onInput, valueRef, defaultValue, ...props }: CheckBoxInputProps) {
+function CheckBoxInput({
+  onInput,
+  valueRef,
+  defaultValue,
+  ...props
+}: CheckBoxInputProps) {
   return (
     <input
-      type='checkbox'
+      type="checkbox"
       onInput={(e) => handleCheckBoxInput(e, onInput, valueRef)}
       defaultChecked={defaultValue}
       {...props}
     />
-  )
+  );
 }
 
-function ToggleInput({ onInput, initialValue, className, valueRef }: ToggleInputProps) {
+function ToggleInput({
+  onInput,
+  initialValue,
+  className,
+  valueRef,
+}: ToggleInputProps) {
   const [yes, setYes] = useState<boolean>(initialValue ?? true);
 
   function handleToggle(value: boolean) {
     setYes(value);
     onInput?.(value);
-    if (valueRef) valueRef.current = value
+    if (valueRef) valueRef.current = value;
   }
 
   return (
