@@ -2,7 +2,7 @@ import withPWA from "next-pwa"
 import runtimeCaching from "next-pwa/cache.js"
 
 /** @type {import('next').NextConfig} */
-const config = {
+const nextConfig = {
   experimental: {
     appDir: true
   },
@@ -10,10 +10,10 @@ const config = {
 
 const isProduction = process.env.NODE_ENV === 'production'
 
-const nextConfig = withPWA({
+const pwaConfig = withPWA({
   dest: "public",
   runtimeCaching,
   disable: !isProduction
-})(config)
+})(nextConfig)
 
-export default nextConfig
+export default pwaConfig
