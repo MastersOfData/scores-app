@@ -7,37 +7,47 @@ import Input from "src/components/Input";
 import styles from "../../styles/SignIn.module.css";
 import { FormEvent, useState } from "react";
 import PageWrapper from "src/components/PageWrapper";
+import Spinner from "../../components/Spinner";
 
 export default function SignInPage() {
   const router = useRouter();
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const searchParams = useSearchParams();
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   async function handleSignIn(e: FormEvent) {
     e.preventDefault();
-    const { signIn } = await import("../../fire-base/auth")
+    setHasSubmitted(true);
+
+    const { signIn } = await import("../../fire-base/auth");
 
     try {
       await signIn(username, password);
       const callbackUrl = searchParams.get("callbackUrl");
       router.push(callbackUrl ?? "/");
+      setHasSubmitted(false);
     } catch (err) {
       console.error(err);
       alert("Oops, something went wrong!");
+      setHasSubmitted(false);
     }
   }
 
+  if (hasSubmitted) {
+    return <Spinner />;
+  }
+
   return (
-    <PageWrapper title="Logg inn" backPath="/">
+    <PageWrapper title='Logg inn' backPath='/'>
       <div className={styles.container}>
         <div className={styles.gamesBanner}>{<GamesBannerIcon />}</div>
         <form onSubmit={handleSignIn} className={styles.form}>
           <div className={styles.inputContainer}>
             <p className={styles.inputLabel}>Email/Brukernavn:</p>
             <Input
-              type="text"
-              placeholder="Brukernavn"
+              type='text'
+              placeholder='Brukernavn'
               onInput={setUsername}
               className={styles.input}
             />
@@ -45,8 +55,8 @@ export default function SignInPage() {
           <div className={styles.inputContainer}>
             <p className={styles.inputLabel}>Passord:</p>
             <Input
-              type="password"
-              placeholder="Passord"
+              type='password'
+              placeholder='Passord'
               onInput={setPassword}
               className={styles.input}
             />
@@ -58,9 +68,9 @@ export default function SignInPage() {
           </div>
           <div className={styles.buttonContainer}>
             <Button
-              type="button"
+              type='button'
               withLink
-              href="/register"
+              href='/register'
               variant={ButtonVariant.Small}
               color={ButtonColor.Pink}
             >

@@ -3,7 +3,6 @@
 import { FC, useState } from "react";
 import styles from "src/styles/RegisterResult.module.css";
 import PageWrapper from "src/components/PageWrapper";
-import { User } from "src/fire-base/models";
 import { RadioCards } from "src/components/RadioCards";
 import TitleWithInfo from "src/components/TitleWithInfo";
 import { CheckboxCards } from "src/components/CheckboxCards";
@@ -13,25 +12,13 @@ import { useAppDispatch, useGetGroupsForCurrentUser } from "src/store/hooks";
 import { useRouter } from "next/navigation";
 import { createGameAction } from "src/store/game.reducer";
 import { DataStatus } from "src/store/store.types";
-import { WithId } from "src/types/types";
 import { useUser } from "src/services/user.service";
 
 const CreateGamePage: FC = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const groupsWithStatus = useGetGroupsForCurrentUser();
-  const { user } = useUser()
-
-  //Mock users
-  const users: WithId<User>[] = [
-    { id: "123", email: "birger@hvl.no", username: "xXbirgerXx" },
-    { id: "911", email: "atle@hvl.no", username: "atle" },
-    {
-      id: "NUGO74z5Z5dA2lW71UCshMYIF2D3",
-      email: "asd@asd.com",
-      username: "atlebirger",
-    },
-  ];
+  const { user } = useUser();
 
   const [isGroupGame, setIsGroupGame] = useState(true);
   const [selectedGroup, setSelectedGroup] = useState<string | undefined>();
@@ -68,6 +55,8 @@ const CreateGamePage: FC = () => {
   ) {
     return <p>Loading...</p>;
   }
+
+  const group = groupsWithStatus.data.find((g) => g.id === selectedGroup);
 
   return (
     <PageWrapper title='Start spill' backPath='/game'>
@@ -129,7 +118,7 @@ const CreateGamePage: FC = () => {
           </div>
         </>
       ) : null}
-      <div>
+      {/* <div>
         <TitleWithInfo
           title='Ønsker du lag?'
           infoText='Ønsker du at deltagerne skal deles inn i lag?'
@@ -143,20 +132,22 @@ const CreateGamePage: FC = () => {
             />
           </div>
         </div>
-      </div>
-      <div>
-        <h2 className={styles["title-centered"]}>Velg deltagere</h2>
-        <div className={styles["groups-container"]}>
-          <CheckboxCards
-            items={users.map((user, i) => ({
-              title: user.username,
-              key: i.toString(),
-            }))}
-            checked={participants}
-            setChecked={setParticipants}
-          />
+      </div> */}
+      {group && group.members && selectedGame && (
+        <div>
+          <h2 className={styles["title-centered"]}>Velg deltagere</h2>
+          <div className={styles["groups-container"]}>
+            <CheckboxCards
+              items={group.members.map((user, i) => ({
+                title: user.username,
+                key: i.toString(),
+              }))}
+              checked={participants}
+              setChecked={setParticipants}
+            />
+          </div>
         </div>
-      </div>
+      )}
       <div className={styles["button-container"]}>
         <Button
           variant={ButtonVariant.Round}
