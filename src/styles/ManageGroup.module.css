@@ -27,3 +27,64 @@
   height: 2.5rem;
   width: min(60%, 18rem);
 }
+
+.members-list-container {
+  padding-top: 2rem;
+  padding-bottom: 1rem;
+  width: 30rem;
+}
+
+.remove-members-container {
+  padding-block: 2rem;
+}
+
+.leaderboard {
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius-soft);
+  border-spacing: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.leaderboard thead {
+  padding: 0;
+}
+
+.leaderboard th {
+  background-color: var(--bg-secondary);
+  font-size: var(--fs-300);
+  text-align: center;
+  padding: 8px;
+  font-weight: 500;
+  color: rgb(255, 255, 255, 0.6);
+}
+
+.leaderboard td {
+  font-size: var(--fs-200);
+  padding: 8px;
+  text-align: center;
+  font-weight: 500;
+  color: white;
+}
+
+.leaderboard tr:nth-of-type(odd) {
+  background-color: rgb(255, 255, 255, 0.07);
+}
+
+.text-align-left {
+  text-align: left !important;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.button {
+  background-color: transparent;
+}
+
+.primary-button {
+  margin-top: 1rem;
+}
