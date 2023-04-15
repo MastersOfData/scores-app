@@ -1,8 +1,9 @@
 "use client";
 
-import { FC, useRef, useState } from "react";
+import { FC, useState } from "react";
 import { RemoveIcon } from "src/assets/icons/RemoveIcon";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
+import { CheckboxCards } from "src/components/CheckboxCards";
 import Input from "src/components/Input";
 import PageWrapper from "src/components/PageWrapper";
 import Spinner from "src/components/Spinner";
@@ -12,6 +13,7 @@ import { joinGroupByInvitationCodeAction } from "src/store/groupsInternal.reduce
 import { useAppDispatch, useGetGroupsForCurrentUser } from "src/store/hooks";
 import { DataStatus } from "src/store/store.types";
 import styles from "src/styles/ManageGroup.module.css";
+import { Member } from "src/types/types";
 
 interface ManagePageProps {
   params: { groupId: string };
@@ -22,6 +24,7 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
   const { groupId } = params;
   const [username, setUsername] = useState<string>("");
   const groupsWithStatus = useGetGroupsForCurrentUser();
+  const [markedMembers, setMarkedMembers] = useState<string[]>([]);
 
   if (
     groupsWithStatus.status === DataStatus.LOADING ||
@@ -46,6 +49,15 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
     }
     setUsername("");
   };
+
+  const onClick = (member: Member) => {
+    console.log("click");
+    const membersMarked = markedMembers;
+    membersMarked.push(member.username);
+    setMarkedMembers(membersMarked);
+  };
+
+  const onConfirm = async () => {};
 
   return (
     <PageWrapper
@@ -92,9 +104,15 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
                       {member.username}
                     </td>
                     <td>
-                      <button className={styles["icon-container"]}>
-                        <RemoveIcon />
-                      </button>
+                      <div className={styles["button-container"]}>
+                        <Button
+                          className={styles["button"]}
+                          variant={ButtonVariant.Small}
+                          onClick={() => onClick(member)}
+                        >
+                          <RemoveIcon />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -107,7 +125,20 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
             title="Fjernede medlemmer"
             infoText="Medlemmer som vil bli fjernet"
           />
+          <div className={styles["groups-container"]}>
+            <CheckboxCards
+              items={markedMembers.map((user, i) => ({
+                title: user,
+                key: i.toString(),
+              }))}
+              checked={markedMembers}
+              setChecked={setMarkedMembers}
+            />
+          </div>
         </div>
+        <Button variant={ButtonVariant.Medium} color={ButtonColor.Red}>
+          Fjern
+        </Button>
       </div>
     </PageWrapper>
   );

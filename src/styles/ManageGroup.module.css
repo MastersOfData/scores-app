@@ -29,11 +29,12 @@
 }
 
 .members-list-container {
-  padding-block: 3rem;
+  padding-top: 2rem;
+  padding-bottom: 1rem;
 }
 
 .remove-members-container {
-  padding-block: 1rem;
+  padding-block: 2rem;
 }
 
 .leaderboard {
@@ -73,11 +74,12 @@
   text-align: left !important;
 }
 
-.icon-container {
+.button-container {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
-  width: fit-content;
-  height: fit-content;
+}
+
+.button {
   background-color: transparent;
 }
