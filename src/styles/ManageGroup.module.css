@@ -31,6 +31,7 @@
 .members-list-container {
   padding-top: 2rem;
   padding-bottom: 1rem;
+  width: 30rem;
 }
 
 .remove-members-container {
@@ -82,4 +83,8 @@
 
 .button {
   background-color: transparent;
+}
+
+.primary-button {
+  margin-top: 1rem;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { RemoveIcon } from "src/assets/icons/RemoveIcon";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
 import { CheckboxCards } from "src/components/CheckboxCards";
@@ -13,18 +13,24 @@ import { joinGroupByInvitationCodeAction } from "src/store/groupsInternal.reduce
 import { useAppDispatch, useGetGroupsForCurrentUser } from "src/store/hooks";
 import { DataStatus } from "src/store/store.types";
 import styles from "src/styles/ManageGroup.module.css";
-import { Member } from "src/types/types";
 
 interface ManagePageProps {
   params: { groupId: string };
 }
 
 const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
+  const groupsWithStatus = useGetGroupsForCurrentUser();
   const dispatch = useAppDispatch();
   const { groupId } = params;
+  const group = groupsWithStatus.data?.find((group) => group.id === groupId);
+
   const [username, setUsername] = useState<string>("");
-  const groupsWithStatus = useGetGroupsForCurrentUser();
-  const [markedMembers, setMarkedMembers] = useState<string[]>([]);
+  const [removedMembers, setRemovedMembers] = useState<string[]>([]);
+  const [remainingMembers, setRemainingMembers] = useState<string[]>([]);
+
+  useEffect(() => {
+    setRemainingMembers(group?.members.map((member) => member.username) ?? []);
+  }, [group?.members]);
 
   if (
     groupsWithStatus.status === DataStatus.LOADING ||
@@ -32,7 +38,6 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
   ) {
     return <Spinner />;
   }
-  const group = groupsWithStatus.data?.find((group) => group.id === groupId);
 
   const onAdd = async () => {
     if (username && group) {
@@ -50,14 +55,19 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
     setUsername("");
   };
 
-  const onClick = (member: Member) => {
-    console.log("click");
-    const membersMarked = markedMembers;
-    membersMarked.push(member.username);
-    setMarkedMembers(membersMarked);
+  const onRemove = (username: string) => {
+    const newRemoved = removedMembers;
+    const newRemaining = remainingMembers.filter(
+      (user) => !(user === username)
+    );
+    newRemoved.push(username);
+    setRemovedMembers(newRemoved);
+    setRemainingMembers(newRemaining);
   };
 
-  const onConfirm = async () => {};
+  const onConfirm = async () => {
+    console.log("Ikke implementert");
+  };
 
   return (
     <PageWrapper
@@ -84,61 +94,70 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
             Legg til
           </Button>
         </div>
-        <div className={styles["members-list-container"]}>
-          <TitleWithInfo
-            title="Medlemmer"
-            infoText="Fjern medlemmer ved å trykke på rødt skilt"
-          />
-          <table className={styles["leaderboard"]}>
-            <thead>
-              <tr>
-                <th className={styles["text-align-left"]}>Medlem</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {group?.members.map((member, index) => {
-                return (
-                  <tr key={member.userId}>
-                    <td className={styles["text-align-left"]}>
-                      {member.username}
-                    </td>
-                    <td>
-                      <div className={styles["button-container"]}>
-                        <Button
-                          className={styles["button"]}
-                          variant={ButtonVariant.Small}
-                          onClick={() => onClick(member)}
-                        >
-                          <RemoveIcon />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        <div className={styles["remove-members-container"]}>
-          <TitleWithInfo
-            title="Fjernede medlemmer"
-            infoText="Medlemmer som vil bli fjernet"
-          />
-          <div className={styles["groups-container"]}>
-            <CheckboxCards
-              items={markedMembers.map((user, i) => ({
-                title: user,
-                key: i.toString(),
-              }))}
-              checked={markedMembers}
-              setChecked={setMarkedMembers}
+        {remainingMembers.length > 0 && (
+          <div className={styles["members-list-container"]}>
+            <TitleWithInfo
+              title="Medlemmer"
+              infoText="Fjern medlemmer ved å trykke på rødt skilt"
             />
+            <table className={styles["leaderboard"]}>
+              <thead>
+                <tr>
+                  <th className={styles["text-align-left"]}>Medlem</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {remainingMembers.map((username, i) => {
+                  return (
+                    <tr key={i.toString()}>
+                      <td className={styles["text-align-left"]}>{username}</td>
+                      <td>
+                        <div className={styles["button-container"]}>
+                          <Button
+                            className={styles["button"]}
+                            variant={ButtonVariant.Small}
+                            onClick={() => onRemove(username)}
+                          >
+                            <RemoveIcon />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-        </div>
-        <Button variant={ButtonVariant.Medium} color={ButtonColor.Red}>
-          Fjern
-        </Button>
+        )}
+        {removedMembers.length > 0 && (
+          <>
+            <div className={styles["remove-members-container"]}>
+              <TitleWithInfo
+                title="Fjernede medlemmer"
+                infoText="Trykk på medlem for å angre"
+              />
+              <div className={styles["groups-container"]}>
+                <CheckboxCards
+                  items={removedMembers.map((username, i) => ({
+                    title: username,
+                    key: i.toString(),
+                  }))}
+                  checked={removedMembers}
+                  setChecked={setRemovedMembers}
+                />
+              </div>
+            </div>
+            <Button
+              variant={ButtonVariant.Medium}
+              color={ButtonColor.Red}
+              className={styles["primary-button"]}
+              onClick={() => onConfirm()}
+            >
+              Fjern
+            </Button>
+          </>
+        )}
       </div>
     </PageWrapper>
   );
