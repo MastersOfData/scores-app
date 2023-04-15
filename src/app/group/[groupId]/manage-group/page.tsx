@@ -13,6 +13,7 @@ import { joinGroupByInvitationCodeAction } from "src/store/groupsInternal.reduce
 import { useAppDispatch, useGetGroupsForCurrentUser } from "src/store/hooks";
 import { DataStatus } from "src/store/store.types";
 import styles from "src/styles/ManageGroup.module.css";
+import { Member } from "src/types/types";
 
 interface ManagePageProps {
   params: { groupId: string };
