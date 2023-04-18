@@ -257,7 +257,7 @@ describe("GroupService", () => {
       await joinGroupByInvitationCode("123456", "user1");
 
       expect(mockSetDocument).toBeCalledWith(
-        db.membershipsCol,
+        db.collections.memberships,
         "user1-group1",
         mockUserGroupStatistic
       );
@@ -380,7 +380,7 @@ describe("GroupService", () => {
       await createGameTypeForGroup(mockGroups[0].id, "name", "emoji");
 
       expect(mockUpdateDocument).toBeCalledWith(
-        db.groupsCol,
+        db.collections.groups,
         mockGroups[0].id,
         expectedUpdatedGroup
       );

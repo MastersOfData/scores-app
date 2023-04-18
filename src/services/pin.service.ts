@@ -1,31 +1,17 @@
-import {
-  getDocument,
-  groupsCol,
-  pincodesDocumentId,
-  setDocument,
-} from "src/fire-base/db";
+
+import { where } from "firebase/firestore";
+import { collections, getDocuments } from "src/fire-base/db";
 import { generatePincode } from "src/utils/util";
 
-type PincodeDocumentData = {
-  pincodes: string[];
-};
-
-const getPincodes = async () => {
-  return await getDocument<PincodeDocumentData>(groupsCol, pincodesDocumentId);
-};
-
 export const createPincode = async () => {
-  const pincodes = (await getPincodes())?.pincodes;
+  while (true) {
+    const pincode = generatePincode()
 
-  let pincode: string;
+    const [ group ] = await getDocuments({
+      collection: collections.groups,
+      constraints: [where("pincode", "==", pincode)]
+    })
 
-  do {
-    pincode = generatePincode();
-  } while (pincodes && pincodes.includes(pincode));
-
-  await setDocument<PincodeDocumentData>(groupsCol, pincodesDocumentId, {
-    pincodes: [...(pincodes ?? []), pincode],
-  });
-
-  return pincode;
+    if (!group) return pincode
+  }
 };

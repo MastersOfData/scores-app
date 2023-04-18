@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 import { store } from "../store/store";
 import { createContext, FC, useEffect, useState } from "react";
 import { onAuthStateChanged } from "src/fire-base/auth";
-import { getDocument } from "src/fire-base/db";
+import { collections, getDocument } from "src/fire-base/db";
 
 export type ProviderProps = {
   children: React.ReactNode
@@ -33,7 +33,7 @@ const UserContextProvider: FC<ProviderProps> = ({ children }) => {
     return onAuthStateChanged(async _user => {
       setUser(_user)
       setLoading(false)
-      const userData = _user ? await getDocument<UserData>("users", _user.uid) : null
+      const userData = _user ? await getDocument(collections.users, _user.uid) : null
       setUserData(userData)
     })
   }, [])

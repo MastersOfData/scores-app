@@ -5,12 +5,10 @@ import {
   deleteDocument,
   getDocument,
   getDocuments,
-  groupsCol,
   setDocument,
   updateDocument,
-  membershipsCol,
-  usersCol,
   Document,
+  collections,
 } from "src/fire-base/db";
 import { Group, User, Membership } from "src/fire-base/models";
 import { generateMembershipDocumentId } from "src/utils/util";
@@ -19,15 +17,15 @@ import { mapGroupAndUsersToGroupInternal } from "../utils/mappers";
 import { createPincode } from "./pin.service";
 
 export const getGroupsForCurrentUser = async (userId: string) => {
-  const groupIds = await getDocuments<Membership>({
-    collectionId: membershipsCol,
+  const groupIds = await getDocuments({
+    collection: collections.memberships,
     constraints: [where("userId", "==", userId)],
   }).then((groups) => [...new Set(groups.map((group) => group.groupId))]);
 
   const groups =
     groupIds.length > 0
-      ? await getDocuments<Group>({
-          collectionId: groupsCol,
+      ? await getDocuments({
+          collection: collections.groups,
           constraints: [where(documentId(), "in", groupIds)],
         }).then((res) => res)
       : [];
@@ -46,9 +44,9 @@ const joinGroup = async (groupId: string, userId: string) => {
     losses: 0,
   };
 
-  await setDocument(membershipsCol, docId, userGroupStatistic);
+  await setDocument(collections.memberships, docId, userGroupStatistic);
 
-  return await getDocument<Group>(groupsCol, docId);
+  return await getDocument(collections.groups, docId);
 };
 
 export const createGroup = async (
@@ -66,7 +64,7 @@ export const createGroup = async (
     gameTypes: [],
   };
 
-  const groupRef = await addDocument(groupsCol, group);
+  const groupRef = await addDocument(collections.groups, group);
 
   await joinGroup(groupRef.id, currentUserId);
   return getGroupInternal(groupRef.id);
@@ -77,7 +75,7 @@ export const joinGroupByInvitationCode = async (
   userId: string
 ) => {
   const groupArray = await getDocuments<Group>({
-    collectionId: groupsCol,
+    collection: collections.groups,
     constraints: [where("invitationCode", "==", invitationCode)],
   });
 
@@ -85,7 +83,7 @@ export const joinGroupByInvitationCode = async (
     return Promise.reject(`Gruppe med kode ${invitationCode} finnes ikke.`);
 
   const membership = await getDocuments<Membership>({
-    collectionId: membershipsCol,
+    collection: collections.memberships,
     constraints: [
       where("userId", "==", userId),
       where("groupId", "==", groupArray[0].id),
@@ -107,30 +105,30 @@ export const joinGroupByInvitationCode = async (
     losses: 0,
   };
 
-  await setDocument(membershipsCol, docId, userGroupStatistic);
+  await setDocument(collections.memberships, docId, userGroupStatistic);
 
   return await getGroupInternal(groupId);
 };
 
 export const removeUserFromGroup = async (userId: string, groupId: string) => {
   const statsId = generateMembershipDocumentId(userId, groupId);
-  await deleteDocument(membershipsCol, statsId);
+  await deleteDocument(collections.memberships, statsId);
 };
 
 export const getStatsForAllUsersInGroup = async (groupId: string) => {
-  return await getDocuments<Membership>({
-    collectionId: membershipsCol,
+  return await getDocuments({
+    collection: collections.memberships,
     constraints: [where("groupId", "==", groupId)],
   }).then((res) => res);
 };
 
 export const getGroupInternal = async (groupId: string) => {
-  const group = await getDocument<Group>(groupsCol, groupId);
+  const group = await getDocument(collections.groups, groupId);
   if (!group) return Promise.reject();
 
   const stats = await getStatsForAllUsersInGroup(groupId);
-  const users = await getDocuments<User>({
-    collectionId: usersCol,
+  const users = await getDocuments({
+    collection: collections.users,
     constraints: [
       where(
         documentId(),
@@ -153,8 +151,8 @@ export const getGroupsInternalForCurrentUser = async (userId: string) => {
       new Promise(async (resolve, reject) => {
         try {
           const stats = await getStatsForAllUsersInGroup(group.id);
-          const users = await getDocuments<User>({
-            collectionId: usersCol,
+          const users = await getDocuments({
+            collection: collections.users,
             constraints: [
               where(
                 documentId(),
@@ -184,7 +182,7 @@ export const createGameTypeForGroup = async (
   gameTypeName: string,
   gameTypeEmoji: string
 ) => {
-  const group = await getDocument<Group>(groupsCol, groupId);
+  const group = await getDocument(collections.groups, groupId);
   if (!group) return Promise.reject();
 
   const nextId =
@@ -205,7 +203,7 @@ export const createGameTypeForGroup = async (
     gameTypes: group.gameTypes?.concat([gameType]) ?? [gameType],
   };
 
-  await updateDocument<Group>(groupsCol, groupId, updatedGroup);
+  await updateDocument(collections.groups, groupId, updatedGroup);
   return gameType;
 };
 
@@ -238,7 +236,7 @@ const updateMembership = async (
   membershipId: string,
   membership: Membership
 ) => {
-  return await updateDocument<Membership>(membershipsCol, membershipId, {
+  return await updateDocument(collections.memberships, membershipId, {
     ...membership,
   });
 };

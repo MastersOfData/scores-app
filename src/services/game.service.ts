@@ -1,10 +1,9 @@
 import { Timestamp, where } from "firebase/firestore";
 import {
   addDocument,
-  gamesCol,
+  collections,
   getDocument,
   getDocuments,
-  membershipsCol,
   updateDocument,
 } from "src/fire-base/db";
 import { Game, Membership } from "src/fire-base/models";
@@ -43,8 +42,8 @@ export const createGame = async (userId: string, data: CreateGameData) => {
     duration: 0,
   };
 
-  const gameRef = await addDocument(gamesCol, game);
-  const createdGame = await getDocument<Game>(gamesCol, gameRef.id);
+  const gameRef = await addDocument(collections.games, game);
+  const createdGame = await getDocument(collections.games, gameRef.id);
 
   if (!createdGame) return Promise.reject();
 
@@ -75,8 +74,8 @@ export const registerResult = async (
     winners: data.winners,
   };
 
-  const gameRef = await addDocument(gamesCol, game);
-  const createdGame = await getDocument<Game>(gamesCol, gameRef.id);
+  const gameRef = await addDocument(collections.games, game);
+  const createdGame = await getDocument(collections.games, gameRef.id);
 
   if (!createdGame) return Promise.reject();
 
@@ -84,19 +83,19 @@ export const registerResult = async (
 };
 
 export const updateGame = async (gameId: string, data: UpdateGameData) => {
-  const game = await getDocument<Game>(gamesCol, gameId);
+  const game = await getDocument(collections.games, gameId);
 
   if (!game) return Promise.reject(`Game not found: ${gameId}`);
 
-  return await updateDocument<Game>(gamesCol, gameId, {
+  return await updateDocument(collections.games, gameId, {
     ...data,
     duration: calculateDuration(game),
   });
 };
 
 export const getGamesForGroup = async (userId: string, groupId: string) => {
-  const membership = await getDocuments<Membership>({
-    collectionId: membershipsCol,
+  const membership = await getDocuments({
+    collection: collections.memberships,
     constraints: [
       where("userId", "==", userId),
       where("groupId", "==", groupId),
@@ -106,8 +105,8 @@ export const getGamesForGroup = async (userId: string, groupId: string) => {
   if (membership.length === 0)
     return Promise.reject(`User is not a member of the group: ${groupId}`);
 
-  const games = await getDocuments<Game>({
-    collectionId: gamesCol,
+  const games = await getDocuments({
+    collection: collections.games,
     constraints: [where("groupId", "==", groupId)],
   });
 
@@ -117,11 +116,11 @@ export const getGamesForGroup = async (userId: string, groupId: string) => {
 };
 
 export const getGameById = async (userId: string, gameId: string) => {
-  const game = await getDocument<Game>(gamesCol, gameId);
+  const game = await getDocument(collections.games, gameId);
   if (!game) return Promise.reject(`Spill med id '${gameId}' finnes ikke`);
 
-  const membership = await getDocuments<Membership>({
-    collectionId: membershipsCol,
+  const membership = await getDocuments({
+    collection: collections.memberships,
     constraints: [
       where("userId", "==", userId),
       where("groupId", "==", game.groupId),
