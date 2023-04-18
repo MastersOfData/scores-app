@@ -54,7 +54,7 @@ export default function GameResult({ gameId }: GameResultProps) {
   return (
     <div className={styles.wrapper}>
       <CenteredSmallCards items={items}/>
-      <div>
+      <div className={styles["winner-wrapper"]}>
         <strong>Vinner &#127881;</strong>
         <p>{JSON.stringify(game.winners)}</p>
       </div>

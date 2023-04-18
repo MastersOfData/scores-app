@@ -3,3 +3,8 @@
   place-content: center;
   gap: 2rem;
 }
+
+.winner-wrapper {
+  display: grid;
+  place-content: center;
+}

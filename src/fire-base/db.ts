@@ -21,13 +21,14 @@ import {
 export const usersCol = "users";
 export const groupsCol = "groups";
 export const gamesCol = "games";
+export const gameActionsCol = "gameActions";
 export const membershipsCol = "memberships";
 export const pincodesDocumentId = "usedPincodes";
 
 // Types
 export type Document<T extends DocumentData> = T & { id: string }
 
-export type Collection = typeof usersCol | typeof groupsCol | typeof gamesCol | typeof membershipsCol
+export type Collection = typeof usersCol | typeof groupsCol | typeof gamesCol | typeof gameActionsCol | typeof membershipsCol
 
 export type QueryDefinition = {
   collectionId: Collection,

@@ -27,6 +27,19 @@ export interface Game extends DocumentData {
   status: GameStatus;
 }
 
+export enum GameActionType {
+  ADD_POINTS
+}
+
+export interface GameAction extends DocumentData {
+  gameId: string,
+  actorId: string,
+  subjectId: string,
+  actionType: GameActionType
+  value?: number,
+  timestamp: Timestamp
+}
+
 export interface Membership extends DocumentData {
   userId: string;
   groupId: string;
