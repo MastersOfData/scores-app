@@ -82,7 +82,7 @@
 }
 
 .button {
-  background-color: transparent;
+  background-color: transparent !important;
 }
 
 .primary-button {

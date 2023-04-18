@@ -159,12 +159,20 @@ const groups = createSlice({
       .addCase(removeUserFromGroupAction.fulfilled, (state, action) => {
         state.update.status = DataStatus.COMPLETED;
         state.update.dataId = undefined;
-        state.data?.forEach((group) => {
-          group.id === action.payload.groupId
-            ? group.members.filter(
-                (member) => member?.id === action.payload.userId
-              )
-            : group;
+
+        state.data = state.data?.map((group) => {
+          if (group.id === action.payload.groupId) {
+            const members = group.members.filter(
+              (member) => member.userId !== action.meta.arg.userId
+            );
+
+            return {
+              ...group,
+              members,
+            };
+          }
+
+          return group;
         });
       })
       .addCase(removeUserFromGroupAction.rejected, (state) => {
