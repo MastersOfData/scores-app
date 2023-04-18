@@ -9,6 +9,19 @@
     "lint": "next lint",
     "test": "jest"
   },
+  "jest": {
+    "verbose": true,
+    "preset": "ts-jest",
+    "resolver": "<rootDir>/jest.resolver.js",
+    "transform": {
+      "^.+\\.(ts|tsx)?$": "ts-jest"
+    },
+    "testEnvironment": "node",
+    "rootDir": "./",
+    "modulePaths": [
+      "<rootDir>"
+    ]
+  },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.3",
     "@types/react-dom": "18.0.11",
@@ -20,14 +33,10 @@
     "react-redux": "^8.0.5",
     "redux": "^4.2.1"
   },
-  "jest": {
-    "verbose": true,
-    "preset": "ts-jest",
-    "testEnvironment": "node"
-  },
   "devDependencies": {
     "@types/firebase": "^3.2.1",
     "@types/jest": "^29.4.0",
+    "@types/next-pwa": "^5.6.2",
     "@types/node": "18.14.6",
     "@types/react": "18.0.28",
     "@typescript-eslint/eslint-plugin": "^5.54.0",

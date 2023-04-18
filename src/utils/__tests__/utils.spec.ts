@@ -52,6 +52,22 @@ describe("differenceBetweenFirestoreTimestampsInDays", () => {
       )
     ).toBe(37 + 365);
   });
+  it("calculates the correct difference in days in different years", () => {
+    expect(
+      differenceBetweenFirestoreTimestampsInDays(
+        Timestamp.fromDate(new Date(2023, 2, 1, 13)),
+        Timestamp.fromDate(new Date(2023, 2, 5))
+      )
+    ).toBe(4);
+  });
+  it("calculates the correct difference in days in different years", () => {
+    expect(
+      differenceBetweenFirestoreTimestampsInDays(
+        Timestamp.fromDate(new Date(2023, 2, 1, 13)),
+        Timestamp.fromDate(new Date(2023, 2, 5, 14))
+      )
+    ).toBe(4);
+  });
 });
 
 describe("calculatDuration", () => {
@@ -74,7 +90,7 @@ describe("calculatDuration", () => {
         points: 420,
       },
     ],
-    winner: "",
+    winners: [],
     timestamp: Timestamp.fromDate(new Date(2023, 2, 21)),
     status: "ONGOING",
   };

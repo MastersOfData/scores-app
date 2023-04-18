@@ -3,16 +3,21 @@
   text-align: center;
   background-color: var(--bg-secondary);
   color: var(--clr-secondary);
-  border-radius: var(--border-radius-hard);
-  padding: calc(0.2 * var(--padding-y)) var(--padding-x);
+  border-radius: var(--border-radius-soft);
+  padding: calc(0.3 * var(--padding-y)) var(--padding-x);
+  margin-bottom: 0.2rem;
+  margin-top: 0.4rem;
   transform: scaleY(0);
   transition: transform 200ms;
   max-width: fit-content;
   font-size: 0.8rem;
+  height: 0;
+  font-size: 11px;
 }
 
 .show {
   transform: scaleY(1);
+  height: fit-content;
 }
 
 .info-btn {

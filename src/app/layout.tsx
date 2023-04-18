@@ -13,7 +13,8 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "Score Tracker",
-  manifest: "/manifest.json"
+  manifest: "/manifest.json",
+  icons: ["ios/32.png"]
 };
 
 export default function RootLayout({

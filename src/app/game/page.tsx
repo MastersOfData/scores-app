@@ -19,7 +19,7 @@ export default function GamePage() {
           >
             <ResultsIcon />
           </Button>
-          <p className={homeStyles["label"]}>Registrer resultat</p>
+          <p className={homeStyles["label"]}>Nytt resultat</p>
         </div>
         <div className={homeStyles["button-container"]}>
           <Button

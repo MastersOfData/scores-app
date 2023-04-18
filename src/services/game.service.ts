@@ -17,6 +17,13 @@ export interface CreateGameData {
   participants: string[];
 }
 
+export interface RegisterResultData {
+  groupId: string;
+  gameTypeId: string;
+  participants: string[];
+  winners: string[];
+}
+
 export type UpdateGameData = Pick<Game, "winner" | "status">;
 
 export const createGame = async (userId: string, data: CreateGameData) => {
@@ -34,6 +41,38 @@ export const createGame = async (userId: string, data: CreateGameData) => {
     timestamp: Timestamp.fromDate(new Date()),
     status: "ONGOING",
     duration: 0,
+  };
+
+  const gameRef = await addDocument(gamesCol, game);
+  const createdGame = await getDocument<Game>(gamesCol, gameRef.id);
+
+  if (!createdGame) return Promise.reject();
+
+  return createdGame;
+};
+
+export const registerResult = async (
+  userId: string,
+  data: RegisterResultData
+) => {
+  const players = data.participants.map((participantId) => {
+    const isWinner = data.winners.includes(participantId);
+    return {
+      playerId: participantId,
+      points: isWinner ? 1 : 0,
+    };
+  });
+
+  const game: Game = {
+    groupId: data.groupId,
+    gameTypeId: data.gameTypeId,
+    allowTeams: false,
+    adminId: userId,
+    players,
+    timestamp: Timestamp.fromDate(new Date()),
+    status: "FINISHED",
+    duration: 0,
+    winners: data.winners,
   };
 
   const gameRef = await addDocument(gamesCol, game);
@@ -75,4 +114,23 @@ export const getGamesForGroup = async (userId: string, groupId: string) => {
   games.map((game) => (game.duration = calculateDuration(game)));
 
   return games;
+};
+
+export const getGameById = async (userId: string, gameId: string) => {
+  const game = await getDocument<Game>(gamesCol, gameId);
+  if (!game) return Promise.reject(`Spill med id '${gameId}' finnes ikke`);
+
+  const membership = await getDocuments<Membership>({
+    collectionId: membershipsCol,
+    constraints: [
+      where("userId", "==", userId),
+      where("groupId", "==", game.groupId),
+    ],
+  });
+
+  if (membership.length === 0)
+    return Promise.reject(`Du har ikke tilgang til spillet`);
+
+  game.duration = calculateDuration(game);
+  return game;
 };

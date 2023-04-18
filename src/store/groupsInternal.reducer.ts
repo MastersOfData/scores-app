@@ -1,12 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { Membership } from "../fire-base/models";
 import {
   createGameTypeForGroup,
   createGroup,
   getGroupsInternalForCurrentUser,
   joinGroupByInvitationCode,
   removeUserFromGroup,
+  updateMultipleMemberships,
 } from "../services/group.service";
-import { GroupInternal } from "../types/types";
+import { GroupInternal, WithId } from "../types/types";
 import { DataStatus, DataWithStatus } from "./store.types";
 
 type GroupsInternalState = DataWithStatus<GroupInternal[] | null>;
@@ -90,6 +92,20 @@ export const createGameTypeAction = createAsyncThunk(
   }
 );
 
+export const updateGroupMembershipsAction = createAsyncThunk(
+  "groups/update-memberships",
+  async ({
+    memberships,
+    groupId,
+  }: {
+    memberships: WithId<Membership>[];
+    groupId: string;
+  }) => {
+    const res = await updateMultipleMemberships(memberships, groupId);
+    return res;
+  }
+);
+
 const groups = createSlice({
   name: "groups",
   initialState: initialState,
@@ -143,12 +159,20 @@ const groups = createSlice({
       .addCase(removeUserFromGroupAction.fulfilled, (state, action) => {
         state.update.status = DataStatus.COMPLETED;
         state.update.dataId = undefined;
-        state.data?.forEach((group) => {
-          group.id === action.payload.groupId
-            ? group.members.filter(
-                (member) => member?.id === action.payload.userId
-              )
-            : group;
+
+        state.data = state.data?.map((group) => {
+          if (group.id === action.payload.groupId) {
+            const members = group.members.filter(
+              (member) => member.userId !== action.meta.arg.userId
+            );
+
+            return {
+              ...group,
+              members,
+            };
+          }
+
+          return group;
         });
       })
       .addCase(removeUserFromGroupAction.rejected, (state) => {
@@ -173,6 +197,42 @@ const groups = createSlice({
         });
       })
       .addCase(createGameTypeAction.rejected, (state) => {
+        state.update.dataId = undefined;
+        state.update.status = DataStatus.ERROR;
+      })
+      .addCase(updateGroupMembershipsAction.pending, (state, action) => {
+        state.update.dataId = action.meta.arg.groupId;
+        state.update.status = DataStatus.LOADING;
+      })
+      .addCase(updateGroupMembershipsAction.fulfilled, (state, action) => {
+        state.update.dataId = undefined;
+        state.update.status = DataStatus.COMPLETED;
+
+        const updatedMemberships = action.meta.arg.memberships;
+
+        state.data = state.data?.map((group) => {
+          if (group.id === action.meta.arg.groupId) {
+            // Maps original memberships with the updated ones
+            const groupMembers = group.members.map((member) => {
+              const updatedMembership = updatedMemberships.find(
+                (m) => m.userId === member.userId
+              );
+              return {
+                ...member,
+                ...updatedMembership,
+              };
+            });
+
+            return {
+              ...group,
+              members: groupMembers,
+            };
+          } else {
+            return group;
+          }
+        });
+      })
+      .addCase(updateGroupMembershipsAction.rejected, (state) => {
         state.update.dataId = undefined;
         state.update.status = DataStatus.ERROR;
       });

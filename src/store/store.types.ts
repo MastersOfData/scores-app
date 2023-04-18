@@ -14,6 +14,7 @@ export type DataWithStatus<T> = {
   delete: {
     status: DataStatus;
   };
+  errorMessage?: string;
 };
 
 export enum DataStatus {
