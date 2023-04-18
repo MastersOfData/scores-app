@@ -160,7 +160,7 @@ const groups = createSlice({
         state.update.status = DataStatus.COMPLETED;
         state.update.dataId = undefined;
 
-        state.data?.map((group) => {
+        state.data = state.data?.map((group) => {
           if (group.id === action.payload.groupId) {
             const members = group.members.filter(
               (member) => member.userId !== action.meta.arg.userId
