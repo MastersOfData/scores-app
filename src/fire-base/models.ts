@@ -1,5 +1,10 @@
 import type { DocumentData, Timestamp } from "firebase/firestore";
-import { GameActionType, GameStatus, GameType, PlayerScore } from "src/types/types";
+import {
+  GameActionType,
+  GameStatus,
+  GameType,
+  PlayerScore,
+} from "src/types/types";
 
 // id is not part of document data
 
@@ -28,12 +33,12 @@ export interface Game extends DocumentData {
 }
 
 export interface GameAction extends DocumentData {
-  gameId: string,
-  actorId: string,
-  subjectId: string,
-  actionType: GameActionType
-  value?: number,
-  timestamp: Timestamp
+  gameId: string;
+  actorId: string;
+  actionType: GameActionType;
+  timestamp: Timestamp;
+  subjectId?: string;
+  value?: number;
 }
 
 export interface Membership extends DocumentData {
