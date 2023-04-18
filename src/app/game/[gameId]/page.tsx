@@ -18,8 +18,13 @@ import {
     mapGameTypesToCardItems,
   } from "src/utils/util";
 import Medal, { MedalType } from "src/components/Medal";
+import { CheckboxCards } from "src/components/CheckboxCards";
+import RegResultStyles from "src/styles/RegisterResult.module.css";
+import { useUser } from "src/services/user.service";
+import { CardItemSmall } from "src/components/Card";
 
 
+import Input from "src/components/Input";
 
 interface GameScreenProps {
     params: { gameId: string };
@@ -31,12 +36,30 @@ interface GameScreenProps {
 const GameScreen: FC<GameScreenProps> = ({ params })=> {
     const { gameId } = params;
 
+    const user = useUser();
+    const userArr = [user]
+
     //Vet hvilket spill, må hente ut gruppe fra spillet
 
     const groupsWithStatus = useGetGroupsForCurrentUser();
     const gamesWithStatus = useGetGamesForGroup(groupId);
     const group = groupsWithStatus.data?.find((group) => group.id === groupId);
+
+    //Hooks
+    const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+    const [isGroupGame, setIsGroupGame] = useState(true);
+    const [expression, setExpression] = useState<string>("");
     
+
+    const calcExpr = () => {
+      const mathExpr = expression.replace("x", "*")
+      setExpression(eval(mathExpr).toString())
+    }
+
+    function addOperator(operator : string): void {
+      setExpression(expression + operator)
+    }
+
 
     if (!group) {
         return (
@@ -56,9 +79,7 @@ const GameScreen: FC<GameScreenProps> = ({ params })=> {
 
     const leaderboardStats = calculateGroupLeaderboard(group.members);
 
-
-
-    
+   
 return (
     <PageWrapper title='Spill' backPath='/' authenticated={true}>
         <div className={CardStyles["center-cards"]}>
@@ -76,11 +97,8 @@ return (
             <tr>
               <th>#</th>
               <th className={GroupStyles["text-align-left"]}>Bruker</th>
-              <th>P</th>
-              <th className={GroupStyles["wins-col"]}>W</th>
-              <th className={GroupStyles["draws-col"]}>D</th>
-              <th className={GroupStyles["losses-col"]}>L</th>
-              <th>W%</th>
+              <th>Poeng</th>
+
             </tr>
           </thead>
           <tbody>
@@ -98,15 +116,74 @@ return (
                     {member.username}
                   </td>
                   <td>{member.gamesPlayed}</td>
-                  <td className={GroupStyles["wins-col"]}>{member.wins}</td>
-                  <td className={GroupStyles["draws-col"]}>{member.draws}</td>
-                  <td className={GroupStyles["losses-col"]}>{member.losses}</td>
-                  <td>{member.winRatio.toFixed(0)}</td>
+                  <td>{member.wins}</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+        <h2 className={RegResultStyles["title-centered"]}>Oppdater poeng</h2>
+        {isGroupGame ? (<div>
+          <h2 className={RegResultStyles["title-centered"]}>Velg deltagere</h2>
+          <div className={RegResultStyles["groups-container"]}>
+            <CheckboxCards
+              items={group.members.map((user, i) => ({
+                title: user.username,
+                key: i.toString(),
+              }))}
+              checked={selectedUsers}
+              setChecked={setSelectedUsers}
+            />
+          </div>
+        </div>) : (<CheckboxCards
+              items={userArr.map((user, i) => ({
+                title: user.toString(),
+                key: i.toString(),
+              }))}
+              checked={selectedUsers}
+              setChecked={setSelectedUsers}
+            />)}
+        
+        <Input 
+            type = {"text"}
+            value = {expression}
+            className = {SpillStyles["text-input"]}
+            onInput = {setExpression} />
+
+        <div className={SpillStyles["math-buttons"]}>
+            <Button 
+              variant = {ButtonVariant.Round}
+              onClick = {() => setExpression(expression + " + ")} 
+            > 
+              +
+            </Button>
+            <Button 
+              variant = {ButtonVariant.Round}
+              onClick = {() => setExpression(expression + " - ")} 
+            > 
+              -
+            </Button>
+            <Button 
+              variant = {ButtonVariant.Round}
+              onClick = {() => setExpression(expression + " x ")} 
+            > 
+              x
+            </Button>
+            <Button 
+              variant = {ButtonVariant.Round}
+              onClick = {() => setExpression(expression + " / ")} 
+            > 
+              /
+            </Button>
+        </div>
+
+        <Button
+          variant={ButtonVariant.Medium}
+          color={ButtonColor.Red}
+          onClick={calcExpr}
+        >
+          Regn ut
+        </Button>
 
 
 
