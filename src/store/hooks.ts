@@ -17,6 +17,7 @@ import { Game, GameAction } from "../fire-base/models";
 import { UserAccess, GameActionType } from "../types/types";
 import { Timestamp, where } from "firebase/firestore";
 import { userHasAccessToGame } from "../services/game.service";
+import { calculateElapsedGameTime } from "../utils/util";
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<StoreType> = useSelector;
@@ -114,6 +115,7 @@ export const useGetLiveGame = (gameId: string) => {
     null
   );
   const [localGameLog, setLocalGameLog] = useState<Document<GameAction>[]>([]);
+  const [elapsedGameTime, setElapsedGameTime] = useState(0);
 
   useEffect(() => {
     return subscribeToDocument<Game>(gamesCol, gameId, setLocalGameState);
@@ -128,6 +130,16 @@ export const useGetLiveGame = (gameId: string) => {
       setLocalGameLog
     );
   }, [gameId]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const elapsed = calculateElapsedGameTime(localGameLog);
+      setElapsedGameTime(elapsed);
+    }, 1000);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [localGameLog]);
 
   const addPoints = async (userId: string, points: number) => {
     if (user) {
@@ -158,5 +170,6 @@ export const useGetLiveGame = (gameId: string) => {
     localGameLog,
     addPoints,
     changeGameStatus,
+    elapsedGameTime,
   };
 };

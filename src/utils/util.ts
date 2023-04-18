@@ -1,12 +1,13 @@
 import { Timestamp } from "firebase/firestore";
-import type { Game, Membership } from "src/fire-base/models";
+import type { Game, GameAction, Membership } from "src/fire-base/models";
 import type { Document } from "src/fire-base/db";
 import type { CardItem } from "src/components/Card";
-import type {
+import {
+  GameActionType,
   GameType,
   GroupInternal,
   LeaderboardStats,
-  Member
+  Member,
 } from "../types/types";
 
 export const testFunc = () => true;
@@ -38,6 +39,17 @@ export const differenceBetweenFirestoreTimestampsInDays = (
   const daysDiff = secondsDiff / (24 * 60 * 60);
 
   return Math.floor(daysDiff);
+};
+
+export const differenceBetweenFirestoreTimestampsInSeconds = (
+  t1: Timestamp,
+  t2: Timestamp
+): number => {
+  const d1 = t1.toDate();
+  const d2 = t2.toDate();
+
+  const secondsDiff = d2.getTime() / 1000 - d1.getTime() / 1000;
+  return Math.floor(secondsDiff);
 };
 
 export const calculateDuration = (game: Game): number => {
@@ -232,4 +244,38 @@ export const recalculateMembershipsResults = (
   });
 
   return updatedMemberships;
+};
+
+// Returns time elapsed in seconds
+export const calculateElapsedGameTime = (gameLog: GameAction[]) => {
+  const start = gameLog.find(
+    (logItem) => logItem.actionType === GameActionType.START
+  );
+  const finish = gameLog.find(
+    (logItem) => logItem.actionType === GameActionType.FINISH
+  );
+
+  if (!start) return 0;
+
+  if (!finish) {
+    return differenceBetweenFirestoreTimestampsInSeconds(
+      start.timestamp,
+      Timestamp.now()
+    );
+  }
+
+  return differenceBetweenFirestoreTimestampsInSeconds(
+    start.timestamp,
+    finish.timestamp
+  );
+};
+
+export const convertNumberToTwoDigitString = (n: number) =>
+  n >= 10 ? n.toString() : `0${n}`;
+
+export const getElapsedTimeStringFromSeconds = (sec: number) => {
+  const { minutes, seconds } = convertSecondsToMinutesAndSeconds(sec);
+  return `${convertNumberToTwoDigitString(
+    minutes
+  )}:${convertNumberToTwoDigitString(seconds)}`;
 };
