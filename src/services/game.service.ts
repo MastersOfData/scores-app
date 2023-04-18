@@ -115,3 +115,22 @@ export const getGamesForGroup = async (userId: string, groupId: string) => {
 
   return games;
 };
+
+export const getGameById = async (userId: string, gameId: string) => {
+  const game = await getDocument<Game>(gamesCol, gameId);
+  if (!game) return Promise.reject(`Spill med id '${gameId}' finnes ikke`);
+
+  const membership = await getDocuments<Membership>({
+    collectionId: membershipsCol,
+    constraints: [
+      where("userId", "==", userId),
+      where("groupId", "==", game.groupId),
+    ],
+  });
+
+  if (membership.length === 0)
+    return Promise.reject(`Du har ikke tilgang til spillet`);
+
+  game.duration = calculateDuration(game);
+  return game;
+};
