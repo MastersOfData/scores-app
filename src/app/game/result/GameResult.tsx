@@ -54,8 +54,8 @@ export default function GameResult({ gameId }: GameResultProps) {
   return (
     <div className={styles.wrapper}>
       <CenteredSmallCards items={items}/>
-      <div>
-        <strong>Vinner &#127881;</strong>
+      <div className={styles["winner-wrapper"]}>
+        <strong>Vinner 🎉</strong>
         <p>{JSON.stringify(game.winners)}</p>
       </div>
       <Button variant={ButtonVariant.Round} color={ButtonColor.Pink}>Tilbake til hjem</Button>

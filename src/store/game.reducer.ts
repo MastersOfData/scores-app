@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { Game } from "src/fire-base/models";
+import type { Game } from "src/fire-base/models";
+import type { Document } from "src/fire-base/db";
 import {
   createGame,
   CreateGameData,
@@ -10,10 +11,9 @@ import {
   updateGame,
   UpdateGameData,
 } from "src/services/game.service";
-import { WithId } from "src/types/types";
 import { DataStatus, DataWithStatus } from "./store.types";
 
-type GameState = DataWithStatus<WithId<Game>[]>;
+type GameState = DataWithStatus<Document<Game>[]>;
 
 const initialState: GameState = {
   data: undefined,
