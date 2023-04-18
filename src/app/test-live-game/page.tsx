@@ -34,6 +34,15 @@ export default function TestLiveGame() {
         Finish game
       </button>
       <button onClick={() => live.addPoints("[userid]", 3)}>Add points</button>
+      <h2>Log</h2>
+      {live.localGameLog
+        .sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)
+        .map((log) => (
+          <p key={log.id}>
+            {log.timestamp.toDate().toLocaleTimeString()},
+            {log.actionType.toString()}, {log.value}, {log.subjectId}
+          </p>
+        ))}
     </PageWrapper>
   );
 }
