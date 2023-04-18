@@ -1,0 +1,44 @@
+
+.timeLabel {
+    font-size: var(--fs-300);
+    color: black;
+    font-weight: 500;
+}
+
+
+.wins-col {
+    padding-right: 0px !important;
+  }
+  
+  .draws-col {
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
+  
+  .losses-col {
+    padding-left: 2px !important;
+  }
+
+
+.text-input {
+  height: 2.5rem;
+  width: min(60%, 18rem);
+}
+
+.calculator-container {
+  display: flex;
+  flex-direction: column;
+  padding-top: 2rem;
+  align-items: center;
+}
+
+.math-buttonsContainer {
+  display: flex;
+  
+}
+
+
+.operator-button{
+  margin-right: 2rem;
+  width: 4rem;
+}

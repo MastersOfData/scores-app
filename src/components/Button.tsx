@@ -8,6 +8,8 @@ export enum ButtonColor {
   Yellow = "button--yellow",
   Pink = "button--pink",
   Orange = "button--orange",
+  Grey = "button-grey"
+
 }
 
 export enum ButtonVariant {
