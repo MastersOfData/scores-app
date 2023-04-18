@@ -17,7 +17,7 @@ export default function PageWrapper({
   children,
   title,
   authenticated,
-  backPath,
+  backPath
 }: PageWrapperProps) {
   const router = useRouter();
   const pathname = usePathname();
