@@ -3,13 +3,15 @@
 import { FC, useEffect, useState } from "react";
 import { RemoveIcon } from "src/assets/icons/RemoveIcon";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
-import { CheckboxCards } from "src/components/CheckboxCards";
 import Input from "src/components/Input";
 import PageWrapper from "src/components/PageWrapper";
 import Spinner from "src/components/Spinner";
 import TitleWithInfo from "src/components/TitleWithInfo";
 import { getUserId } from "src/services/user.service";
-import { joinGroupByInvitationCodeAction } from "src/store/groupsInternal.reducer";
+import {
+  joinGroupByInvitationCodeAction,
+  removeUserFromGroupAction,
+} from "src/store/groupsInternal.reducer";
 import { useAppDispatch, useGetGroupsForCurrentUser } from "src/store/hooks";
 import { DataStatus } from "src/store/store.types";
 import styles from "src/styles/ManageGroup.module.css";
@@ -25,8 +27,8 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
   const group = groupsWithStatus.data?.find((group) => group.id === groupId);
 
   const [username, setUsername] = useState<string>("");
-  const [removedMembers, setRemovedMembers] = useState<string[]>([]);
   const [remainingMembers, setRemainingMembers] = useState<string[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
     setRemainingMembers(group?.members.map((member) => member.username) ?? []);
@@ -49,29 +51,36 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
             userId: userId,
           })
         ).unwrap();
+        setErrorMessage("");
+      } else {
+        setErrorMessage(`Fant ingen bruker med brukernavn: ${username}`);
       }
-      console.log("No user with given username");
     }
     setUsername("");
   };
 
-  const onRemove = (username: string) => {
-    const newRemoved = removedMembers;
-    const newRemaining = remainingMembers.filter(
-      (user) => !(user === username)
-    );
-    newRemoved.push(username);
-    setRemovedMembers(newRemoved);
-    setRemainingMembers(newRemaining);
-  };
-
-  const onConfirm = async () => {
-    console.log("Ikke implementert");
+  const onRemove = async (username: string) => {
+    if (group) {
+      const member = group.members.filter(
+        (mem) => mem.username === username
+      )[0];
+      await dispatch(
+        removeUserFromGroupAction({
+          groupId: groupId,
+          userId: member.userId,
+        })
+      );
+      const newRemaining = remainingMembers.filter(
+        (user) => !(user === username)
+      );
+      setRemainingMembers(newRemaining);
+      window.confirm(`Bruker \"${username}\" ble slettet`);
+    }
   };
 
   return (
     <PageWrapper
-      title={group?.name ?? "Din gruppe"}
+      title={group?.name ?? "Kunne ikke laste inn gruppe"}
       backPath={`/group/${groupId}`}
     >
       <div className={styles.container}>
@@ -94,6 +103,10 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
             Legg til
           </Button>
         </div>
+        <div className="center-items">
+          <p className="error-text">{errorMessage}</p>
+        </div>
+
         {remainingMembers.length > 0 && (
           <div className={styles["members-list-container"]}>
             <TitleWithInfo
@@ -129,34 +142,6 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
               </tbody>
             </table>
           </div>
-        )}
-        {removedMembers.length > 0 && (
-          <>
-            <div className={styles["remove-members-container"]}>
-              <TitleWithInfo
-                title="Fjernede medlemmer"
-                infoText="Trykk på medlem for å angre"
-              />
-              <div className={styles["groups-container"]}>
-                <CheckboxCards
-                  items={removedMembers.map((username, i) => ({
-                    title: username,
-                    key: i.toString(),
-                  }))}
-                  checked={removedMembers}
-                  setChecked={setRemovedMembers}
-                />
-              </div>
-            </div>
-            <Button
-              variant={ButtonVariant.Medium}
-              color={ButtonColor.Red}
-              className={styles["primary-button"]}
-              onClick={() => onConfirm()}
-            >
-              Fjern
-            </Button>
-          </>
         )}
       </div>
     </PageWrapper>
