@@ -31,7 +31,8 @@
 .members-list-container {
   padding-top: 2rem;
   padding-bottom: 1rem;
-  width: 30rem;
+  width: 100%;
+  max-width: 30rem;
 }
 
 .remove-members-container {

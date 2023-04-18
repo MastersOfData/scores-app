@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { Membership } from "../fire-base/models";
+import type { Membership } from "../fire-base/models";
+import type { Document } from "src/fire-base/db";
 import {
   createGameTypeForGroup,
   createGroup,
@@ -8,7 +9,7 @@ import {
   removeUserFromGroup,
   updateMultipleMemberships,
 } from "../services/group.service";
-import { GroupInternal, WithId } from "../types/types";
+import type { GroupInternal } from "../types/types";
 import { DataStatus, DataWithStatus } from "./store.types";
 
 type GroupsInternalState = DataWithStatus<GroupInternal[] | null>;
@@ -98,7 +99,7 @@ export const updateGroupMembershipsAction = createAsyncThunk(
     memberships,
     groupId,
   }: {
-    memberships: WithId<Membership>[];
+    memberships: Document<Membership>[];
     groupId: string;
   }) => {
     const res = await updateMultipleMemberships(memberships, groupId);

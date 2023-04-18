@@ -1,8 +1,13 @@
+import { Document } from "src/fire-base/db";
 import { User, Membership } from "../fire-base/models";
 
-export type WithId<T> = {
-  id: string;
-} & T;
+export enum GameActionType {
+  ADD_POINTS = "addPoints",
+  START = "start",
+  CONTINUE = "continue",
+  PAUSE = "pause",
+  FINISH = "finish",
+}
 
 export type GameStatus = "FINISHED" | "PAUSED" | "ONGOING";
 
@@ -10,7 +15,8 @@ export type PlayerScore = {
   playerId: string;
   points: number;
 };
-export type Member = WithId<Membership> & User;
+
+export type Member = Document<Membership> & User;
 
 export interface GroupInternal {
   id: string;
@@ -36,4 +42,9 @@ export interface LeaderboardStats {
   losses: number;
   winRatio: number;
   gamesPlayed: number;
+}
+
+export interface UserAccess {
+  hasAccess: boolean;
+  noAccessReason?: string;
 }

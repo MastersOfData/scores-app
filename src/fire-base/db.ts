@@ -21,21 +21,22 @@ import {
 export const usersCol = "users";
 export const groupsCol = "groups";
 export const gamesCol = "games";
+export const gameActionsCol = "gameActions";
 export const membershipsCol = "memberships";
 export const pincodesDocumentId = "usedPincodes";
 
 // Types
-type Document<T extends DocumentData> = T & { id: string }
+export type Document<T extends DocumentData> = T & { id: string }
 
-type Collection = typeof usersCol | typeof groupsCol | typeof gamesCol | typeof membershipsCol
+export type Collection = typeof usersCol | typeof groupsCol | typeof gamesCol | typeof gameActionsCol | typeof membershipsCol
 
-type QueryDefinition = {
+export type QueryDefinition = {
   collectionId: Collection,
   constraints?: QueryConstraint[]
 }
 
 // Functions
-export function subscribeToDoc<T extends DocumentData>(collectionId: Collection, docId: string, observer: (document: Document<T> | null) => void) {
+export function subscribeToDocument<T extends DocumentData>(collectionId: Collection, docId: string, observer: (document: Document<T> | null) => void) {
   const docRef = doc(db, collectionId, docId) as DocumentReference<T>
   return onSnapshot(docRef, snapshot => {
     const id = snapshot.id

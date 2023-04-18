@@ -1,13 +1,14 @@
 import { Timestamp } from "firebase/firestore";
-import { CardItem } from "src/components/Card";
+import type { CardItem } from "src/components/Card";
+import type { Document } from "src/fire-base/db";
 import { Group, User, Membership, Game } from "../fire-base/models";
-import { GameType, GroupInternal, Member, WithId } from "../types/types";
+import type { GameType, GroupInternal, Member } from "../types/types";
 import { differenceBetweenFirestoreTimestampsInDays } from "./util";
 
 export const mapGroupAndUsersToGroupInternal = (
-  group: WithId<Group>,
-  userGroupStats: WithId<Membership>[],
-  users: WithId<User>[]
+  group: Document<Group>,
+  userGroupStats: Document<Membership>[],
+  users: Document<User>[]
 ): GroupInternal => {
   const statsWithUserInfo: Member[] = [];
 
@@ -61,7 +62,7 @@ export const mapGameTypesToCardItems = (
   ];
 };
 
-export const mapGameToCardItem = (game: WithId<Game>) => {
+export const mapGameToCardItem = (game: Document<Game>) => {
   const endDate = game.duration
     ? Timestamp.fromMillis(game.duration)
     : Timestamp.fromDate(new Date());

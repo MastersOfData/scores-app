@@ -7,7 +7,7 @@ import PageWrapper from "src/components/PageWrapper"
 import CardStyles from "src/styles/Card.module.css";
 import ButtonStyles from "src/styles/Button.module.css";
 import SpillStyles from "src/styles/Spill.module.css"
-import { useGetGroupsForCurrentUser } from "src/store/hooks";
+import { useGetGroupsForCurrentUser, useUserHasAccessToGame, useGetLiveGame } from "src/store/hooks";
 import GroupStyles from "src/styles/Group.module.css";
 import {
     calculateGroupLeaderboard,
@@ -20,7 +20,9 @@ import { useGetGameById } from "src/store/hooks";
 
 import Input from "src/components/Input";
 import { getUserId } from "src/services/user.service";
-import { User } from "firebase/auth";
+import { DataStatus } from "../../../store/store.types";
+import Spinner from "../../../components/Spinner";
+import { useRouter, useSearchParams } from "next/navigation";
 
 
 interface GameScreenProps {
@@ -28,7 +30,11 @@ interface GameScreenProps {
   }
 
 const GameScreen: FC<GameScreenProps> = ({ params })=> {
+    const router = useRouter();
     const { gameId } = params;
+    const access = useUserHasAccessToGame(gameId)
+
+    //Skummelt å loade inn game før vi vet om en bruker has access?
     const gamesWithStatus = useGetGameById(gameId);
     const game = gamesWithStatus.data;
 
@@ -36,23 +42,39 @@ const GameScreen: FC<GameScreenProps> = ({ params })=> {
     const user = userContext.userData
     const operators = ["+", "-", "×", "÷"]
     
-
-    //Vet hvilket spill, må hente ut gruppe fra spillet
-
     const groupsWithStatus = useGetGroupsForCurrentUser();
+
+    const liveGame = useGetLiveGame(gameId)
 
     //Hooks
     const [selectedUser, setSelectedUser] = useState<string | undefined>("");
     const [isGroupGame, setIsGroupGame] = useState(true);
     const [expression, setExpression] = useState<string>("");
     const [currentUserPoints, setCurrentUserPoints] = useState<string>("");
-    
+
+    if (
+      user &&
+      (groupsWithStatus.status === DataStatus.LOADING ||
+        !access.hasLoaded ||
+        groupsWithStatus.data === undefined ||
+        gamesWithStatus.status === DataStatus.LOADING ||
+        gamesWithStatus.data === undefined)
+    ) {
+      return <Spinner />;
+    }
+
+    if (!access.hasAccess){
+      return <p>{access.noAccessReason}</p>
+    }
+    //Kan en se denne siden uten å logge inn?
     if (user === null){
       return <div />
     }
+    //NOT DONE
     if (game === undefined){
       return <div />
     }
+
     const userArr = [user];
     
     const group = groupsWithStatus.data?.find((group) => group.id === game.groupId);
@@ -60,7 +82,15 @@ const GameScreen: FC<GameScreenProps> = ({ params })=> {
     const calcExpr = () => {
       const mathExpr = expression.replace("×", "*").replace("÷", "/")
       try{
-        setExpression(eval(mathExpr).toString())
+        if (selectedUser){
+          const newScore = eval(mathExpr).toString();
+        liveGame.addPoints(selectedUser, newScore)
+        setExpression(newScore);
+        }
+        else{
+          alert("User has not been defined!")
+        }
+        
       }
       catch (err) {
         console.log(err)
@@ -73,7 +103,11 @@ const GameScreen: FC<GameScreenProps> = ({ params })=> {
       if (game === undefined) {
         return 
       }
+      //Get score from user and setExpression(score)
+
       setSelectedUser(username);
+      
+       
       
     
       const userId = await getUserId(username);

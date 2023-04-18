@@ -1,12 +1,12 @@
 import { Timestamp } from "firebase/firestore";
-import { Game, Membership } from "src/fire-base/models";
-import { CardItem } from "src/components/Card";
-import {
+import type { Game, Membership } from "src/fire-base/models";
+import type { Document } from "src/fire-base/db";
+import type { CardItem } from "src/components/Card";
+import type {
   GameType,
   GroupInternal,
   LeaderboardStats,
-  Member,
-  WithId,
+  Member
 } from "../types/types";
 
 export const testFunc = () => true;
@@ -99,7 +99,7 @@ export const mapGameTypesToCardItems = (
   ];
 };
 
-export const mapGameToCardItem = (game: WithId<Game>) => {
+export const mapGameToCardItem = (game: Document<Game>) => {
   const endDate = game.duration
     ? Timestamp.fromMillis(game.duration)
     : Timestamp.fromDate(new Date());
@@ -153,7 +153,7 @@ export const calculateGroupLeaderboard = (
 };
 
 export const mapGamesToCardItems = (
-  games: WithId<Game>[],
+  games: Document<Game>[],
   group: GroupInternal
 ): CardItem[] => {
   if (!games) return [];
@@ -204,12 +204,12 @@ export const mapGamesToCardItems = (
 };
 
 export const recalculateMembershipsResults = (
-  memberships: WithId<Membership>[],
+  memberships: Document<Membership>[],
   participants: string[],
   winners: string[]
-): WithId<Membership>[] => {
+): Document<Membership>[] => {
   const multipleWinners = winners.length > 1;
-  const updatedMemberships: WithId<Membership>[] = [];
+  const updatedMemberships: Document<Membership>[] = [];
 
   participants.forEach((participant) => {
     const membership = memberships.find(

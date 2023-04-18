@@ -9,6 +9,7 @@ import {
 } from "src/fire-base/db";
 import { Game, Membership } from "src/fire-base/models";
 import { calculateDuration } from "src/utils/util";
+import { UserAccess } from "../types/types";
 
 export interface CreateGameData {
   groupId: string;
@@ -133,4 +134,34 @@ export const getGameById = async (userId: string, gameId: string) => {
 
   game.duration = calculateDuration(game);
   return game;
+};
+
+export const userHasAccessToGame = async (
+  userId: string,
+  gameId: string
+): Promise<UserAccess> => {
+  const game = await getDocument<Game>(gamesCol, gameId);
+  if (!game)
+    return {
+      hasAccess: false,
+      noAccessReason: `Spill med id '${gameId}' finnes ikke`,
+    };
+
+  const membership = await getDocuments<Membership>({
+    collectionId: membershipsCol,
+    constraints: [
+      where("userId", "==", userId),
+      where("groupId", "==", game.groupId),
+    ],
+  });
+
+  if (membership.length === 0)
+    return {
+      hasAccess: false,
+      noAccessReason: `Du har ikke tilgang til spillet`,
+    };
+
+  return {
+    hasAccess: true,
+  };
 };

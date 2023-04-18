@@ -1,10 +1,11 @@
-import { CardItem } from "src/components/Card";
-import { Group, User, Membership } from "../../fire-base/models";
-import { GameType, GroupInternal, WithId } from "../../types/types";
+import type { CardItem } from "src/components/Card";
+import type { Group, User, Membership } from "../../fire-base/models";
+import type { GameType, GroupInternal } from "../../types/types";
+import type { Document } from "src/fire-base/db";
 import { mapGameTypesToCardItems, mapGroupAndUsersToGroupInternal, mapGroupsToCardItems } from "../mappers";
 
 describe("mapGroupAndUsersToGroupInternal", () => {
-  const group: WithId<Group> = {
+  const group: Document<Group> = {
     id: "g1",
     name: "Gutta",
     emoji: "🎮",
@@ -19,7 +20,7 @@ describe("mapGroupAndUsersToGroupInternal", () => {
     invitationCode: "",
   };
 
-  const userStats: WithId<Membership>[] = [
+  const userStats: Document<Membership>[] = [
     {
       id: "123-g1",
       userId: "123",
@@ -38,7 +39,7 @@ describe("mapGroupAndUsersToGroupInternal", () => {
     },
   ];
 
-  const users: WithId<User>[] = [
+  const users: Document<User>[] = [
     {
       id: "123",
       username: "xXbirgerXx",
