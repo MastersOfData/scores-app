@@ -1,4 +1,12 @@
 
+.header-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+  gap: 10px;
+}
+
 .timeLabel {
     font-size: var(--fs-300);
     color: black;
@@ -6,39 +14,32 @@
 }
 
 
-.wins-col {
-    padding-right: 0px !important;
-  }
-  
-  .draws-col {
-    padding-left: 2px !important;
-    padding-right: 2px !important;
-  }
-  
-  .losses-col {
-    padding-left: 2px !important;
-  }
-
-
 .text-input {
   height: 2.5rem;
-  width: min(60%, 18rem);
+  width: min(70%, 18rem);
+  padding-top: 2rem;
 }
 
 .calculator-container {
   display: flex;
   flex-direction: column;
-  padding-top: 2rem;
   align-items: center;
+  padding-bottom: 2rem;
 }
 
 .math-buttonsContainer {
+  margin-top: 1rem;
   display: flex;
   
 }
 
 
 .operator-button{
-  margin-right: 2rem;
-  width: 4rem;
+  margin-right: 1rem;
+  width: 2.5rem;
+}
+
+
+.calculate-button{
+  margin-top: 1rem;
 }
