@@ -5,6 +5,18 @@ import { DataStatus } from "./store.types";
 import { getAllGamesAction, getGameByIdAction } from "./game.reducer";
 import { getAllGroupsAction } from "./groupsInternal.reducer";
 import { useUser } from "src/services/user.service";
+import {
+  addDocument,
+  Document,
+  gameActionsCol,
+  gamesCol,
+  subscribeToDocument,
+  subscribeToDocuments,
+} from "../fire-base/db";
+import { Game, GameAction } from "../fire-base/models";
+import { UserAccess, GameActionType } from "../types/types";
+import { Timestamp, where } from "firebase/firestore";
+import { userHasAccessToGame } from "../services/game.service";
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<StoreType> = useSelector;
@@ -72,5 +84,79 @@ export const useGetGameById = (gameId: string) => {
   return {
     ...games,
     data: games.data?.find((g) => g.id === gameId),
+  };
+};
+
+export const useUserHasAccessToGame = (gameId: string) => {
+  const { user } = useUser();
+  const [userAccess, setUserAccess] = useState<
+    UserAccess & { hasLoaded: boolean }
+  >({ hasAccess: false, hasLoaded: false });
+
+  useEffect(() => {
+    user
+      ? userHasAccessToGame(user?.uid, gameId).then((data) =>
+          setUserAccess({
+            ...data,
+            hasLoaded: true,
+          })
+        )
+      : setUserAccess({ hasAccess: false, hasLoaded: false });
+  }, [user, gameId]);
+
+  return userAccess;
+};
+
+export const useGetLiveGame = (gameId: string) => {
+  const { user } = useUser();
+
+  const [localGameState, setLocalGameState] = useState<Document<Game> | null>(
+    null
+  );
+  const [localGameLog, setLocalGameLog] = useState<Document<GameAction>[]>([]);
+
+  useEffect(() => {
+    return subscribeToDocument<Game>(gamesCol, gameId, setLocalGameState);
+  }, [gameId]);
+
+  useEffect(() => {
+    return subscribeToDocuments<GameAction>(
+      {
+        collectionId: gameActionsCol,
+        constraints: [where("gameId", "==", gameId)],
+      },
+      setLocalGameLog
+    );
+  }, [gameId]);
+
+  const addPoints = async (userId: string, points: number) => {
+    if (user) {
+      await addDocument<GameAction>(gameActionsCol, {
+        subjectId: userId,
+        value: points,
+        actionType: GameActionType.ADD_POINTS,
+        gameId,
+        actorId: user.uid,
+        timestamp: Timestamp.now(),
+      });
+    }
+  };
+
+  const changeGameStatus = async (status: GameActionType) => {
+    if (user) {
+      await addDocument<GameAction>(gameActionsCol, {
+        actionType: status,
+        gameId,
+        actorId: user.uid,
+        timestamp: Timestamp.now(),
+      });
+    }
+  };
+
+  return {
+    localGameState,
+    localGameLog,
+    addPoints,
+    changeGameStatus,
   };
 };

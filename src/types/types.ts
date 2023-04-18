@@ -2,7 +2,11 @@ import { Document } from "src/fire-base/db";
 import { User, Membership } from "../fire-base/models";
 
 export enum GameActionType {
-  ADD_POINTS
+  ADD_POINTS = "addPoints",
+  START = "start",
+  CONTINUE = "continue",
+  PAUSE = "pause",
+  FINISH = "finish",
 }
 
 export type GameStatus = "FINISHED" | "PAUSED" | "ONGOING";
@@ -38,4 +42,9 @@ export interface LeaderboardStats {
   losses: number;
   winRatio: number;
   gamesPlayed: number;
+}
+
+export interface UserAccess {
+  hasAccess: boolean;
+  noAccessReason?: string;
 }
