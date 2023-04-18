@@ -39,7 +39,7 @@ const CreateGamePage: FC = () => {
           },
         })
       ).unwrap();
-      router.push(`group/${game.groupId}/${game.id}`);
+      router.push(`game/${game.id}`);
     } else {
       alert(
         `Mangler verdier for: ${selectedGroup ?? "Gruppe"} ${
