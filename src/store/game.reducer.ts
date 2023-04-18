@@ -3,6 +3,7 @@ import { Game } from "src/fire-base/models";
 import {
   createGame,
   CreateGameData,
+  getGameById,
   getGamesForGroup,
   registerResult,
   RegisterResultData,
@@ -27,6 +28,7 @@ const initialState: GameState = {
   delete: {
     status: DataStatus.COMPLETED,
   },
+  errorMessage: undefined,
 };
 
 export const createGameAction = createAsyncThunk(
@@ -48,6 +50,13 @@ export const getAllGamesAction = createAsyncThunk(
   async ({ userId, groupId }: { userId: string; groupId: string }) => {
     const res = await getGamesForGroup(userId, groupId);
     return res;
+  }
+);
+
+export const getGameByIdAction = createAsyncThunk(
+  "games/getById",
+  async ({ userId, gameId }: { userId: string; gameId: string }) => {
+    return await getGameById(userId, gameId);
   }
 );
 
@@ -166,6 +175,34 @@ const gamesSlice = createSlice({
       })
       .addCase(registerResultAction.rejected, (state) => {
         state.create.status = DataStatus.ERROR;
+      })
+      // Get game by id
+      .addCase(getGameByIdAction.pending, (state) => {
+        state.status = DataStatus.LOADING;
+      })
+      .addCase(getGameByIdAction.fulfilled, (state, action) => {
+        state.status = DataStatus.COMPLETED;
+
+        if (!state.data) {
+          state.data = [action.payload];
+        } else {
+          let gameAlreadyInState = false;
+
+          state.data = state.data.map((game) => {
+            if (game.id === action.meta.arg.gameId) {
+              gameAlreadyInState = true;
+              return action.payload;
+            } else {
+              return game;
+            }
+          });
+
+          if (!gameAlreadyInState) state.data = [...state.data, action.payload];
+        }
+      })
+      .addCase(getGameByIdAction.rejected, (state, action) => {
+        state.status = DataStatus.ERROR;
+        state.errorMessage = action.error.message;
       });
   },
 });
