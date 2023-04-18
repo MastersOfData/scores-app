@@ -25,12 +25,20 @@
   width: min(60%, 18rem);
 }
 
-
-.math-buttons {
-  gap: 2rem !important;
-  padding-top: 1rem;
+.calculator-container {
+  display: flex;
+  flex-direction: column;
+  padding-top: 2rem;
+  align-items: center;
 }
 
-.button-round {
-  border-radius: 50% !important;
+.math-buttonsContainer {
+  display: flex;
+  
+}
+
+
+.operator-button{
+  margin-right: 2rem;
+  width: 4rem;
 }

@@ -7,22 +7,16 @@ import PageWrapper from "src/components/PageWrapper"
 import CardStyles from "src/styles/Card.module.css";
 import ButtonStyles from "src/styles/Button.module.css";
 import SpillStyles from "src/styles/Spill.module.css"
-import {
-    useGetGamesForGroup,
-    useGetGroupsForCurrentUser,
-  } from "src/store/hooks";
+import { useGetGroupsForCurrentUser } from "src/store/hooks";
 import GroupStyles from "src/styles/Group.module.css";
 import {
     calculateGroupLeaderboard,
-    mapGamesToCardItems,
-    mapGameTypesToCardItems,
   } from "src/utils/util";
 import Medal, { MedalType } from "src/components/Medal";
 import { CheckboxCards } from "src/components/CheckboxCards";
 import RegResultStyles from "src/styles/RegisterResult.module.css";
 import { useUser } from "src/services/user.service";
-import { CardItemSmall } from "src/components/Card";
-
+import { useGetGameById } from "src/store/hooks";
 
 import Input from "src/components/Input";
 
@@ -30,20 +24,21 @@ interface GameScreenProps {
     params: { gameId: string };
   }
 
-
-
-
 const GameScreen: FC<GameScreenProps> = ({ params })=> {
     const { gameId } = params;
+    const gamesWithStatus = useGetGameById(gameId);
+    const game = gamesWithStatus.data;
+
+    if (game === undefined)
+      return <div />
 
     const user = useUser();
-    const userArr = [user]
+    const userArr = [user];
 
     //Vet hvilket spill, må hente ut gruppe fra spillet
 
     const groupsWithStatus = useGetGroupsForCurrentUser();
-    const gamesWithStatus = useGetGamesForGroup(groupId);
-    const group = groupsWithStatus.data?.find((group) => group.id === groupId);
+    const group = groupsWithStatus.data?.find((group) => group.id === game.groupId);
 
     //Hooks
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -78,6 +73,11 @@ const GameScreen: FC<GameScreenProps> = ({ params })=> {
     const groupMember = ["Tore", "Tang"]
 
     const leaderboardStats = calculateGroupLeaderboard(group.members);
+
+    const onSubmit = () => {
+      console.log("It is submitted")
+    }
+
 
    
 return (
@@ -115,7 +115,6 @@ return (
                   <td className={GroupStyles["text-align-left"]}>
                     {member.username}
                   </td>
-                  <td>{member.gamesPlayed}</td>
                   <td>{member.wins}</td>
                 </tr>
               );
@@ -124,7 +123,6 @@ return (
         </table>
         <h2 className={RegResultStyles["title-centered"]}>Oppdater poeng</h2>
         {isGroupGame ? (<div>
-          <h2 className={RegResultStyles["title-centered"]}>Velg deltagere</h2>
           <div className={RegResultStyles["groups-container"]}>
             <CheckboxCards
               items={group.members.map((user, i) => ({
@@ -143,49 +141,65 @@ return (
               checked={selectedUsers}
               setChecked={setSelectedUsers}
             />)}
-        
-        <Input 
-            type = {"text"}
-            value = {expression}
-            className = {SpillStyles["text-input"]}
-            onInput = {setExpression} />
+        <div className={SpillStyles["calculator-container"]}>
+          <Input 
+              type = {"text"}
+              value = {expression}
+              className = {SpillStyles["text-input"]}
+              onInput = {setExpression} />
 
-        <div className={SpillStyles["math-buttons"]}>
-            <Button 
-              variant = {ButtonVariant.Round}
-              onClick = {() => setExpression(expression + " + ")} 
-            > 
-              +
-            </Button>
-            <Button 
-              variant = {ButtonVariant.Round}
-              onClick = {() => setExpression(expression + " - ")} 
-            > 
-              -
-            </Button>
-            <Button 
-              variant = {ButtonVariant.Round}
-              onClick = {() => setExpression(expression + " x ")} 
-            > 
-              x
-            </Button>
-            <Button 
-              variant = {ButtonVariant.Round}
-              onClick = {() => setExpression(expression + " / ")} 
-            > 
-              /
-            </Button>
+          <div className={SpillStyles["math-buttonsContainer"]}>
+              <Button 
+                className={SpillStyles["operator-button"]}
+                variant = {ButtonVariant.Round}
+                color = {ButtonColor.Grey}
+                onClick = {() => setExpression(expression + " + ")} 
+              > 
+                +
+              </Button>
+              <Button 
+                className={SpillStyles["operator-button"]}
+                variant = {ButtonVariant.Round}
+                color = {ButtonColor.Grey}
+                onClick = {() => setExpression(expression + " - ")} 
+              > 
+                -
+              </Button>
+              <Button 
+                className={SpillStyles["operator-button"]}
+                variant = {ButtonVariant.Round}
+                color = {ButtonColor.Grey}
+                onClick = {() => setExpression(expression + " x ")} 
+              > 
+                x
+              </Button>
+              <Button 
+                className={SpillStyles["operator-button"]}
+                variant = {ButtonVariant.Round}
+                color = {ButtonColor.Grey}
+                onClick = {() => setExpression(expression + " / ")} 
+              > 
+                /
+              </Button>
+          </div>
+
+          <Button
+            variant={ButtonVariant.Medium}
+            color={ButtonColor.Red}
+            onClick={calcExpr}
+          >
+            Regn ut
+          </Button>
+
         </div>
 
         <Button
-          variant={ButtonVariant.Medium}
-          color={ButtonColor.Red}
-          onClick={calcExpr}
+          variant={ButtonVariant.Round}
+          color={ButtonColor.Green}
+          onClick={onSubmit}
         >
-          Regn ut
+          Start spill
         </Button>
-
-
 
     </PageWrapper>
     )
