@@ -10,10 +10,11 @@ import {
   updateDocument,
   membershipsCol,
   usersCol,
+  Document,
 } from "src/fire-base/db";
 import { Group, User, Membership } from "src/fire-base/models";
 import { generateMembershipDocumentId } from "src/utils/util";
-import { GroupInternal, WithId } from "../types/types";
+import { GroupInternal } from "../types/types";
 import { mapGroupAndUsersToGroupInternal } from "../utils/mappers";
 import { createPincode } from "./pin.service";
 
@@ -211,7 +212,7 @@ export const createGameTypeForGroup = async (
 export type UserResult = "WIN" | "DRAW" | "LOSS";
 
 export const updateMultipleMemberships = async (
-  updatedMemberships: WithId<Membership>[],
+  updatedMemberships: Document<Membership>[],
   groupId: string
 ) => {
   const updatePromises: Promise<void>[] = [];

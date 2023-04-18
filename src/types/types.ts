@@ -1,8 +1,9 @@
+import { Document } from "src/fire-base/db";
 import { User, Membership } from "../fire-base/models";
 
-export type WithId<T> = {
-  id: string;
-} & T;
+export enum GameActionType {
+  ADD_POINTS
+}
 
 export type GameStatus = "FINISHED" | "PAUSED" | "ONGOING";
 
@@ -11,7 +12,7 @@ export type PlayerScore = {
   points: number;
 };
 
-export type Member = WithId<Membership> & User;
+export type Member = Document<Membership> & User;
 
 export interface GroupInternal {
   id: string;
