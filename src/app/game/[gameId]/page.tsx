@@ -7,53 +7,120 @@ import PageWrapper from "src/components/PageWrapper"
 import CardStyles from "src/styles/Card.module.css";
 import ButtonStyles from "src/styles/Button.module.css";
 import SpillStyles from "src/styles/Spill.module.css"
-import { useGetGroupsForCurrentUser } from "src/store/hooks";
+import { useGetGroupsForCurrentUser, useUserHasAccessToGame, useGetLiveGame } from "src/store/hooks";
 import GroupStyles from "src/styles/Group.module.css";
 import {
     calculateGroupLeaderboard,
   } from "src/utils/util";
 import Medal, { MedalType } from "src/components/Medal";
-import { CheckboxCards } from "src/components/CheckboxCards";
+import { RadioCards } from "src/components/RadioCards";
 import RegResultStyles from "src/styles/RegisterResult.module.css";
 import { useUser } from "src/services/user.service";
 import { useGetGameById } from "src/store/hooks";
 
 import Input from "src/components/Input";
+import { getUserId } from "src/services/user.service";
+import { DataStatus } from "../../../store/store.types";
+import Spinner from "../../../components/Spinner";
+import { useRouter, useSearchParams } from "next/navigation";
+
 
 interface GameScreenProps {
     params: { gameId: string };
   }
 
 const GameScreen: FC<GameScreenProps> = ({ params })=> {
+    const router = useRouter();
     const { gameId } = params;
+    const access = useUserHasAccessToGame(gameId)
+
+    //Skummelt å loade inn game før vi vet om en bruker has access?
     const gamesWithStatus = useGetGameById(gameId);
     const game = gamesWithStatus.data;
 
-    const user = useUser();
-    const userArr = [user];
-
-    //Vet hvilket spill, må hente ut gruppe fra spillet
-
+    const userContext = useUser();
+    const user = userContext.userData
+    const operators = ["+", "-", "×", "÷"]
+    
     const groupsWithStatus = useGetGroupsForCurrentUser();
 
+    const liveGame = useGetLiveGame(gameId)
+
     //Hooks
-    const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+    const [selectedUser, setSelectedUser] = useState<string | undefined>("");
     const [isGroupGame, setIsGroupGame] = useState(true);
     const [expression, setExpression] = useState<string>("");
-    
+    const [currentUserPoints, setCurrentUserPoints] = useState<string>("");
+
+    if (
+      user &&
+      (groupsWithStatus.status === DataStatus.LOADING ||
+        !access.hasLoaded ||
+        groupsWithStatus.data === undefined ||
+        gamesWithStatus.status === DataStatus.LOADING ||
+        gamesWithStatus.data === undefined)
+    ) {
+      return <Spinner />;
+    }
+
+    if (!access.hasAccess){
+      return <p>{access.noAccessReason}</p>
+    }
+    //Kan en se denne siden uten å logge inn?
+    if (user === null){
+      return <div />
+    }
+    //NOT DONE
     if (game === undefined){
       return <div />
     }
+
+    const userArr = [user];
     
     const group = groupsWithStatus.data?.find((group) => group.id === game.groupId);
 
     const calcExpr = () => {
-      const mathExpr = expression.replace("x", "*")
-      setExpression(eval(mathExpr).toString())
+      const mathExpr = expression.replace("×", "*").replace("÷", "/")
+      try{
+        if (selectedUser){
+          const newScore = eval(mathExpr).toString();
+        liveGame.addPoints(selectedUser, newScore)
+        setExpression(newScore);
+        }
+        else{
+          alert("User has not been defined!")
+        }
+        
+      }
+      catch (err) {
+        console.log(err)
+        alert("Not a valid expression!")
+      }
     }
 
-    function addOperator(operator : string): void {
-      setExpression(expression + operator)
+    async function setUserPoints(username : string): Promise<void> {
+      console.log("SetUserPoints")
+      if (game === undefined) {
+        return 
+      }
+      //Get score from user and setExpression(score)
+
+      setSelectedUser(username);
+      
+       
+      
+    
+      const userId = await getUserId(username);
+      if (userId === undefined){
+        return
+      }
+
+      for (const score of game.players) {
+        if (score.playerId === userId) {
+          setExpression(score.toString())
+          break;
+        }
+      }
     }
 
     if (!group) {
@@ -82,7 +149,7 @@ const GameScreen: FC<GameScreenProps> = ({ params })=> {
    
 return (
     <PageWrapper title='Spill' backPath='/' authenticated={true}>
-        <div className={CardStyles["center-cards"]}>
+        <div className={SpillStyles["header-cards"]}>
             <Card title = {gameTitle} />
             <div className={`${CardStyles["card"]} 
                             ${ButtonStyles["button--green"]}`}>
@@ -124,25 +191,26 @@ return (
         <h2 className={RegResultStyles["title-centered"]}>Oppdater poeng</h2>
         {isGroupGame ? (<div>
           <div className={RegResultStyles["groups-container"]}>
-            <CheckboxCards
+            <RadioCards
               items={group.members.map((user, i) => ({
                 title: user.username,
-                key: i.toString(),
+                key: user.id,
               }))}
-              checked={selectedUsers}
-              setChecked={setSelectedUsers}
+              selected={selectedUser}
+              setSelected={setUserPoints}
             />
           </div>
-        </div>) : (<CheckboxCards
+        </div>) : (<RadioCards
               items={userArr.map((user, i) => ({
                 title: user.toString(),
-                key: i.toString(),
+                key: user.toString(),
               }))}
-              checked={selectedUsers}
-              setChecked={setSelectedUsers}
+              selected={selectedUser}
+              setSelected={setSelectedUser}
             />)}
         <div className={SpillStyles["calculator-container"]}>
           <Input 
+              placeholder="Legg til poeng..."
               type = {"text"}
               value = {expression}
               className = {SpillStyles["text-input"]}
@@ -169,28 +237,27 @@ return (
                 className={SpillStyles["operator-button"]}
                 variant = {ButtonVariant.Round}
                 color = {ButtonColor.Grey}
-                onClick = {() => setExpression(expression + " x ")} 
+                onClick = {() => setExpression(expression + " × ")} 
               > 
-                x
+                ×
               </Button>
               <Button 
                 className={SpillStyles["operator-button"]}
                 variant = {ButtonVariant.Round}
                 color = {ButtonColor.Grey}
-                onClick = {() => setExpression(expression + " / ")} 
+                onClick = {() => setExpression(expression + " ÷ ")} 
               > 
-                /
+                ÷
               </Button>
           </div>
-
-          <Button
-            variant={ButtonVariant.Medium}
-            color={ButtonColor.Red}
-            onClick={calcExpr}
-          >
-            Regn ut
-          </Button>
-
+            <Button
+              className={SpillStyles["calculate-button"]}
+              variant={ButtonVariant.Medium}
+              color={ButtonColor.Red}
+              onClick={calcExpr}
+            >
+              Regn ut
+            </Button>
         </div>
 
         <Button
