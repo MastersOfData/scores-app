@@ -29,22 +29,23 @@ const GameScreen: FC<GameScreenProps> = ({ params })=> {
     const gamesWithStatus = useGetGameById(gameId);
     const game = gamesWithStatus.data;
 
-    if (game === undefined)
-      return <div />
-
     const user = useUser();
     const userArr = [user];
 
     //Vet hvilket spill, må hente ut gruppe fra spillet
 
     const groupsWithStatus = useGetGroupsForCurrentUser();
-    const group = groupsWithStatus.data?.find((group) => group.id === game.groupId);
 
     //Hooks
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
     const [isGroupGame, setIsGroupGame] = useState(true);
     const [expression, setExpression] = useState<string>("");
     
+    if (game === undefined){
+      return <div />
+    }
+    
+    const group = groupsWithStatus.data?.find((group) => group.id === game.groupId);
 
     const calcExpr = () => {
       const mathExpr = expression.replace("x", "*")
@@ -54,7 +55,6 @@ const GameScreen: FC<GameScreenProps> = ({ params })=> {
     function addOperator(operator : string): void {
       setExpression(expression + operator)
     }
-
 
     if (!group) {
         return (
