@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Game } from "src/fire-base/models";
+import type { Game } from "src/fire-base/models";
 import { createGame, getGamesForGroup, updateGame } from "../game.service";
 import * as db from "../../fire-base/db";
-import { WithId } from "src/types/types";
 import { Timestamp } from "firebase/firestore";
 
 jest.mock("../../fire-base/db");
 
-const mockGame: WithId<Game> = {
+const mockGame: db.Document<Game> = {
   id: "1",
   gameTypeId: "",
   groupId: "",

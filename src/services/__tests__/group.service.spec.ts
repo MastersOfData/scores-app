@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Group, Membership, User } from "src/fire-base/models";
-import { GameType, GroupInternal, WithId } from "src/types/types";
+import type { Group, Membership, User } from "src/fire-base/models";
+import type { GameType, GroupInternal } from "src/types/types";
 import * as db from "../../fire-base/db";
 import {
   createGameTypeForGroup,
@@ -34,7 +34,7 @@ const baseMockMembership: Membership = {
   losses: 0,
 };
 
-const mockUsers: WithId<User>[] = [
+const mockUsers: db.Document<User>[] = [
   {
     id: "user1",
     ...baseMockUser,
@@ -53,7 +53,7 @@ const mockUsers: WithId<User>[] = [
   },
 ];
 
-const mockGroups: WithId<Group>[] = [
+const mockGroups: db.Document<Group>[] = [
   {
     id: "group1",
     ...baseMockGroup,
@@ -68,7 +68,7 @@ const mockGroups: WithId<Group>[] = [
   },
 ];
 
-const mockMemberships: WithId<Membership>[] = [
+const mockMemberships: db.Document<Membership>[] = [
   {
     ...baseMockMembership,
     id: "1",
