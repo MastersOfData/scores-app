@@ -10,7 +10,7 @@ import {
   Document,
   collections,
 } from "src/fire-base/db";
-import { Group, User, Membership } from "src/fire-base/models";
+import { Group, Membership } from "src/fire-base/models";
 import { generateMembershipDocumentId } from "src/utils/util";
 import { GroupInternal } from "../types/types";
 import { mapGroupAndUsersToGroupInternal } from "../utils/mappers";

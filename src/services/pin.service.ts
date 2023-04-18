@@ -7,11 +7,11 @@ export const createPincode = async () => {
   while (true) {
     const pincode = generatePincode()
 
-    const [ group ] = await getDocuments({
+    const groups = await getDocuments({
       collection: collections.groups,
       constraints: [where("pincode", "==", pincode)]
     })
 
-    if (!group) return pincode
+    if (groups?.length === 0) return pincode
   }
 };

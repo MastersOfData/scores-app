@@ -6,7 +6,7 @@ import {
   getDocuments,
   updateDocument,
 } from "src/fire-base/db";
-import { Game, Membership } from "src/fire-base/models";
+import { Game } from "src/fire-base/models";
 import { calculateDuration } from "src/utils/util";
 
 export interface CreateGameData {
