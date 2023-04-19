@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 import Spinner from "src/components/Spinner"
-import { getDocument } from "src/fire-base/db"
-import type { Game } from "src/fire-base/models"
+import { collections, getDocument } from "src/fire-base/db"
+import type { Game, Group } from "src/fire-base/models"
 import type { Document } from "src/fire-base/db"
 import styles from "src/styles/GameResult.module.css"
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button"
@@ -17,10 +17,16 @@ export type GameResultProps = {
 
 export default function GameResult({ gameId }: GameResultProps) {
   const [game, setGame] = useState<Document<Game> | null>(null)
+  const [group, setGroup] = useState<Document<Group> | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getDocument<Game>("games", gameId).then(setGame).then(() => setLoading(false))
+    getDocument(collections.games, gameId)
+      .then(game => {
+        setGame(game)
+        if (game) getDocument(collections.groups, game.groupId).then(setGroup)
+      })
+      .then(() => setLoading(false))
   }, [gameId])
 
   if (!game && loading) return <Spinner />
@@ -32,7 +38,7 @@ export default function GameResult({ gameId }: GameResultProps) {
 
   const timestampStr = Intl.DateTimeFormat("no").format(startDate)
   const durationStr = `${hours}:${minutes}`
-  const groupNameStr = null
+  const groupNameStr = game.gr
   const gameTypeStr = "Tennis"
 
   const items: CardItemSmall[] = [

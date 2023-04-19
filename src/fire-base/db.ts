@@ -9,35 +9,34 @@ import {
   query,
   addDoc,
   deleteDoc,
-  DocumentReference,
   updateDoc,
   getDoc,
   UpdateData,
   getDocs,
   setDoc
 } from "firebase/firestore"
+import type { Game, GameAction, Group, Membership, User } from "./models";
 
-// Constants
-export const usersCol = "users";
-export const groupsCol = "groups";
-export const gamesCol = "games";
-export const gameActionsCol = "gameActions";
-export const membershipsCol = "memberships";
-export const pincodesDocumentId = "usedPincodes";
+// Collections
+export const collections = {
+  users: createCollection<User>("users"),
+  groups: createCollection<Group>("groups"),
+  games: createCollection<Game>("games"),
+  gameActions: createCollection<GameAction>("gameActions"),
+  memberships: createCollection<Membership>("memberships")
+}
 
 // Types
 export type Document<T extends DocumentData> = T & { id: string }
 
-export type Collection = typeof usersCol | typeof groupsCol | typeof gamesCol | typeof gameActionsCol | typeof membershipsCol
-
-export type QueryDefinition = {
-  collectionId: Collection,
+export type QueryDefinition<T extends DocumentData> = {
+  collection: CollectionReference<T>,
   constraints?: QueryConstraint[]
 }
 
 // Functions
-export function subscribeToDocument<T extends DocumentData>(collectionId: Collection, docId: string, observer: (document: Document<T> | null) => void) {
-  const docRef = doc(db, collectionId, docId) as DocumentReference<T>
+export function subscribeToDocument<T extends DocumentData>(collection: CollectionReference<T>, docId: string, observer: (document: Document<T> | null) => void) {
+  const docRef = doc(collection, docId)
   return onSnapshot(docRef, snapshot => {
     const id = snapshot.id
     const data = snapshot.data()
@@ -46,10 +45,9 @@ export function subscribeToDocument<T extends DocumentData>(collectionId: Collec
   })
 }
 
-export function subscribeToDocuments<T extends DocumentData>({ collectionId, constraints }: QueryDefinition, observer: (documents: Document<T>[]) => void) {
-  const collectionRef = collection(db, collectionId) as CollectionReference<T>
-  const _constraints = constraints || []
-  const q = query(collectionRef, ..._constraints)
+export function subscribeToDocuments<T extends DocumentData>({ collection, constraints }: QueryDefinition<T>, observer: (documents: Document<T>[]) => void) {
+  const _constraints = constraints ?? []
+  const q = query(collection, ..._constraints)
   return onSnapshot(q, snapshot => {
     const documents = snapshot.docs.map(_doc => {
       const id = _doc.id
@@ -60,38 +58,36 @@ export function subscribeToDocuments<T extends DocumentData>({ collectionId, con
   })
 }
 
-export async function addDocument<T extends DocumentData>(collectionId: Collection, data: T) {
-  const collectionRef = collection(db, collectionId) as CollectionReference<T>
-  return await addDoc(collectionRef, data)
+export async function addDocument<T extends DocumentData>(collection: CollectionReference<T>, data: T) {
+  return await addDoc(collection, data)
 }
 
-export async function setDocument<T extends DocumentData>(collectionId: Collection, docId: string, data: T) {
-  const docRef = doc(db, collectionId, docId) as DocumentReference<T>
+export async function setDocument<T extends DocumentData>(collection: CollectionReference<T>, docId: string, data: T) {
+  const docRef = doc(collection, docId)
   return await setDoc(docRef, data)
 }
 
-export async function deleteDocument(collectionId: Collection, docId: string) {
-  const docRef = doc(db, collectionId, docId)
+export async function deleteDocument<T extends DocumentData>(collection: CollectionReference<T>, docId: string) {
+  const docRef = doc(collection, docId)
   return await deleteDoc(docRef)
 }
 
-export async function updateDocument<T extends DocumentData>(collectionId: Collection, docId: string, updateData: UpdateData<T>) {
-  const docRef = doc(db, collectionId, docId) as DocumentReference<T>
+export async function updateDocument<T extends DocumentData>(collection: CollectionReference<T>, docId: string, updateData: UpdateData<T>) {
+  const docRef = doc(collection, docId)
   return await updateDoc(docRef, updateData)
 }
 
-export async function getDocument<T extends DocumentData>(collectionId: Collection, docId: string) {
-  const docRef = doc(db, collectionId, docId) as DocumentReference<T>
+export async function getDocument<T extends DocumentData>(collection: CollectionReference<T>, docId: string) {
+  const docRef = doc(collection, docId)
   const snapshot = await getDoc(docRef)
   const id = snapshot.id
   const data = snapshot.data()
   return data ? { id, ...data } as Document<T> : null
 }
 
-export async function getDocuments<T extends DocumentData>({ collectionId, constraints }: QueryDefinition) {
-  const collectionRef = collection(db, collectionId) as CollectionReference<T>
+export async function getDocuments<T extends DocumentData>({ collection, constraints }: QueryDefinition<T>) {
   const _constraints = constraints || []
-  const q = query(collectionRef, ..._constraints)
+  const q = query(collection, ..._constraints)
   const snapshot = await getDocs(q)
   return snapshot.docs.map(_doc => {
     return {
@@ -99,4 +95,9 @@ export async function getDocuments<T extends DocumentData>({ collectionId, const
       ..._doc.data()
     } as Document<T>
   })
+}
+
+// Helper functions
+function createCollection<T extends DocumentData>(collectionId: string) {
+  return collection(db, collectionId) as CollectionReference<T>
 }

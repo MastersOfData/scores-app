@@ -144,25 +144,24 @@ describe("GroupService", () => {
     it("Should call database", async () => {
       mockAddDocument.mockResolvedValueOnce({ id: "1" } as unknown as any); // groupRef
       mockGetDocument
-        .mockResolvedValueOnce({ id: "1", pincodes: ["123456"] }) // createPincode
-        .mockResolvedValueOnce(mockGroups[0]) // getGroupInternal
+        .mockResolvedValueOnce(mockGroups[0]) // joinGroup
         .mockResolvedValue(mockGroups[0]); // getGroupInternal
       mockGetDocuments
+        .mockResolvedValueOnce([]) // createPincode
         .mockResolvedValueOnce(mockMemberships) // getGroupInternal
         .mockResolvedValueOnce(mockUsers); // getGroupInternal
 
       await createGroup("user1", "420", "69");
 
       expect(mockAddDocument).toBeCalledTimes(1);
-      expect(mockSetDocument).toBeCalledTimes(2);
-      expect(mockGetDocument).toBeCalledTimes(3);
-      expect(mockGetDocuments).toBeCalledTimes(2);
+      expect(mockSetDocument).toBeCalledTimes(1);
+      expect(mockGetDocument).toBeCalledTimes(2);
+      expect(mockGetDocuments).toBeCalledTimes(3);
     });
 
     it("Should return correct object", async () => {
       mockAddDocument.mockResolvedValueOnce({ id: "1" } as unknown as any); // groupRef
       mockGetDocument
-        .mockResolvedValueOnce({ id: "1", pincodes: ["123456"] }) // createPincode
         .mockResolvedValueOnce({ ...mockGroups[0], name: "Gutta", emoji: "OG" }) // getGroupInternal
         .mockResolvedValueOnce({
           ...mockGroups[0],
@@ -170,6 +169,7 @@ describe("GroupService", () => {
           emoji: "OG",
         }); // getGroupInternal
       mockGetDocuments
+        .mockResolvedValueOnce([]) // createPincode
         .mockResolvedValueOnce([mockMemberships[0]]) // getGroupInternal
         .mockResolvedValueOnce([
           { ...mockUsers[0], username: "Birger", email: "birger@hvl.no" },
@@ -257,7 +257,7 @@ describe("GroupService", () => {
       await joinGroupByInvitationCode("123456", "user1");
 
       expect(mockSetDocument).toBeCalledWith(
-        db.membershipsCol,
+        db.collections.memberships,
         "user1-group1",
         mockUserGroupStatistic
       );
@@ -380,7 +380,7 @@ describe("GroupService", () => {
       await createGameTypeForGroup(mockGroups[0].id, "name", "emoji");
 
       expect(mockUpdateDocument).toBeCalledWith(
-        db.groupsCol,
+        db.collections.groups,
         mockGroups[0].id,
         expectedUpdatedGroup
       );

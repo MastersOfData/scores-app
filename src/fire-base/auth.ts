@@ -1,5 +1,5 @@
 import { auth } from "./config";
-import { setDocument } from "./db";
+import { collections, setDocument } from "./db";
 import { User } from "./models";
 export { updateProfile, updatePassword } from "firebase/auth";
 import {
@@ -38,7 +38,7 @@ export async function createAccount(
     email,
     password
   );
-  await setDocument<User>("users", credentials.user.uid, {
+  await setDocument(collections.users, credentials.user.uid, {
     email,
     username,
   });

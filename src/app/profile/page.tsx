@@ -7,8 +7,7 @@ import styles from "src/styles/Account.module.css";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
 import PageWrapper from "src/components/PageWrapper";
 import { usePathname, useRouter } from "next/navigation";
-import { updateDocument } from "src/fire-base/db";
-import { User } from "src/fire-base/models";
+import { collections, updateDocument } from "src/fire-base/db";
 import { useUser } from "src/services/user.service";
 import { useAppDispatch } from "../../store/hooks";
 import { clearGroupState } from "../../store/groupsInternal.reducer";
@@ -36,7 +35,7 @@ export default function AccountPage() {
     if (!username) return;
 
     try {
-      await updateDocument<User>("users", user.uid, {
+      await updateDocument(collections.users, user.uid, {
         username,
       });
 
