@@ -87,3 +87,11 @@
 .text-align-left {
   text-align: left !important;
 }
+
+.positive-number {
+  color: var(--accent-green) !important;
+}
+
+.negative-number {
+  color: var(--accent-red) !important;
+}

@@ -18,12 +18,11 @@ import { ScrollableLargeCards } from "../../../components/ScrollableLargeCards";
 import { CardItem } from "../../../components/Card";
 import {
   calculateGroupLeaderboard,
-  mapGamesToCardItems,
 } from "../../../utils/util";
 import { useRouter } from "next/navigation";
 import Spinner from "../../../components/Spinner";
 import { useUser } from "src/services/user.service";
-import { mapGameTypesToCardItems } from "src/utils/mappers";
+import { mapGamesToCardItems, mapGameTypesToCardItems } from "src/utils/mappers";
 
 interface GroupPageProps {
   params: { groupId: string };

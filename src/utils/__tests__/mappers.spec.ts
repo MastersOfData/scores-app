@@ -1,25 +1,84 @@
 import type { CardItem } from "src/components/Card";
-import type { Group, User, Membership } from "../../fire-base/models";
+import type { Group, User, Membership, Game } from "../../fire-base/models";
 import type { GameType, GroupInternal } from "../../types/types";
 import type { Document } from "src/fire-base/db";
-import { mapGameTypesToCardItems, mapGroupAndUsersToGroupInternal, mapGroupsToCardItems } from "../mappers";
+import { mapGamesToCardItems, mapGameTypesToCardItems, mapGroupAndUsersToGroupInternal, mapGroupsToCardItems } from "../mappers";
+import { Timestamp } from "firebase/firestore";
+
+const group: Document<Group> = {
+  id: "g1",
+  name: "Gutta",
+  emoji: "🎮",
+  gameTypes: [
+    {
+      id: "1",
+      emoji: "🎱",
+      name: "Biljard",
+    },
+  ],
+  games: [],
+  invitationCode: "",
+};
+
+const gameTypes: GameType[] = [
+  {
+    id: "1",
+    name: "Tennis",
+    emoji: "TS",
+  },
+  {
+    id: "2",
+    name: "Tennis",
+    emoji: "TE",
+  },
+  {
+    id: "3",
+    name: "Fotball",
+    emoji: "FB",
+  },
+];
+
+const groupInternalBase: GroupInternal = {
+  id: "g1",
+  name: "",
+  emoji: "",
+  games: [],
+  invitationCode: "",
+  members: [],
+  gameTypes: gameTypes,
+};
+
+const games: Document<Game>[] = [
+  {
+    id: "game1",
+    gameTypeId: "1",
+    groupId: "g1",
+    adminId: "",
+    players: [],
+    timestamp: new Timestamp(Date.now() / 1000, 0),
+    status: "FINISHED",
+  },
+  {
+    id: "game2",
+    gameTypeId: "2",
+    groupId: "g2",
+    adminId: "",
+    players: [],
+    timestamp: new Timestamp(Date.now() / 1000, 1),
+    status: "ONGOING",
+  },
+  {
+    id: "game3",
+    gameTypeId: "3",
+    groupId: "g3",
+    adminId: "",
+    players: [],
+    timestamp: new Timestamp(Date.now() / 1000, 1),
+    status: "PAUSED",
+  },
+]
 
 describe("mapGroupAndUsersToGroupInternal", () => {
-  const group: Document<Group> = {
-    id: "g1",
-    name: "Gutta",
-    emoji: "🎮",
-    gameTypes: [
-      {
-        id: "1",
-        emoji: "🎱",
-        name: "Biljard",
-      },
-    ],
-    games: [],
-    invitationCode: "",
-  };
-
   const userStats: Document<Membership>[] = [
     {
       id: "123-g1",
@@ -95,14 +154,7 @@ describe("mapGroupAndUsersToGroupInternal", () => {
 });
 
 describe("mapGroupsToCardItems", () => {
-  const groupInternalBase: GroupInternal = {
-    id: "",
-    name: "",
-    emoji: "",
-    games: [],
-    invitationCode: "",
-    members: []
-  };
+
 
   const groups: GroupInternal[] = [
     {
@@ -154,23 +206,7 @@ describe("mapGroupsToCardItems", () => {
 });
 
 describe("mapGameTypesToCardItems", () => {
-  const gameTypes: GameType[] = [
-    {
-      id: "1",
-      name: "Tennis",
-      emoji: "TS",
-    },
-    {
-      id: "2",
-      name: "Tennis",
-      emoji: "TE",
-    },
-    {
-      id: "3",
-      name: "Fotball",
-      emoji: "FB",
-    },
-  ];
+
 
   const expectedNewGameType: CardItem = {
     key: "new",
@@ -198,5 +234,36 @@ describe("mapGameTypesToCardItems", () => {
         emoji: gameTypes[1].emoji,
       }
     ]);
+  });
+});
+
+describe("mapGamesToCardItems", () => {
+  it("Should map objects correctly when games exist", () => {
+    const res = mapGamesToCardItems(games, groupInternalBase);
+    expect(res).toEqual([
+      {
+        key: "game1",
+        title: "I dag",
+        labels: ["Tennis", "Fullført"],
+        emoji: "TS"
+      },
+      {
+        key: "game2",
+        title: "I dag",
+        labels: ["Tennis"],
+        emoji: "TE"
+      },
+      {
+        key: "game3",
+        title: "I dag",
+        labels: ["Fotball", "Ikke fullført"],
+        emoji: "FB"
+      },
+    ])
+  });
+
+  it("Should return empty list when no games exist", () => {
+    const res = mapGamesToCardItems([], groupInternalBase);
+    expect(res).toEqual([]);
   });
 });

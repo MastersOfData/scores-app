@@ -1,16 +1,11 @@
 import { Timestamp } from "firebase/firestore";
 import type { Game, GameAction, Membership } from "src/fire-base/models";
 import type { Document } from "src/fire-base/db";
-import type { CardItem } from "src/components/Card";
 import {
   GameActionType,
-  GameType,
-  GroupInternal,
   LeaderboardStats,
   Member,
 } from "../types/types";
-
-export const testFunc = () => true;
 
 export const generateMembershipDocumentId = (
   userId: string,
@@ -74,59 +69,6 @@ export const convertSecondsToMinutesAndSeconds = (seconds: number) => {
   };
 };
 
-export const mapGroupsToCardItems = (
-  groups: GroupInternal[],
-  includeLabels: boolean
-): CardItem[] => {
-  return groups.map((group) => {
-    return {
-      key: group.id,
-      title: group.name,
-      labels: includeLabels ? ["Noe relevant info", "Annen info"] : undefined,
-      emoji: group.emoji,
-      href: `/group/${group.id}`,
-    };
-  });
-};
-
-export const mapGameTypesToCardItems = (
-  gameTypes?: GameType[],
-  addGameTypeClickEvent?: () => void
-) => {
-  const gameTypeCards: CardItem[] = gameTypes
-    ? gameTypes.map((gt) => ({
-        key: gt.name,
-        title: gt.name,
-        emoji: gt.emoji,
-      }))
-    : [];
-
-  return [
-    {
-      key: "new",
-      title: "+ Legg til",
-      onClick: () => addGameTypeClickEvent?.(),
-    },
-    ...gameTypeCards.sort((a, b) => a.title.localeCompare(b.title)),
-  ];
-};
-
-export const mapGameToCardItem = (game: Document<Game>) => {
-  const endDate = game.duration
-    ? Timestamp.fromMillis(game.duration)
-    : Timestamp.fromDate(new Date());
-
-  return {
-    key: game.id,
-    title: `${differenceBetweenFirestoreTimestampsInDays(
-      endDate,
-      Timestamp.fromDate(new Date())
-    )} dager siden`,
-    labels: [game.gameTypeId, `${game.winners} vant! 🎉`],
-    emoji: game.gameTypeId,
-  };
-};
-
 export const generatePincode = () => {
   const digits = "0123456789";
   let pin = "";
@@ -162,57 +104,6 @@ export const calculateGroupLeaderboard = (
 
     return a.username.localeCompare(b.username);
   });
-};
-
-export const mapGamesToCardItems = (
-  games: Document<Game>[],
-  group: GroupInternal
-): CardItem[] => {
-  if (!games) return [];
-
-  return games
-    .sort((a, b) => b.timestamp.toMillis() - a.timestamp.toMillis())
-    .map((game) => {
-      const diffDays = differenceBetweenFirestoreTimestampsInDays(
-        game.timestamp,
-        Timestamp.fromDate(new Date())
-      );
-
-      const labels: string[] = [];
-
-      const gameType = group.gameTypes?.find((gt) => gt.id === game.gameTypeId);
-      if (gameType) {
-        labels.push(`${gameType.name}`);
-      }
-
-      if (game.status === "ONGOING" && game.duration) {
-        const { minutes, seconds } = convertSecondsToMinutesAndSeconds(
-          game.duration
-        );
-        labels.push(`Varighet: ${minutes}:${seconds}`);
-      }
-
-      if (game.status === "PAUSED") {
-        labels.push("Ikke fullført");
-      }
-
-      if (game.status === "FINISHED") {
-        if (game.winners && game.winners.length === 1) {
-          const gameWinners = game.winners;
-          const winner = group.members.find((u) => u.userId === gameWinners[0]);
-          if (winner) labels.push(`${winner.username} vant! 🎉`);
-        } else if (game.winners && game.winners.length > 1) {
-          labels.push("Uavgjort");
-        } else labels.push("Fullført");
-      }
-
-      return {
-        key: game.id,
-        title: diffDays === 0 ? "I dag" : `${diffDays} dager siden`,
-        labels: labels,
-        emoji: gameType?.emoji,
-      };
-    });
 };
 
 export const recalculateMembershipsResults = (

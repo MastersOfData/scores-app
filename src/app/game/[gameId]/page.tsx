@@ -6,7 +6,7 @@ import { Button, ButtonVariant, ButtonColor } from "src/components/Button";
 import PageWrapper from "src/components/PageWrapper";
 import CardStyles from "src/styles/Card.module.css";
 import ButtonStyles from "src/styles/Button.module.css";
-import SpillStyles from "src/styles/Spill.module.css";
+import GameStyles from "src/styles/Spill.module.css";
 import {
   useGetGroupsForCurrentUser,
   useUserHasAccessToGame,
@@ -146,7 +146,7 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
 
   return (
     <PageWrapper title="Spill" backPath="/" authenticated={true}>
-      <div className={SpillStyles["header-cards"]}>
+      <div className={GameStyles["header-cards"]}>
         <Card title={gameTitle} />
         <div
           className={`${CardStyles["card"]} 
@@ -154,7 +154,7 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
         >
           <div className={CardStyles["card-header-wrapper"]}>
             <h4
-              className={`${CardStyles["card-title"]} ${SpillStyles.timeLabel} `}
+              className={`${CardStyles["card-title"]} ${GameStyles.timeLabel} `}
             >
               {time}
             </h4>
@@ -214,18 +214,18 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
           setSelected={setSelectedUser}
         />
       )}
-      <div className={SpillStyles["calculator-container"]}>
+      <div className={GameStyles["calculator-container"]}>
         <Input
           placeholder="Legg til poeng..."
           type={"text"}
           value={expression}
-          className={SpillStyles["text-input"]}
+          className={GameStyles["text-input"]}
           onInput={setExpression}
         />
 
-        <div className={SpillStyles["math-buttonsContainer"]}>
+        <div className={GameStyles["math-buttonsContainer"]}>
           <Button
-            className={SpillStyles["operator-button"]}
+            className={GameStyles["operator-button"]}
             variant={ButtonVariant.Round}
             color={ButtonColor.Grey}
             onClick={() => setExpression(expression + " + ")}
@@ -233,7 +233,7 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
             +
           </Button>
           <Button
-            className={SpillStyles["operator-button"]}
+            className={GameStyles["operator-button"]}
             variant={ButtonVariant.Round}
             color={ButtonColor.Grey}
             onClick={() => setExpression(expression + " - ")}
@@ -241,7 +241,7 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
             -
           </Button>
           <Button
-            className={SpillStyles["operator-button"]}
+            className={GameStyles["operator-button"]}
             variant={ButtonVariant.Round}
             color={ButtonColor.Grey}
             onClick={() => setExpression(expression + " × ")}
@@ -249,7 +249,7 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
             ×
           </Button>
           <Button
-            className={SpillStyles["operator-button"]}
+            className={GameStyles["operator-button"]}
             variant={ButtonVariant.Round}
             color={ButtonColor.Grey}
             onClick={() => setExpression(expression + " ÷ ")}
@@ -258,7 +258,7 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
           </Button>
         </div>
         <Button
-          className={SpillStyles["calculate-button"]}
+          className={GameStyles["calculate-button"]}
           variant={ButtonVariant.Medium}
           color={ButtonColor.Red}
           onClick={calcExpr}
@@ -269,30 +269,45 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
       {liveGame.localGameLog.length > 0 ? (
         <>
           <h2 className={RegResultStyles["title-centered"]}>Logg</h2>
-          <table className={SpillStyles["log"]}>
+          <table className={GameStyles["log"]}>
             <thead>
               <tr>
                 <th>Tid</th>
-                <th className={SpillStyles["text-align-left"]}>Bruker</th>
-                <th>Tildeler</th>
+                <th className={GameStyles["text-align-left"]}>Bruker</th>
+                <th className={GameStyles["text-align-left"]}>Tildeler</th>
+                <th>Handling</th>
                 <th>Poeng</th>
               </tr>
             </thead>
             <tbody>
               {liveGame.localGameLog.map((entry, index) => {
                 const { subjectId, actorId, timestamp, value } = entry;
+                const hasValue = !!value;
+                const isPositive = hasValue && value > 0;
+
                 return (
                   <tr key={index + entry.actionType + entry.subjectId}>
-                    <td>
-                      {getElapsedTimeStringFromSeconds(timestamp.seconds)}
-                    </td>
-                    <td className={SpillStyles["text-align-left"]}>
+                    <td>{timestamp.seconds}</td>
+                    <td className={GameStyles["text-align-left"]}>
                       {group?.members.find((m) => m.id === subjectId)?.username}
                     </td>
-                    <td>
+                    <td className={GameStyles["text-align-left"]}>
                       {group?.members.find((m) => m.id === actorId)?.username}
                     </td>
-                    <td>{value}</td>
+                    <td>{entry.actionType}</td>
+                    <td
+                      className={
+                        GameStyles[
+                          isPositive
+                            ? "positive-number"
+                            : "negative-number"
+                        ]
+                      }
+                    >
+                      {`${isPositive ? "+" : "-"} ${
+                        hasValue ? Math.abs(value) : ""
+                      }`}
+                    </td>
                   </tr>
                 );
               })}
