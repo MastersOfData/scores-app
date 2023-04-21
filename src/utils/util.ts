@@ -211,6 +211,7 @@ export const mapGamesToCardItems = (
         title: diffDays === 0 ? "I dag" : `${diffDays} dager siden`,
         labels: labels,
         emoji: gameType?.emoji,
+        href: `/game/${game.id}`
       };
     });
 };

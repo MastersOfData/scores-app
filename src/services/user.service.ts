@@ -2,12 +2,11 @@ import { where } from "firebase/firestore";
 import { useContext } from "react";
 import { userContext } from "src/app/providers";
 import { getDocuments, collections } from "src/fire-base/db";
-import { User } from "src/fire-base/models";
 
 export const useUser = () => useContext(userContext);
 
 export const getUserId = async (userName: string) => {
-  const users = await getDocuments<User>({
+  const users = await getDocuments({
     collection: collections.users,
     constraints: [where("username", "==", userName)],
   });

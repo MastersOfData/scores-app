@@ -1,10 +1,12 @@
 .wrapper {
   display: grid;
-  place-content: center;
+  place-items: center;
   gap: 2rem;
 }
 
-.winner-wrapper {
-  display: grid;
-  place-content: center;
+.actions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
