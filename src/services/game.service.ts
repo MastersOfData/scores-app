@@ -139,15 +139,15 @@ export const userHasAccessToGame = async (
   userId: string,
   gameId: string
 ): Promise<UserAccess> => {
-  const game = await getDocument<Game>(gamesCol, gameId);
+  const game = await getDocument(collections.games, gameId);
   if (!game)
     return {
       hasAccess: false,
       noAccessReason: `Spill med id '${gameId}' finnes ikke`,
     };
 
-  const membership = await getDocuments<Membership>({
-    collectionId: membershipsCol,
+  const membership = await getDocuments({
+    collection: collections.memberships,
     constraints: [
       where("userId", "==", userId),
       where("groupId", "==", game.groupId),
