@@ -7,9 +7,8 @@ import { getAllGroupsAction } from "./groupsInternal.reducer";
 import { useUser } from "src/services/user.service";
 import {
   addDocument,
+  collections,
   Document,
-  gameActionsCol,
-  gamesCol,
   subscribeToDocument,
   subscribeToDocuments,
 } from "../fire-base/db";
@@ -118,13 +117,13 @@ export const useGetLiveGame = (gameId: string) => {
   const [elapsedGameTime, setElapsedGameTime] = useState(0);
 
   useEffect(() => {
-    return subscribeToDocument<Game>(gamesCol, gameId, setLocalGameState);
+    return subscribeToDocument(collections.games, gameId, setLocalGameState);
   }, [gameId]);
 
   useEffect(() => {
-    return subscribeToDocuments<GameAction>(
+    return subscribeToDocuments(
       {
-        collectionId: gameActionsCol,
+        collection: collections.gameActions,
         constraints: [where("gameId", "==", gameId)],
       },
       setLocalGameLog
@@ -143,7 +142,7 @@ export const useGetLiveGame = (gameId: string) => {
 
   const addPoints = async (userId: string, points: number) => {
     if (user) {
-      await addDocument<GameAction>(gameActionsCol, {
+      await addDocument(collections.gameActions, {
         subjectId: userId,
         value: points,
         actionType: GameActionType.ADD_POINTS,
@@ -156,7 +155,7 @@ export const useGetLiveGame = (gameId: string) => {
 
   const changeGameStatus = async (status: GameActionType) => {
     if (user) {
-      await addDocument<GameAction>(gameActionsCol, {
+      await addDocument(collections.gameActions, {
         actionType: status,
         gameId,
         actorId: user.uid,
