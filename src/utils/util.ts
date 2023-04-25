@@ -65,11 +65,13 @@ export const calculateDuration = (game: Game): number => {
   return game.duration || 0;
 };
 
-export const convertSecondsToMinutesAndSeconds = (seconds: number) => {
-  const minutes = Math.floor(seconds / 60);
+export const convertSecondsToHoursMinutesAndSeconds = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
   const secondsRemainder = Math.round(seconds % 60);
 
   return {
+    hours,
     minutes,
     seconds: secondsRemainder,
   };
@@ -187,7 +189,7 @@ export const mapGamesToCardItems = (
       }
 
       if (game.status === "ONGOING" && game.duration) {
-        const { minutes, seconds } = convertSecondsToMinutesAndSeconds(
+        const { minutes, seconds } = convertSecondsToHoursMinutesAndSeconds(
           game.duration
         );
         labels.push(`Varighet: ${minutes}:${seconds}`);
@@ -276,10 +278,19 @@ export const convertNumberToTwoDigitString = (n: number) =>
   n >= 10 ? n.toString() : `0${n}`;
 
 export const getElapsedTimeStringFromSeconds = (sec: number) => {
-  const { minutes, seconds } = convertSecondsToMinutesAndSeconds(sec);
-  return `${convertNumberToTwoDigitString(
-    minutes
-  )}:${convertNumberToTwoDigitString(seconds)}`;
+  const { hours, minutes, seconds } =
+    convertSecondsToHoursMinutesAndSeconds(sec);
+  if (hours === 0) {
+    return `${convertNumberToTwoDigitString(
+      minutes
+    )}:${convertNumberToTwoDigitString(seconds)}`;
+  } else {
+    return `${convertNumberToTwoDigitString(
+      hours
+    )}:${convertNumberToTwoDigitString(
+      minutes
+    )}:${convertNumberToTwoDigitString(seconds)}`;
+  }
 };
 
 export const calculateLiveScores = (gameLog: GameAction[]): PlayerScore[] => {
@@ -300,6 +311,41 @@ export const calculateLiveScores = (gameLog: GameAction[]): PlayerScore[] => {
   );
 
   return scores;
+};
+
+export const removeCorruptGameActions = (
+  game: Game,
+  gameLog: Document<GameAction>[]
+) => {
+  const playerOrder = game.players.map((player) => player.playerId);
+  let nextPlayersTurn = 0;
+
+  const sortedGameLog = gameLog.sort(
+    (a, b) => a.timestamp.toMillis() - b.timestamp.toMillis()
+  );
+
+  const startAction = sortedGameLog.shift();
+  if (!startAction)
+    return {
+      updatedGameLog: sortedGameLog,
+      nextPlayersTurn: playerOrder[nextPlayersTurn],
+    };
+
+  const updatedGameLog: Document<GameAction>[] = [startAction];
+
+  while (sortedGameLog.length > 0) {
+    const nextAction = sortedGameLog.shift();
+    if (
+      nextAction &&
+      nextAction.subjectId &&
+      nextAction.subjectId === playerOrder[nextPlayersTurn]
+    ) {
+      updatedGameLog.push(nextAction);
+      nextPlayersTurn = (nextPlayersTurn + 1) % playerOrder.length;
+    }
+  }
+
+  return { updatedGameLog, nextPlayersTurn: playerOrder[nextPlayersTurn] };
 };
 
 export function formatSeconds(seconds: number): string {
