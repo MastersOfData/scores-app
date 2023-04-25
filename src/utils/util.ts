@@ -212,7 +212,7 @@ export const mapGamesToCardItems = (
         title: diffDays === 0 ? "I dag" : `${diffDays} dager siden`,
         labels: labels,
         emoji: gameType?.emoji,
-        href: `/game/${game.id}`
+        href: `/game/${game.id}`,
       };
     });
 };
@@ -301,3 +301,15 @@ export const calculateLiveScores = (gameLog: GameAction[]): PlayerScore[] => {
 
   return scores;
 };
+
+export function formatSeconds(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+
+  const formattedHours = hours.toString().padStart(2, "0");
+  const formattedMinutes = minutes.toString().padStart(2, "0");
+  const formattedSeconds = remainingSeconds.toString().padStart(2, "0");
+
+  return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+}
