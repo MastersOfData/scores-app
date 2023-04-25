@@ -6,7 +6,7 @@ import Spinner from "../../components/Spinner";
 import { getElapsedTimeStringFromSeconds } from "../../utils/util";
 
 export default function TestLiveGame() {
-  const gameId = "Vo90Ls9JIUM45x0aWTrE";
+  const gameId = "CFjs5Zzpty6BhPGtDn5i";
 
   const gameAccess = useUserHasAccessToGame(gameId);
   const live = useGetLiveGame(gameId);

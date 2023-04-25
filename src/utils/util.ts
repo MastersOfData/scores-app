@@ -342,6 +342,8 @@ export const removeCorruptGameActions = (
     ) {
       updatedGameLog.push(nextAction);
       nextPlayersTurn = (nextPlayersTurn + 1) % playerOrder.length;
+    } else if (nextAction && nextAction.actionType === GameActionType.FINISH) {
+      updatedGameLog.push(nextAction);
     }
   }
 
