@@ -1,13 +1,14 @@
 import { Timestamp, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import {
   addDocument,
-  gamesCol,
+  collections,
+  Document,
   getDocument,
   getDocuments,
-  membershipsCol,
   updateDocument,
 } from "src/fire-base/db";
-import { Game, Membership } from "src/fire-base/models";
+import { Game, GameAction, Group, User } from "src/fire-base/models";
 import { calculateDuration } from "src/utils/util";
 import { UserAccess } from "../types/types";
 
@@ -44,8 +45,8 @@ export const createGame = async (userId: string, data: CreateGameData) => {
     duration: 0,
   };
 
-  const gameRef = await addDocument(gamesCol, game);
-  const createdGame = await getDocument<Game>(gamesCol, gameRef.id);
+  const gameRef = await addDocument(collections.games, game);
+  const createdGame = await getDocument(collections.games, gameRef.id);
 
   if (!createdGame) return Promise.reject();
 
@@ -76,8 +77,8 @@ export const registerResult = async (
     winners: data.winners,
   };
 
-  const gameRef = await addDocument(gamesCol, game);
-  const createdGame = await getDocument<Game>(gamesCol, gameRef.id);
+  const gameRef = await addDocument(collections.games, game);
+  const createdGame = await getDocument(collections.games, gameRef.id);
 
   if (!createdGame) return Promise.reject();
 
@@ -85,19 +86,19 @@ export const registerResult = async (
 };
 
 export const updateGame = async (gameId: string, data: UpdateGameData) => {
-  const game = await getDocument<Game>(gamesCol, gameId);
+  const game = await getDocument(collections.games, gameId);
 
   if (!game) return Promise.reject(`Game not found: ${gameId}`);
 
-  return await updateDocument<Game>(gamesCol, gameId, {
+  return await updateDocument(collections.games, gameId, {
     ...data,
     duration: calculateDuration(game),
   });
 };
 
 export const getGamesForGroup = async (userId: string, groupId: string) => {
-  const membership = await getDocuments<Membership>({
-    collectionId: membershipsCol,
+  const membership = await getDocuments({
+    collection: collections.memberships,
     constraints: [
       where("userId", "==", userId),
       where("groupId", "==", groupId),
@@ -107,8 +108,8 @@ export const getGamesForGroup = async (userId: string, groupId: string) => {
   if (membership.length === 0)
     return Promise.reject(`User is not a member of the group: ${groupId}`);
 
-  const games = await getDocuments<Game>({
-    collectionId: gamesCol,
+  const games = await getDocuments({
+    collection: collections.games,
     constraints: [where("groupId", "==", groupId)],
   });
 
@@ -118,11 +119,11 @@ export const getGamesForGroup = async (userId: string, groupId: string) => {
 };
 
 export const getGameById = async (userId: string, gameId: string) => {
-  const game = await getDocument<Game>(gamesCol, gameId);
+  const game = await getDocument(collections.games, gameId);
   if (!game) return Promise.reject(`Spill med id '${gameId}' finnes ikke`);
 
-  const membership = await getDocuments<Membership>({
-    collectionId: membershipsCol,
+  const membership = await getDocuments({
+    collection: collections.memberships,
     constraints: [
       where("userId", "==", userId),
       where("groupId", "==", game.groupId),
@@ -140,15 +141,15 @@ export const userHasAccessToGame = async (
   userId: string,
   gameId: string
 ): Promise<UserAccess> => {
-  const game = await getDocument<Game>(gamesCol, gameId);
+  const game = await getDocument(collections.games, gameId);
   if (!game)
     return {
       hasAccess: false,
       noAccessReason: `Spill med id '${gameId}' finnes ikke`,
     };
 
-  const membership = await getDocuments<Membership>({
-    collectionId: membershipsCol,
+  const membership = await getDocuments({
+    collection: collections.memberships,
     constraints: [
       where("userId", "==", userId),
       where("groupId", "==", game.groupId),
@@ -165,3 +166,50 @@ export const userHasAccessToGame = async (
     hasAccess: true,
   };
 };
+
+export function useGetGameByIdWithAggregateData(gameId: Document<Game>["id"]) {
+  const [game, setGame] = useState<Document<Game> | null>(null)
+  const [group, setGroup] = useState<Document<Group> | null>(null)
+  const [gameActions, setGameActions] = useState<Document<GameAction>[]>([])
+  const [players, setPlayers] = useState<Document<User>[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    getDocument(collections.games, gameId)
+      .then(_game => {
+        setGame(_game)
+        if (_game) {
+          const groupFetcher = getDocument(collections.groups, _game.groupId).then(setGroup)
+
+          const gameActionsFetcher = getDocuments({
+            collection: collections.gameActions,
+            constraints: [where("gameId", "==", _game.id)]
+          })
+          .then(setGameActions)
+
+          const playersFetcher = Promise.all(
+            _game.players.map(p => getDocument(collections.users, p.playerId))
+          )
+          .then(_players => _players.filter(p => !!p) as Document<User>[]).then(setPlayers)
+
+          Promise.all([groupFetcher, gameActionsFetcher, playersFetcher])
+        }
+      })
+      .then(() => setLoading(false))
+  }, [gameId])
+
+  if (!game && loading) return {
+    game: null,
+    loading: true
+  }
+
+  return {
+    game: {
+      ...game,
+      group,
+      gameActions: gameActions.sort((a1, a2) => a1.timestamp.valueOf().localeCompare(a2.timestamp.valueOf())),
+      players
+    },
+    loading: false
+  }
+}

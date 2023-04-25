@@ -1,0 +1,23 @@
+.table {
+  margin-block: 2rem;
+  width: 100%;
+  background-color: #2a293f;
+  border-radius: 1rem;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.body-wrapper {
+  background-color: #2a293f;
+  border-radius: 1rem;
+  margin-inline: 2rem;
+}
+
+.td {
+  text-align: center;
+}
+
+.tr {
+  background-color: #1f1f31;
+  margin-inline: 1rem;
+}
