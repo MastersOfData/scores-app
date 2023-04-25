@@ -16,7 +16,11 @@ import { Game, GameAction } from "../fire-base/models";
 import { UserAccess, GameActionType, PlayerScore } from "../types/types";
 import { Timestamp, where } from "firebase/firestore";
 import { userHasAccessToGame } from "../services/game.service";
-import { calculateElapsedGameTime, calculateLiveScores } from "../utils/util";
+import {
+  calculateElapsedGameTime,
+  calculateLiveScores,
+  removeCorruptGameActions,
+} from "../utils/util";
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<StoreType> = useSelector;
@@ -116,6 +120,7 @@ export const useGetLiveGame = (gameId: string) => {
   const [localGameLog, setLocalGameLog] = useState<Document<GameAction>[]>([]);
   const [elapsedGameTime, setElapsedGameTime] = useState(0);
   const [scores, setScores] = useState<PlayerScore[]>([]);
+  const [nextPlayersTurn, setNextPlayersTurn] = useState<string | null>(null);
 
   useEffect(() => {
     return subscribeToDocument(collections.games, gameId, setLocalGameState);
@@ -127,9 +132,20 @@ export const useGetLiveGame = (gameId: string) => {
         collection: collections.gameActions,
         constraints: [where("gameId", "==", gameId)],
       },
-      setLocalGameLog
+      (log) => {
+        if (localGameState) {
+          const { updatedGameLog, nextPlayersTurn } = removeCorruptGameActions(
+            localGameState,
+            log
+          );
+          setLocalGameLog(updatedGameLog);
+          setNextPlayersTurn(nextPlayersTurn);
+        } else {
+          setLocalGameLog(log);
+        }
+      }
     );
-  }, [gameId]);
+  }, [gameId, localGameState]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -199,5 +215,6 @@ export const useGetLiveGame = (gameId: string) => {
     finishGame,
     elapsedGameTime,
     scores,
+    nextPlayersTurn,
   };
 };
