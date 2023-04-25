@@ -48,3 +48,9 @@ export interface UserAccess {
   hasAccess: boolean;
   noAccessReason?: string;
 }
+
+
+export type playerProps = {
+  playerId: string;
+  playerName: string;
+}
