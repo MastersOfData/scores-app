@@ -13,10 +13,10 @@ import {
   subscribeToDocuments,
 } from "../fire-base/db";
 import { Game, GameAction } from "../fire-base/models";
-import { UserAccess, GameActionType } from "../types/types";
+import { UserAccess, GameActionType, PlayerScore } from "../types/types";
 import { Timestamp, where } from "firebase/firestore";
 import { userHasAccessToGame } from "../services/game.service";
-import { calculateElapsedGameTime } from "../utils/util";
+import { calculateElapsedGameTime, calculateLiveScores } from "../utils/util";
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<StoreType> = useSelector;
@@ -115,6 +115,7 @@ export const useGetLiveGame = (gameId: string) => {
   );
   const [localGameLog, setLocalGameLog] = useState<Document<GameAction>[]>([]);
   const [elapsedGameTime, setElapsedGameTime] = useState(0);
+  const [scores, setScores] = useState<PlayerScore[]>([]);
 
   useEffect(() => {
     return subscribeToDocument(collections.games, gameId, setLocalGameState);
@@ -140,7 +141,19 @@ export const useGetLiveGame = (gameId: string) => {
     };
   }, [localGameLog]);
 
+  useEffect(() => {
+    setScores(calculateLiveScores(localGameLog));
+  }, [localGameLog]);
+
+  const gameHasStarted = () =>
+    localGameLog.map((log) => log.actionType).includes(GameActionType.START);
+
+  const gameIsFinished = () =>
+    localGameLog.map((log) => log.actionType).includes(GameActionType.FINISH);
+
   const addPoints = async (userId: string, points: number) => {
+    if (!gameHasStarted() || gameIsFinished()) return;
+
     if (user) {
       await addDocument(collections.gameActions, {
         subjectId: userId,
@@ -154,6 +167,17 @@ export const useGetLiveGame = (gameId: string) => {
   };
 
   const changeGameStatus = async (status: GameActionType) => {
+    const hasStarted = gameHasStarted();
+    const hasFinished = gameIsFinished();
+
+    if (hasFinished) return;
+    if (
+      (status === GameActionType.START && hasStarted) ||
+      (status === GameActionType.FINISH && !hasStarted)
+    ) {
+      return;
+    }
+
     if (user) {
       await addDocument(collections.gameActions, {
         actionType: status,
@@ -164,11 +188,16 @@ export const useGetLiveGame = (gameId: string) => {
     }
   };
 
+  const startGame = () => changeGameStatus(GameActionType.START);
+  const finishGame = () => changeGameStatus(GameActionType.FINISH);
+
   return {
     localGameState,
     localGameLog,
     addPoints,
-    changeGameStatus,
+    startGame,
+    finishGame,
     elapsedGameTime,
+    scores,
   };
 };

@@ -8,6 +8,7 @@ import {
   GroupInternal,
   LeaderboardStats,
   Member,
+  PlayerScore,
 } from "../types/types";
 
 export const testFunc = () => true;
@@ -278,4 +279,24 @@ export const getElapsedTimeStringFromSeconds = (sec: number) => {
   return `${convertNumberToTwoDigitString(
     minutes
   )}:${convertNumberToTwoDigitString(seconds)}`;
+};
+
+export const calculateLiveScores = (gameLog: GameAction[]): PlayerScore[] => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const init: any = {};
+
+  const scoresObj = gameLog.reduce((scores, logItem) => {
+    if (logItem.actionType === GameActionType.ADD_POINTS && logItem.subjectId) {
+      scores[logItem.subjectId] = scores[logItem.subjectId] || 0;
+      scores[logItem.subjectId] = scores[logItem.subjectId] + logItem.value;
+    }
+    return scores;
+  }, init);
+
+  const scores = Object.entries(scoresObj).map(
+    (score) =>
+      ({ playerId: score[0], points: score[1] as number } as PlayerScore)
+  );
+
+  return scores;
 };
