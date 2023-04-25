@@ -1,0 +1,32 @@
+.log-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  background-color: #2a293f;
+  border-radius: 1rem;
+  margin-block: 2rem;
+  padding: 0.5rem;
+}
+
+.table {
+  border-spacing: 0;
+  width: 100%;
+}
+
+.td {
+  text-align: center;
+}
+
+.tr {
+  background-color: #1f1f31;
+  height: 3rem;
+  border-radius: 5rem;
+}
+
+.positive-value {
+  color: #44eb9f;
+}
+
+.negative-value {
+  color: #f1778b;
+}
