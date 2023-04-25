@@ -9,8 +9,9 @@ import {
   updateDocument,
 } from "src/fire-base/db";
 import { Game, GameAction, Group, User } from "src/fire-base/models";
+import { useUserHasAccessToGame } from "src/store/hooks";
 import { calculateDuration } from "src/utils/util";
-import { UserAccess } from "../types/types";
+import { GameActionType, UserAccess } from "../types/types";
 
 export interface CreateGameData {
   groupId: string;
@@ -167,49 +168,147 @@ export const userHasAccessToGame = async (
   };
 };
 
-export function useGetGameByIdWithAggregateData(gameId: Document<Game>["id"]) {
+export type GroupData = Pick<Document<Group>, "id" | "name" | "emoji"> 
+
+export type GameActionData = Pick<Document<GameAction>, "id" | "actionType" | "value"> & {
+  timestamp: Date,
+  actor: Document<User> | null,
+  subject: Document<User> | null
+}
+
+export type PlayerData = Document<User> & {
+  points: number
+}
+
+export type GameData = Pick<Document<Game>, "id" | "duration" | "status"> & {
+  gameType: string,
+  timestamp: Date,
+  group: GroupData | null,
+  gameActions: GameActionData[],
+  admin: Document<User> | null,
+  players: PlayerData[],
+  winners: PlayerData[],
+}
+
+export type GameDataResult = {
+  game: GameData | null,
+  loading: boolean,
+  error: boolean
+}
+
+export function useGameData(gameId: Document<Game>["id"]): GameDataResult {
+  //const { hasAccess, hasLoaded } = useUserHasAccessToGame(gameId)
+
   const [game, setGame] = useState<Document<Game> | null>(null)
   const [group, setGroup] = useState<Document<Group> | null>(null)
   const [gameActions, setGameActions] = useState<Document<GameAction>[]>([])
   const [players, setPlayers] = useState<Document<User>[]>([])
-  const [loading, setLoading] = useState(true)
+  const [admin, setAdmin] = useState<Document<User> | null>(null)
+  const [groupLoading, setGroupLoading] = useState(true)
+  const [gameActionsLoading, setGameActionsLoading] = useState(true)
+  const [playersLoading, setPlayersLoading] = useState(true)
+  const [adminLoading, setAdminLoading] = useState(true)
 
   useEffect(() => {
-    getDocument(collections.games, gameId)
-      .then(_game => {
-        setGame(_game)
-        if (_game) {
-          const groupFetcher = getDocument(collections.groups, _game.groupId).then(setGroup)
+    if (/*hasLoaded && hasAccess*/ true) {
+      getDocument(collections.games, gameId).then(setGame)
+    }
+  }, [gameId, /*hasLoaded, hasAccess*/])
 
-          const gameActionsFetcher = getDocuments({
-            collection: collections.gameActions,
-            constraints: [where("gameId", "==", _game.id)]
-          })
-          .then(setGameActions)
+  useEffect(() => {
+    if (game) {
+      getDocument(collections.groups, game.groupId)
+        .then(setGroup)
+        .then(() => setGroupLoading(false))
+    }
+  }, [game])
 
-          const playersFetcher = Promise.all(
-            _game.players.map(p => getDocument(collections.users, p.playerId))
-          )
-          .then(_players => _players.filter(p => !!p) as Document<User>[]).then(setPlayers)
+  useEffect(() => {
+    if (game) {
+      getDocument(collections.users, game.adminId)
+        .then(setAdmin)
+        .then(() => setAdminLoading(false))
+    }
+  }, [game])
 
-          Promise.all([groupFetcher, gameActionsFetcher, playersFetcher])
-        }
+  useEffect(() => {
+    if (game) {
+      Promise.all(
+        game.players.map(p => getDocument(collections.users, p.playerId))
+      )
+      .then(_players => _players.filter(p => !!p).map(p => p!))
+      .then(setPlayers)
+      .then(() => setPlayersLoading(false))
+    }
+  }, [game])
+
+  useEffect(() => {
+    if (game) {
+      getDocuments({
+        collection: collections.gameActions,
+        constraints: [where("gameId", "==", game.id)]
       })
-      .then(() => setLoading(false))
-  }, [gameId])
+      .then(setGameActions)
+      .then(() => setGameActionsLoading(false))
+    }
+  }, [game])
 
-  if (!game && loading) return {
-    game: null,
-    loading: true
+  const playersData: PlayerData[] = players.map(p => {
+    const points = gameActions
+      .filter(a => a.actionType === GameActionType.ADD_POINTS && a.subjectId === p.id)
+      .map(a => a.value ?? 0)
+      .reduce((sum, value) => sum + value, 0)
+
+    return {
+      id: p.id,
+      email: p.email,
+      username: p.username,
+      points
+    }
+  })
+
+  const winnersData: PlayerData[] = playersData.filter(p => {
+    const max = Math.max(...playersData.map(p => p.points))
+    return p.points === max
+  })
+
+  const groupData: GroupData | null = !group ? null : {
+    id: group.id,
+    name: group.name,
+    emoji: group.emoji
   }
 
+  const actionsData: GameActionData[] = gameActions.map(a => {
+    const actor = players.find(p => p.id === a.actorId) ?? null
+    const subject = players.find(p => p.id === a.subjectId) ?? null
+    return {
+      actor,
+      subject,
+      actionType: a.actionType,
+      id: a.id,
+      timestamp: a.timestamp.toDate(),
+      value: a.value
+    }
+  })
+
+  const gameData: GameData | null = !game ? null : {
+    id: game.id,
+    timestamp: game.timestamp.toDate(),
+    duration: game.duration,
+    gameType: game.gameTypeId,
+    status: game.status,
+    admin,
+    players: playersData,
+    winners: winnersData,
+    group: groupData,
+    gameActions: actionsData
+  }
+
+  const loading = groupLoading || playersLoading || gameActionsLoading || adminLoading
+
   return {
-    game: {
-      ...game,
-      group,
-      gameActions: gameActions.sort((a1, a2) => a1.timestamp.valueOf().localeCompare(a2.timestamp.valueOf())),
-      players
-    },
-    loading: false
+    game: loading ? null : gameData,
+    loading,
+    error: !gameData && !loading
   }
 }
