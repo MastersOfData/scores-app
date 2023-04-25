@@ -22,7 +22,7 @@
   --accent-orange: hsl(29 82% 67%);
   --accent-pink: hsl(313 61% 71%);
   --accent-red: hsl(350 81% 71%);
-  --tint-soft: hsl(0 0% 0% / 0.05);
+  --tint-soft: hsl(0 0% 100% / 0.05);
   --tint-medium: hsl(0 0% 100% / 0.1);
   --tint-strong: hsl(0 0% 100% / 0.15);
 
