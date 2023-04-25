@@ -3,11 +3,10 @@
 import PageWrapper from "src/components/PageWrapper";
 import { useGetLiveGame, useUserHasAccessToGame } from "../../store/hooks";
 import Spinner from "../../components/Spinner";
-import { GameActionType } from "../../types/types";
 import { getElapsedTimeStringFromSeconds } from "../../utils/util";
 
 export default function TestLiveGame() {
-  const gameId = "cb4Xqs6WdfUfKVHHVygm";
+  const gameId = "H94f3E3KBBAClAaOwwYA";
 
   const gameAccess = useUserHasAccessToGame(gameId);
   const live = useGetLiveGame(gameId);
@@ -27,13 +26,28 @@ export default function TestLiveGame() {
   return (
     <PageWrapper title='Live game test' authenticated={true}>
       <p>{elapsedTimeString}</p>
-      <button onClick={() => live.changeGameStatus(GameActionType.START)}>
-        Start game
+      <button onClick={() => live.startGame()}>Start game</button>
+      <button onClick={() => live.finishGame()}>Finish game</button>
+      <button
+        onClick={() =>
+          live.addPoints(
+            live.localGameState ? live.localGameState.players[0].playerId : "",
+            3
+          )
+        }
+      >
+        Add points to {live.localGameState?.players[0].playerId}
       </button>
-      <button onClick={() => live.changeGameStatus(GameActionType.FINISH)}>
-        Finish game
+      <button
+        onClick={() =>
+          live.addPoints(
+            live.localGameState ? live.localGameState.players[1].playerId : "",
+            3
+          )
+        }
+      >
+        Add points to {live.localGameState?.players[1].playerId}
       </button>
-      <button onClick={() => live.addPoints("[userid]", 3)}>Add points</button>
       <h2>Log</h2>
       {live.localGameLog
         .sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)

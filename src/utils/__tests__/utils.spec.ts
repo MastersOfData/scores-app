@@ -1,11 +1,13 @@
 import {
   calculateDuration,
+  calculateLiveScores,
   convertSecondsToMinutesAndSeconds,
   differenceBetweenFirestoreTimestampsInDays,
   generateMembershipDocumentId,
 } from "../util";
 import { Timestamp } from "firebase/firestore";
-import { Game } from "src/fire-base/models";
+import { Game, GameAction } from "src/fire-base/models";
+import { GameActionType } from "../../types/types";
 
 describe("generateMembershipDocumentId", () => {
   it.each([
@@ -152,5 +154,77 @@ describe("Convert seconds to minutes and seconds", () => {
     expect(convertSecondsToMinutesAndSeconds(testCase.input)).toEqual(
       testCase.return
     );
+  });
+});
+
+describe("Calculate live scores", () => {
+  it("calculates the correct live scores", () => {
+    const gameLog: GameAction[] = [
+      {
+        actionType: GameActionType.ADD_POINTS,
+        timestamp: Timestamp.fromDate(new Date(2023, 2, 2, 13, 0)),
+        value: 10,
+        subjectId: "player1",
+        gameId: "game1",
+        actorId: "admin",
+      },
+      {
+        actionType: GameActionType.ADD_POINTS,
+        timestamp: Timestamp.fromDate(new Date(2023, 2, 2, 13, 0, 5)),
+        value: 5,
+        subjectId: "player2",
+        gameId: "game1",
+        actorId: "admin",
+      },
+      {
+        actionType: GameActionType.ADD_POINTS,
+        timestamp: Timestamp.fromDate(new Date(2023, 2, 2, 13, 0, 12)),
+        value: 2,
+        subjectId: "player3",
+        gameId: "game1",
+        actorId: "admin",
+      },
+      {
+        actionType: GameActionType.ADD_POINTS,
+        timestamp: Timestamp.fromDate(new Date(2023, 2, 2, 13, 0, 19)),
+        value: -2,
+        subjectId: "player1",
+        gameId: "game1",
+        actorId: "admin",
+      },
+      {
+        actionType: GameActionType.ADD_POINTS,
+        timestamp: Timestamp.fromDate(new Date(2023, 2, 2, 13, 0, 26)),
+        value: 20,
+        subjectId: "player2",
+        gameId: "game1",
+        actorId: "admin",
+      },
+      {
+        actionType: GameActionType.ADD_POINTS,
+        timestamp: Timestamp.fromDate(new Date(2023, 2, 2, 13, 0, 30)),
+        value: 4,
+        subjectId: "player3",
+        gameId: "game1",
+        actorId: "admin",
+      },
+    ];
+
+    const liveScores = calculateLiveScores(gameLog);
+
+    expect(liveScores).toEqual([
+      {
+        playerId: "player1",
+        points: 8,
+      },
+      {
+        playerId: "player2",
+        points: 25,
+      },
+      {
+        playerId: "player3",
+        points: 6,
+      },
+    ]);
   });
 });
