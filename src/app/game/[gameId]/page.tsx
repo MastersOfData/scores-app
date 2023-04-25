@@ -15,42 +15,49 @@ import {
 import Medal, { MedalType } from "src/components/Medal";
 import { RadioCards } from "src/components/RadioCards";
 import RegResultStyles from "src/styles/RegisterResult.module.css";
-import { useUser } from "src/services/user.service";
+import { useUser, getUserId } from "src/services/user.service";
 import { useGetGameById } from "src/store/hooks";
 
 import Input from "src/components/Input";
-import { getUserId } from "src/services/user.service";
 import { DataStatus } from "../../../store/store.types";
 import Spinner from "../../../components/Spinner";
 import { useRouter, useSearchParams } from "next/navigation";
+import { GameActionType } from "src/types/types";
 
 
 interface GameScreenProps {
     params: { gameId: string };
   }
 
+
+interface ScoreBoardProps {
+  playerId: string;
+  playerName: string;
+  score: string;
+}
+
 const GameScreen: FC<GameScreenProps> = ({ params })=> {
     const router = useRouter();
     const { gameId } = params;
     const access = useUserHasAccessToGame(gameId)
 
-    //Skummelt å loade inn game før vi vet om en bruker has access?
     const gamesWithStatus = useGetGameById(gameId);
     const game = gamesWithStatus.data;
 
     const userContext = useUser();
-    const user = userContext.userData
-    const operators = ["+", "-", "×", "÷"]
+    const user = userContext.userData;
     
     const groupsWithStatus = useGetGroupsForCurrentUser();
 
     const liveGame = useGetLiveGame(gameId)
+
 
     //Hooks
     const [selectedUser, setSelectedUser] = useState<string | undefined>("");
     const [isGroupGame, setIsGroupGame] = useState(true);
     const [expression, setExpression] = useState<string>("");
     const [currentUserPoints, setCurrentUserPoints] = useState<string>("");
+    const [scoreBoard, setScoreBoard] = useState<ScoreBoardProps[]>([]);
 
     if (
       user &&
@@ -74,6 +81,9 @@ const GameScreen: FC<GameScreenProps> = ({ params })=> {
     if (game === undefined){
       return <div />
     }
+    
+    
+    
 
     const userArr = [user];
     
@@ -84,8 +94,8 @@ const GameScreen: FC<GameScreenProps> = ({ params })=> {
       try{
         if (selectedUser){
           const newScore = eval(mathExpr).toString();
-        liveGame.addPoints(selectedUser, newScore)
-        setExpression(newScore);
+          liveGame.addPoints(selectedUser, newScore)
+          setExpression(newScore);
         }
         else{
           alert("User has not been defined!")
@@ -107,9 +117,6 @@ const GameScreen: FC<GameScreenProps> = ({ params })=> {
 
       setSelectedUser(username);
       
-       
-      
-    
       const userId = await getUserId(username);
       if (userId === undefined){
         return
@@ -123,6 +130,8 @@ const GameScreen: FC<GameScreenProps> = ({ params })=> {
       }
     }
 
+    const gamePlayerList = game.players
+
     if (!group) {
         return (
           <PageWrapper title="" backPath="/" authenticated>
@@ -132,6 +141,27 @@ const GameScreen: FC<GameScreenProps> = ({ params })=> {
           </PageWrapper>
         );
       }
+
+    function updatePlayerScore(pName: string, addScore: number): void {
+      const newPlayers = scoreBoard.map((player) => {
+        if (player.playerName === pName) {
+          return { playerId: player.playerId,
+                   playerName: player.playerName,
+                  score: player.score +  addScore};
+        }
+        else{
+          return player;
+        }
+      });
+      setScoreBoard(newPlayers);
+    }
+    
+    async function updateScoreBoard() {
+      const newScoreBoard = liveGame.localGameLog.map(log => {
+        if (log.actionType === GameActionType.ADD_POINTS)
+      })
+      setScoreBoard(newScoreBoard);
+    }
 
 
     const gameEmoji = "😂"
@@ -145,8 +175,6 @@ const GameScreen: FC<GameScreenProps> = ({ params })=> {
       console.log("It is submitted")
     }
 
-
-   
 return (
     <PageWrapper title='Spill' backPath='/' authenticated={true}>
         <div className={SpillStyles["header-cards"]}>
@@ -182,7 +210,7 @@ return (
                   <td className={GroupStyles["text-align-left"]}>
                     {member.username}
                   </td>
-                  <td>{member.wins}</td>
+                  <td>{member}</td>
                 </tr>
               );
             })}
