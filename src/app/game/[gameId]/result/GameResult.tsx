@@ -6,60 +6,28 @@ import { Button, ButtonColor, ButtonVariant } from "src/components/Button"
 import { CenteredSmallCards } from "src/components/CenteredSmallCards"
 import { parseSeconds } from "src/utils/time"
 import { CardItemSmall } from "src/components/Card"
-import { useGetGameByIdWithAggregateData } from "src/services/game.service"
+import { useGameData } from "src/services/game.service"
 import { GameActionType } from "src/types/types"
-import { useMemo } from "react"
 
 export type GameResultProps = {
   gameId: string
 }
 
 export default function GameResult({ gameId }: GameResultProps) {
-  const { loading, game } = useGetGameByIdWithAggregateData(gameId)
+  const { game, loading } = useGameData(gameId)
 
-  const leaderboard = useMemo(() => {
-    if (!game) return <></>
-
-    const playerScores = game.players.map(player => {
-      const points = game.gameActions
-        .filter(a => a.actionType === GameActionType.ADD_POINTS && a.subjectId === player.id)
-        .reduce((sum, action) => sum + (action.value ?? 0), 0)
-
-      return {
-        username: player.username,
-        points
-      }
-    })
-
-    return (
-      <div className={styles.leaderboard}>
-        <div className={styles.grid}>
-          <strong>Username</strong>
-          <strong>Points</strong>
-        </div>
-        {playerScores.map(ps => (
-          <div key={ps.username} className={styles.grid}>
-            <span>{ps.username}</span>
-            <span>{ps.points}</span>
-          </div>
-        ))}
-      </div>
-    )
-  }, [game])
-
-  if (!game && loading) return <Spinner />
+  if (loading) return <Spinner />
 
   if (!game) return <p>Something went wrong!</p>
 
-  const startDate = new Date((game.timestamp?.seconds ?? 0) * 1000)
-  const { hours, minutes } = parseSeconds(7000 ?? 0)
+  const { hours, minutes } = parseSeconds(game.duration ?? 0)
 
-  const timestampStr = Intl.DateTimeFormat("no").format(startDate)
+  const timestampStr = Intl.DateTimeFormat("no").format(game.timestamp)
   const durationStr = `${hours}:${minutes}`
   const groupNameStr = game.group ? `${game.group?.emoji} ${game.group?.name}` : null
-  const gameTypeStr = game.gameTypeId + ""
+  const gameTypeStr = game.gameType
 
-  const items: CardItemSmall[] = [
+  const gameItems: CardItemSmall[] = [
     {
       key: "time",
       title: `${timestampStr} ${durationStr}`
@@ -70,17 +38,22 @@ export default function GameResult({ gameId }: GameResultProps) {
     }
   ]
 
-  if (groupNameStr) items.push({
+  const winnerItems: CardItemSmall[] = game.winners.map(winner => ({
+    key: winner.id,
+    title: winner.username
+  }))
+
+  if (groupNameStr) gameItems.push({
     key: "group",
     title: groupNameStr
   })
 
   return (
     <div className={styles.wrapper}>
-      <CenteredSmallCards items={items}/>
+      <CenteredSmallCards items={gameItems}/>
       <div className={styles["winner-wrapper"]}>
-        <strong>Vinner 🎉</strong>
-        <p>{JSON.stringify(game.winners)}</p>
+        <h2>Vinner 🎉</h2>
+        <CenteredSmallCards items={winnerItems} />
       </div>
       <Button 
         variant={ButtonVariant.Round} 
@@ -92,25 +65,32 @@ export default function GameResult({ gameId }: GameResultProps) {
       </Button>
       <div>
         <h2>Leaderboard</h2>
-        {leaderboard}
+        <div className={styles.leaderboard}>
+        <div className={styles.grid}>
+          <strong>Username</strong>
+          <strong>Points</strong>
+        </div>
+        {game.players.map(player => (
+          <div key={player.id} className={styles.grid}>
+            <span>{player.username}</span>
+            <span>{player.points}</span>
+          </div>
+        ))}
+      </div>
       </div>
       <div>
         <h2>Logg</h2>
         <ul className={styles["actions-list"]}>
-          {game.gameActions.map((gameAction, index) => {
-            const actor = game.players.find(p => p.id === gameAction.actorId)
-            const subject = game.players.find(p => p.id === gameAction.subjectId)
-
+          {game.gameActions.map((action, index) => {
             const text = `
-              ${gameAction.actionType === GameActionType.ADD_POINTS ? `added ${gameAction.value} points for ${subject?.username}` : ""}
-              ${gameAction.actionType === GameActionType.START ? "started the game" : ""}
-              ${gameAction.actionType === GameActionType.FINISH ? "ended the game" : ""}
-              ${gameAction.actionType === GameActionType.PAUSE ? "paused the game" : ""}
-              ${gameAction.actionType === GameActionType.CONTINUE ? "continued the game" : ""}
+              ${action.actionType === GameActionType.ADD_POINTS ? `added ${action.value} points for ${action.subject?.username}` : ""}
+              ${action.actionType === GameActionType.START ? "started the game" : ""}
+              ${action.actionType === GameActionType.FINISH ? "ended the game" : ""}
+              ${action.actionType === GameActionType.PAUSE ? "paused the game" : ""}
+              ${action.actionType === GameActionType.CONTINUE ? "continued the game" : ""}
             `
-
             return (
-              <li key={`game-action-${index}`}><strong>{actor?.username}</strong> {text}</li>
+              <li key={`game-action-${index}`}><strong>{action.actor?.username}</strong> {text}</li>
             )
           })}
         </ul>
