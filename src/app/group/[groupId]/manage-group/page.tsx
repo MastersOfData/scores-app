@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useEffect, useState } from "react";
+import { FC, FormEvent, useEffect, useState } from "react";
 import { RemoveIcon } from "src/assets/icons/RemoveIcon";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
 import Input from "src/components/Input";
@@ -41,10 +41,12 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
     return <Spinner />;
   }
 
-  const onAdd = async () => {
+  const onAdd = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     if (username && group) {
       const userId = await getUserId(username);
       if (userId) {
+        console.log(group)
         await dispatch(
           joinGroupByInvitationCodeAction({
             invitationCode: group.invitationCode,
@@ -87,7 +89,7 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
         <span className={styles.code}>
           {`Kode: ${group?.invitationCode ?? ""}`}
         </span>
-        <div className={styles["input-container"]}>
+        <form onSubmit={onAdd} className={styles["input-container"]}>
           <Input
             type="text"
             value={username}
@@ -98,11 +100,10 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
           <Button
             variant={ButtonVariant.Medium}
             color={ButtonColor.Pink}
-            onClick={onAdd}
           >
             Legg til
           </Button>
-        </div>
+        </form>
         <div className="center-items">
           <p className="error-text">{errorMessage}</p>
         </div>
