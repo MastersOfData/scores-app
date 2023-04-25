@@ -6,7 +6,7 @@ import Spinner from "../../components/Spinner";
 import { getElapsedTimeStringFromSeconds } from "../../utils/util";
 
 export default function TestLiveGame() {
-  const gameId = "H94f3E3KBBAClAaOwwYA";
+  const gameId = "CFjs5Zzpty6BhPGtDn5i";
 
   const gameAccess = useUserHasAccessToGame(gameId);
   const live = useGetLiveGame(gameId);
@@ -48,6 +48,8 @@ export default function TestLiveGame() {
       >
         Add points to {live.localGameState?.players[1].playerId}
       </button>
+      <p>Next player:</p>
+      <p>{live.nextPlayersTurn ?? "undefined"}</p>
       <h2>Log</h2>
       {live.localGameLog
         .sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)
