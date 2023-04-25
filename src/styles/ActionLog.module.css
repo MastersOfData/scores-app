@@ -1,32 +1,72 @@
+.container {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .log-wrapper {
   display: flex;
   justify-content: center;
   width: 100%;
   background-color: #2a293f;
   border-radius: 1rem;
-  margin-block: 2rem;
-  padding: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.2rem 0.5rem;
+
+  overflow-y: scroll;
+  max-height: 300px;
 }
 
 .table {
-  border-spacing: 0;
+  border-spacing: 0 10px;
   width: 100%;
+}
+
+.tbody {
+  height: 200px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.th {
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
 }
 
 .td {
   text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tr :first-child {
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+}
+
+.tr :last-child {
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
 }
 
 .tr {
   background-color: #1f1f31;
-  height: 3rem;
-  border-radius: 5rem;
+  height: 2.5rem;
+  border-radius: 10rem;
+  width: 100%;
 }
 
 .positive-value {
+  font-weight: 600;
   color: #44eb9f;
 }
 
 .negative-value {
+  font-weight: 600;
   color: #f1778b;
 }
