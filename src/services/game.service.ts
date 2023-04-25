@@ -197,7 +197,7 @@ export type GameDataResult = {
 }
 
 export function useGameData(gameId: Document<Game>["id"]): GameDataResult {
-  const { hasAccess, hasLoaded } = useUserHasAccessToGame(gameId)
+  //const { hasAccess, hasLoaded } = useUserHasAccessToGame(gameId)
 
   const [game, setGame] = useState<Document<Game> | null>(null)
   const [group, setGroup] = useState<Document<Group> | null>(null)
@@ -210,10 +210,10 @@ export function useGameData(gameId: Document<Game>["id"]): GameDataResult {
   const [adminLoading, setAdminLoading] = useState(true)
 
   useEffect(() => {
-    if (hasLoaded && hasAccess) {
+    if (/*hasLoaded && hasAccess*/ true) {
       getDocument(collections.games, gameId).then(setGame)
     }
-  }, [gameId, hasLoaded, hasAccess])
+  }, [gameId, /*hasLoaded, hasAccess*/])
 
   useEffect(() => {
     if (game) {
