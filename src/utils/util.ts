@@ -8,10 +8,8 @@ import {
   GroupInternal,
   LeaderboardStats,
   Member,
-  playerProps,
   PlayerScore,
 } from "../types/types";
-import { getUserName } from "src/services/user.service";
 
 export const testFunc = () => true;
 
@@ -362,17 +360,4 @@ export function formatSeconds(seconds: number): string {
   const formattedSeconds = remainingSeconds.toString().padStart(2, "0");
 
   return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-}
-
-export async function mapUserIdToName(group: string[]) {
-  const userIdToUserName = group.map(async (member) => {
-    const pName = await getUserName(member);
-    if (pName) {
-      return {
-        playerId: member,
-        playerName: pName,
-      };
-    }
-  });
-  return userIdToUserName;
 }
