@@ -24,7 +24,7 @@ const CreateGamePage: FC = () => {
   const [selectedGroup, setSelectedGroup] = useState<string | undefined>();
   const [selectedGame, setSelectedGame] = useState<string | undefined>();
   const [participants, setParticipants] = useState<string[]>([]);
-  const [allowTeams, setAllowTeams] = useState<boolean>(false);
+  const [allowTeams] = useState<boolean>(false);
 
   const onSubmit = async () => {
     if (user && selectedGroup && selectedGame) {
@@ -39,6 +39,7 @@ const CreateGamePage: FC = () => {
           },
         })
       ).unwrap();
+      console.log(game);
       router.push(`game/${game.id}`);
     } else {
       alert(
@@ -109,7 +110,7 @@ const CreateGamePage: FC = () => {
                 .find((g) => g.id === selectedGroup)
                 ?.gameTypes?.map((gameType) => ({
                   title: gameType.emoji + " " + gameType.name,
-                  key: gameType.emoji + " " + gameType.name,
+                  key: gameType.id,
                 }))}
               selected={selectedGame}
               setSelected={setSelectedGame}
@@ -138,9 +139,9 @@ const CreateGamePage: FC = () => {
           <h2 className={styles["title-centered"]}>Velg deltagere</h2>
           <div className={styles["groups-container"]}>
             <CheckboxCards
-              items={group.members.map((user, i) => ({
+              items={group.members.map((user) => ({
                 title: user.username,
-                key: i.toString(),
+                key: user.id,
               }))}
               checked={participants}
               setChecked={setParticipants}

@@ -1,70 +1,27 @@
-import { Timestamp } from "firebase/firestore";
-import { FC, useMemo } from "react";
+import { FC } from "react";
 import { GameAction } from "src/fire-base/models";
 import styles from "src/styles/ActionLog.module.css";
-import { GameActionType } from "src/types/types";
 import { formatSeconds } from "src/utils/util";
+import { GameActionType } from "../types/types";
 
 interface ActionLogProps {
   actions: GameAction[];
+  usernameMap: Map<string, string | undefined>;
 }
 
-const mockActions: GameAction[] = [
-  {
-    gameId: "69",
-    actorId: "7Om4PoQLCbdQOIhatXZAlfzABdF2",
-    actionType: GameActionType.START,
-    timestamp: Timestamp.fromDate(new Date()),
-    subjectId: "7Om4PoQLCbdQOIhatXZAlfzABdF2",
-    value: 40,
-  },
-  {
-    gameId: "69",
-    actorId: "7Om4PoQLCbdQOIhatXZAlfzABdF2",
-    actionType: GameActionType.CONTINUE,
-    timestamp: Timestamp.fromDate(new Date()),
-    subjectId: "7Om4PoQLCbdQOIhatXZAlfzABdF2",
-    value: 50,
-  },
-  {
-    gameId: "69",
-    actorId: "7Om4PoQLCbdQOIhatXZAlfzABdF2",
-    actionType: GameActionType.FINISH,
-    timestamp: Timestamp.fromDate(new Date()),
-    subjectId: "7Om4PoQLCbdQOIhatXZAlfzABdF2",
-    value: -10,
-  },
-  {
-    gameId: "69",
-    actorId: "7Om4PoQLCbdQOIhatXZAlfzABdF2",
-    actionType: GameActionType.FINISH,
-    timestamp: Timestamp.fromDate(new Date()),
-    subjectId: "7Om4PoQLCbdQOIhatXZAlfzABdF2",
-    value: -10,
-  },
-  {
-    gameId: "69",
-    actorId: "7Om4PoQLCbdQOIhatXZAlfzABdF2",
-    actionType: GameActionType.FINISH,
-    timestamp: Timestamp.fromDate(new Date()),
-    subjectId: "7Om4PoQLCbdQOIhatXZAlfzABdF2",
-    value: -10,
-  },
-  {
-    gameId: "69",
-    actorId: "7Om4PoQLCbdQOIhatXZAlfzABdF2",
-    actionType: GameActionType.FINISH,
-    timestamp: Timestamp.fromDate(new Date()),
-    subjectId: "7Om4PoQLCbdQOIhatXZAlfzABdF2",
-    value: -10,
-  },
-];
+export const ActionLog: FC<ActionLogProps> = ({ actions, usernameMap }) => {
+  const startTime = actions.find(
+    (action) => action.actionType === GameActionType.START
+  )?.timestamp.seconds;
 
-export const ActionLog: FC<ActionLogProps> = ({ actions }) => {
-  const startTime = useMemo(
-    () => mockActions[0].timestamp.seconds,
-    [mockActions]
+  if (!startTime) {
+    return null;
+  }
+
+  const sortedActions = actions.sort(
+    (a, b) => b.timestamp.seconds - a.timestamp.seconds
   );
+
   return (
     <div className={styles.container}>
       <h2>Spillogg</h2>
@@ -79,26 +36,56 @@ export const ActionLog: FC<ActionLogProps> = ({ actions }) => {
             </tr>
           </thead>
           <tbody className={styles["tbody"]}>
-            {mockActions.map((action, index) => (
-              <tr key={index} className={styles["tr"]}>
-                <td className={styles["td"]}>
-                  {formatSeconds(action.timestamp.seconds - startTime)}
-                </td>
-                <td className={styles["td"]}>Birger</td>
-                <td className={styles["td"]}>Birger</td>
-                {action.value && (
+            {sortedActions.map((action, index) => {
+              const isStartOrFinishAction =
+                action.actionType == GameActionType.START ||
+                action.actionType == GameActionType.FINISH;
+
+              if (isStartOrFinishAction) {
+                return (
+                  <tr key={index} className={styles["tr"]}>
+                    <td className={styles["td"]}>
+                      {formatSeconds(action.timestamp.seconds - startTime)}
+                    </td>
+                    <td
+                      className={`${styles["td"]} ${styles["start-or-end-td"]}`}
+                      colSpan={3}
+                    >
+                      {action.actionType === GameActionType.START
+                        ? "Start"
+                        : "Slutt"}
+                    </td>
+                  </tr>
+                );
+              }
+
+              return (
+                <tr key={index} className={styles["tr"]}>
                   <td className={styles["td"]}>
-                    {action.value > 0 ? (
-                      <p
-                        className={styles["positive-value"]}
-                      >{`+${action.value}`}</p>
-                    ) : (
-                      <p className={styles["negative-value"]}>{action.value}</p>
-                    )}
+                    {formatSeconds(action.timestamp.seconds - startTime)}
                   </td>
-                )}
-              </tr>
-            ))}
+                  <td className={styles["td"]}>
+                    {action.subjectId ? usernameMap.get(action.subjectId) : ""}
+                  </td>
+                  <td className={styles["td"]}>
+                    {action.actorId ? usernameMap.get(action.actorId) : ""}
+                  </td>
+                  {action.value !== undefined && action.value > 0 ? (
+                    <td
+                      className={`${styles["td"]} ${styles["positive-value"]}`}
+                    >
+                      {`+${action.value}`}
+                    </td>
+                  ) : (
+                    <td
+                      className={`${styles["td"]} ${styles["negative-value"]}`}
+                    >
+                      {action.value}
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

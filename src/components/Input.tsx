@@ -103,7 +103,7 @@ function TextAreaInput({ onInput, valueRef, ...props }: TextAreaInputProps) {
 function TextInput({ onInput, valueRef, ...props }: TextInputProps) {
   return (
     <input
-      type="text"
+      type='text'
       onInput={(e) => handleTextInput(e, onInput, valueRef)}
       {...props}
     />
@@ -113,7 +113,7 @@ function TextInput({ onInput, valueRef, ...props }: TextInputProps) {
 function EmailInput({ onInput, valueRef, ...props }: TextInputProps) {
   return (
     <input
-      type="email"
+      type='email'
       onInput={(e) => handleTextInput(e, onInput, valueRef)}
       {...props}
     />
@@ -123,7 +123,7 @@ function EmailInput({ onInput, valueRef, ...props }: TextInputProps) {
 function PasswordInput({ onInput, valueRef, ...props }: TextInputProps) {
   return (
     <input
-      type="password"
+      type='password'
       onInput={(e) => handleTextInput(e, onInput, valueRef)}
       {...props}
     />
@@ -162,8 +162,8 @@ function NumberInput({ onInput, defaultValue, ...props }: NumberInputProps) {
 
   return (
     <input
-      type="text"
-      inputMode="numeric"
+      type='text'
+      inputMode='numeric'
       pattern={regexpStr}
       className={styles["number-input"]}
       onInput={handleInput}
@@ -181,7 +181,7 @@ function CheckBoxInput({
 }: CheckBoxInputProps) {
   return (
     <input
-      type="checkbox"
+      type='checkbox'
       onInput={(e) => handleCheckBoxInput(e, onInput, valueRef)}
       defaultChecked={defaultValue}
       {...props}

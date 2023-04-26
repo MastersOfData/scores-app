@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Card } from "src/components/Card";
 import { Button, ButtonVariant, ButtonColor } from "src/components/Button";
 import PageWrapper from "src/components/PageWrapper";
@@ -13,18 +13,19 @@ import {
   useGetLiveGame,
 } from "src/store/hooks";
 import GroupStyles from "src/styles/Group.module.css";
-import { calculateGroupLeaderboard } from "src/utils/util";
+import { getElapsedTimeStringFromSeconds } from "src/utils/util";
 import Medal, { MedalType } from "src/components/Medal";
 import { RadioCards } from "src/components/RadioCards";
 import RegResultStyles from "src/styles/RegisterResult.module.css";
-import { useUser } from "src/services/user.service";
-import { useGetGameById } from "src/store/hooks";
+import {
+  getMultipleUsernamesFromIds,
+  useUser,
+} from "src/services/user.service";
 
 import Input from "src/components/Input";
-import { getUserId } from "src/services/user.service";
 import { DataStatus } from "../../../store/store.types";
 import Spinner from "../../../components/Spinner";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ActionLog } from "src/components/ActionLog";
 
 interface GameScreenProps {
@@ -34,127 +35,107 @@ interface GameScreenProps {
 const GameScreen: FC<GameScreenProps> = ({ params }) => {
   const router = useRouter();
   const { gameId } = params;
+
+  const { user } = useUser();
   const access = useUserHasAccessToGame(gameId);
 
-  //Skummelt å loade inn game før vi vet om en bruker has access?
-  const gamesWithStatus = useGetGameById(gameId);
-  const game = gamesWithStatus.data;
-
-  const userContext = useUser();
-  const user = userContext.userData;
-  const operators = ["+", "-", "×", "÷"];
-
+  const liveGame = useGetLiveGame(gameId);
   const groupsWithStatus = useGetGroupsForCurrentUser();
 
-  const liveGame = useGetLiveGame(gameId);
-
-  //Hooks
-  const [selectedUser, setSelectedUser] = useState<string | undefined>("");
-  const [isGroupGame, setIsGroupGame] = useState(true);
+  const [isGroupGame] = useState(true);
   const [expression, setExpression] = useState<string>("");
-  const [currentUserPoints, setCurrentUserPoints] = useState<string>("");
+  // const inputFieldRef = useRef<HTMLInputElement>(null);
+
+  const [usernameMap, setUsernameMap] = useState<
+    Map<string, string | undefined>
+  >(new Map());
+
+  useEffect(() => {
+    if (liveGame.gameIsFinished()) {
+      router.push(`/game/${gameId}/result`);
+    }
+  }, [gameId, liveGame, liveGame.localGameLog, router]);
+
+  useEffect(() => {
+    if (liveGame.localGameState?.players) {
+      getMultipleUsernamesFromIds(
+        liveGame.localGameState.players.map((p) => p.playerId)
+      ).then((map) => setUsernameMap(map));
+    }
+  }, [liveGame.localGameState?.players]);
 
   if (
     user &&
-    (groupsWithStatus.status === DataStatus.LOADING ||
-      !access.hasLoaded ||
-      groupsWithStatus.data === undefined ||
-      gamesWithStatus.status === DataStatus.LOADING ||
-      gamesWithStatus.data === undefined)
+    (!access.hasLoaded ||
+      groupsWithStatus.status === DataStatus.LOADING ||
+      groupsWithStatus.data === undefined)
   ) {
     return <Spinner />;
+  }
+
+  const group = groupsWithStatus.data?.find(
+    (group) => group.id === liveGame.localGameState?.groupId
+  );
+
+  if (!user) {
+    return <PageWrapper title='' backPath='/' authenticated />;
+  }
+
+  if (!group) {
+    return (
+      <div className='center-items'>
+        <p>Gruppen finnes ikke! 🚨</p>
+      </div>
+    );
   }
 
   if (!access.hasAccess) {
     return <p>{access.noAccessReason}</p>;
   }
-  //Kan en se denne siden uten å logge inn?
-  if (user === null) {
-    return <div />;
-  }
-  //NOT DONE
-  if (game === undefined) {
-    return <div />;
-  }
 
-  const userArr = [user];
-
-  const group = groupsWithStatus.data?.find(
-    (group) => group.id === game.groupId
+  const gameType = group.gameTypes?.find(
+    (gameType) => gameType.id === liveGame.localGameState?.gameTypeId
   );
 
   const calcExpr = () => {
     const mathExpr = expression.replace("×", "*").replace("÷", "/");
     try {
-      if (selectedUser) {
-        const newScore = eval(mathExpr).toString();
-        liveGame.addPoints(selectedUser, newScore);
-        setExpression(newScore);
+      const nextPlayer = liveGame.nextPlayersTurn;
+      if (nextPlayer) {
+        const newScore = Number(eval(mathExpr).toString());
+        liveGame.addPoints(nextPlayer, newScore);
+        setExpression("");
       } else {
         alert("User has not been defined!");
       }
     } catch (err) {
-      console.log(err);
       alert("Not a valid expression!");
     }
   };
 
-  async function setUserPoints(username: string): Promise<void> {
-    console.log("SetUserPoints");
-    if (game === undefined) {
-      return;
-    }
-    //Get score from user and setExpression(score)
-
-    setSelectedUser(username);
-
-    const userId = await getUserId(username);
-    if (userId === undefined) {
-      return;
-    }
-
-    for (const score of game.players) {
-      if (score.playerId === userId) {
-        setExpression(score.toString());
-        break;
-      }
-    }
-  }
-
-  if (!group) {
-    return (
-      <PageWrapper title="" backPath="/" authenticated>
-        <div className="center-items">
-          <p>Gruppen finnes ikke! 🚨</p>
-        </div>
-      </PageWrapper>
-    );
-  }
-
-  const gameEmoji = "😂";
-  const gameTitle = gameEmoji + "Tennis";
-  const time = "13:37";
-  const groupMember = ["Tore", "Tang"];
-
-  const leaderboardStats = calculateGroupLeaderboard(group.members);
-
-  const onSubmit = () => {
-    console.log("It is submitted");
+  const setExpressionAndFocusOnInput = (newExpr: string) => {
+    setExpression(expression + newExpr);
+    // inputFieldRef.current?.focus();
   };
 
   return (
-    <PageWrapper title="Spill" backPath="/" authenticated={true}>
+    <PageWrapper title='Spill' backPath='/' authenticated={true}>
       <div className={SpillStyles["header-cards"]}>
-        <Card title={gameTitle} />
+        <Card
+          title={
+            gameType
+              ? `${gameType?.emoji} ${gameType?.name}`
+              : "Ukjent spilltype"
+          }
+        />
         <div
-          className={`${CardStyles["card"]} 
-                            ${ButtonStyles["button--green"]}`}
+          className={`${CardStyles["card"]} ${ButtonStyles["button--green"]}`}
         >
           <div className={CardStyles["card-header-wrapper"]}>
             <h4
               className={`${CardStyles["card-title"]} ${SpillStyles.timeLabel} `}
             >
-              {time}
+              {getElapsedTimeStringFromSeconds(liveGame.elapsedGameTime)}
             </h4>
           </div>
         </div>
@@ -169,9 +150,12 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
           </tr>
         </thead>
         <tbody>
-          {leaderboardStats.map((member, index) => {
+          {liveGame.localGameState?.players.map((member, index) => {
+            const score = liveGame.scores.find(
+              (u) => u.playerId === member.playerId
+            );
             return (
-              <tr key={member.userId}>
+              <tr key={member.playerId}>
                 <td>
                   {index < 3 ? (
                     <Medal type={Object.values(MedalType)[index]} />
@@ -180,98 +164,129 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
                   )}
                 </td>
                 <td className={GroupStyles["text-align-left"]}>
-                  {member.username}
+                  {usernameMap.get(member.playerId) ?? member.playerId}
                 </td>
-                <td>{member.wins}</td>
+                <td>{score ? score.points : "-"}</td>
               </tr>
             );
           })}
         </tbody>
       </table>
-      <h2 className={RegResultStyles["title-centered"]}>Oppdater poeng</h2>
-      {isGroupGame ? (
-        <div>
-          <div className={RegResultStyles["groups-container"]}>
-            <RadioCards
-              items={group.members.map((user, i) => ({
-                title: user.username,
-                key: user.id,
-              }))}
-              selected={selectedUser}
-              setSelected={setUserPoints}
-            />
+      <div className={GroupStyles["spacing"]} />
+
+      {
+        // START: Show when game has started
+        liveGame.gameHasStarted() && (
+          <div>
+            <h2 className={RegResultStyles["title-centered"]}>
+              Oppdater poeng
+            </h2>
+            {isGroupGame ? (
+              <div>
+                <div className={RegResultStyles["groups-container"]}>
+                  <RadioCards
+                    items={liveGame.localGameState?.players.map((player) => ({
+                      title:
+                        usernameMap.get(player.playerId) ?? player.playerId,
+                      key: player.playerId,
+                    }))}
+                    selected={liveGame.nextPlayersTurn ?? ""}
+                    setSelected={() => 1}
+                  />
+                </div>
+              </div>
+            ) : (
+              // <RadioCards
+              //   items={userArr.map((user, i) => ({
+              //     title: user.toString(),
+              //     key: user.toString(),
+              //   }))}
+              //   selected={selectedUser}
+              //   setSelected={setSelectedUser}
+              // />
+              <></>
+            )}
+
+            <div className={SpillStyles["calculator-container"]}>
+              <Input
+                placeholder='Legg til poeng...'
+                type={"text"}
+                value={expression}
+                className={SpillStyles["text-input"]}
+                onInput={setExpression}
+              />
+              <div className={SpillStyles["math-buttonsContainer"]}>
+                <Button
+                  className={SpillStyles["operator-button"]}
+                  variant={ButtonVariant.Round}
+                  color={ButtonColor.Grey}
+                  onClick={() => setExpressionAndFocusOnInput(" + ")}
+                >
+                  +
+                </Button>
+                <Button
+                  className={SpillStyles["operator-button"]}
+                  variant={ButtonVariant.Round}
+                  color={ButtonColor.Grey}
+                  onClick={() => setExpressionAndFocusOnInput(" - ")}
+                >
+                  -
+                </Button>
+                <Button
+                  className={SpillStyles["operator-button"]}
+                  variant={ButtonVariant.Round}
+                  color={ButtonColor.Grey}
+                  onClick={() => setExpressionAndFocusOnInput(" × ")}
+                >
+                  ×
+                </Button>
+                <Button
+                  className={SpillStyles["operator-button"]}
+                  variant={ButtonVariant.Round}
+                  color={ButtonColor.Grey}
+                  onClick={() => setExpressionAndFocusOnInput(" ÷ ")}
+                >
+                  ÷
+                </Button>
+              </div>
+              <Button
+                className={SpillStyles["calculate-button"]}
+                variant={ButtonVariant.Medium}
+                color={ButtonColor.Red}
+                onClick={calcExpr}
+              >
+                Regn ut
+              </Button>
+            </div>
           </div>
-        </div>
-      ) : (
-        <RadioCards
-          items={userArr.map((user, i) => ({
-            title: user.toString(),
-            key: user.toString(),
-          }))}
-          selected={selectedUser}
-          setSelected={setSelectedUser}
-        />
-      )}
-      <div className={SpillStyles["calculator-container"]}>
-        <Input
-          placeholder="Legg til poeng..."
-          type={"text"}
-          value={expression}
-          className={SpillStyles["text-input"]}
-          onInput={setExpression}
-        />
+        )
+        // END: Show when game has started
+      }
 
-        <div className={SpillStyles["math-buttonsContainer"]}>
+      <div className='center-items'>
+        {!liveGame.gameHasStarted() && (
+          <>
+            <div className={GroupStyles["spacing"]} />
+            <div className={GroupStyles["spacing"]} />
+            <Button
+              variant={ButtonVariant.Round}
+              color={ButtonColor.Green}
+              onClick={liveGame.startGame}
+            >
+              Start spill
+            </Button>
+          </>
+        )}
+        {liveGame.gameHasStarted() && !liveGame.gameIsFinished() && (
           <Button
-            className={SpillStyles["operator-button"]}
             variant={ButtonVariant.Round}
-            color={ButtonColor.Grey}
-            onClick={() => setExpression(expression + " + ")}
+            color={ButtonColor.Green}
+            onClick={liveGame.finishGame}
           >
-            +
+            Fullfør spill
           </Button>
-          <Button
-            className={SpillStyles["operator-button"]}
-            variant={ButtonVariant.Round}
-            color={ButtonColor.Grey}
-            onClick={() => setExpression(expression + " - ")}
-          >
-            -
-          </Button>
-          <Button
-            className={SpillStyles["operator-button"]}
-            variant={ButtonVariant.Round}
-            color={ButtonColor.Grey}
-            onClick={() => setExpression(expression + " × ")}
-          >
-            ×
-          </Button>
-          <Button
-            className={SpillStyles["operator-button"]}
-            variant={ButtonVariant.Round}
-            color={ButtonColor.Grey}
-            onClick={() => setExpression(expression + " ÷ ")}
-          >
-            ÷
-          </Button>
-        </div>
-        <Button
-          className={SpillStyles["calculate-button"]}
-          variant={ButtonVariant.Medium}
-          color={ButtonColor.Red}
-          onClick={calcExpr}
-        >
-          Regn ut
-        </Button>
-
-        <Button
-          variant={ButtonVariant.Round}
-          color={ButtonColor.Green}
-          onClick={onSubmit}
-        >
-          Fullfør spill
-        </Button>
-        <ActionLog actions={[]} />
+        )}
+        <ActionLog actions={liveGame.localGameLog} usernameMap={usernameMap} />
       </div>
     </PageWrapper>
   );

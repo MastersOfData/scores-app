@@ -216,5 +216,7 @@ export const useGetLiveGame = (gameId: string) => {
     elapsedGameTime,
     scores,
     nextPlayersTurn,
+    gameHasStarted,
+    gameIsFinished,
   };
 };
