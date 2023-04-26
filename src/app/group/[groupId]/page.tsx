@@ -47,6 +47,7 @@ const GroupPage: FC<GroupPageProps> = ({ params }) => {
     return <Spinner />;
   }
 
+
   const group = groupsWithStatus.data?.find((group) => group.id === groupId);
 
   if (!user) {

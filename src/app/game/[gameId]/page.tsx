@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Card } from "src/components/Card";
 import { Button, ButtonVariant, ButtonColor } from "src/components/Button";
 import PageWrapper from "src/components/PageWrapper";
@@ -17,7 +17,7 @@ import { calculateGroupLeaderboard } from "src/utils/util";
 import Medal, { MedalType } from "src/components/Medal";
 import { RadioCards } from "src/components/RadioCards";
 import RegResultStyles from "src/styles/RegisterResult.module.css";
-import { useUser } from "src/services/user.service";
+import { useUser, getUserName } from "src/services/user.service";
 import { useGetGameById } from "src/store/hooks";
 
 import Input from "src/components/Input";
@@ -26,10 +26,14 @@ import { DataStatus } from "../../../store/store.types";
 import Spinner from "../../../components/Spinner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ActionLog } from "src/components/ActionLog";
+import { PlayerScore } from "src/types/types";
+import { mapUserIdToName } from "src/utils/util";
 
 interface GameScreenProps {
   params: { gameId: string };
 }
+
+
 
 const GameScreen: FC<GameScreenProps> = ({ params }) => {
   const router = useRouter();
@@ -38,22 +42,37 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
 
   //Skummelt å loade inn game før vi vet om en bruker has access?
   const gamesWithStatus = useGetGameById(gameId);
-  const game = gamesWithStatus.data;
+  
 
   const userContext = useUser();
   const user = userContext.userData;
-  const operators = ["+", "-", "×", "÷"];
 
-  const groupsWithStatus = useGetGroupsForCurrentUser();
+  
 
   const liveGame = useGetLiveGame(gameId);
+  const game = liveGame?.localGameState;
+
+
 
   //Hooks
   const [selectedUser, setSelectedUser] = useState<string | undefined>("");
   const [isGroupGame, setIsGroupGame] = useState(true);
   const [expression, setExpression] = useState<string>("");
-  const [currentUserPoints, setCurrentUserPoints] = useState<string>("");
+  const [scoreBoard, setScoreBoard] = useState<scoreBoard[]>([]);
+  const [userNameMap, setUserNameMap] = useState<({
+                                                  playerId: string;
+                                                  playerName: string;
+                                                  } | undefined)[]>([undefined]);
 
+  useEffect(() => {
+    const getUserNames =  () => {
+      if (liveGame.localGameState?.players) {
+        const names = mapUserIdToName(liveGame.localGameState.players.map(x=>x.playerId)).then(data => setUserNameMap(data));
+
+        
+      }
+    }
+  })
   if (
     user &&
     (groupsWithStatus.status === DataStatus.LOADING ||
@@ -65,6 +84,29 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
     return <Spinner />;
   }
 
+  if (liveGame === undefined || liveGame === null) {
+    return <div />;
+  }
+  
+
+    //NOT DONE
+    if (game === undefined || game === null) {
+      return <div />;
+    }
+
+
+
+  if (!group) {
+    return (
+      <PageWrapper title="" backPath="/" authenticated>
+        <div className="center-items">
+          <p>Gruppen finnes ikke! 🚨</p>
+        </div>
+      </PageWrapper>
+    );
+  }
+
+
   if (!access.hasAccess) {
     return <p>{access.noAccessReason}</p>;
   }
@@ -72,17 +114,21 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
   if (user === null) {
     return <div />;
   }
-  //NOT DONE
-  if (game === undefined) {
-    return <div />;
-  }
 
+  const scores : PlayerScore[] = liveGame.scores;
+ 
+  const board = await mapMemberScoresToScoreBoard(group.members, scores);
+
+
+  if (scoreBoard.length === 0){
+    setScoreBoard(board)
+  }
   const userArr = [user];
 
-  const group = groupsWithStatus.data?.find(
-    (group) => group.id === game.groupId
-  );
+  console.log(scoreBoard)
 
+
+ 
   const calcExpr = () => {
     const mathExpr = expression.replace("×", "*").replace("÷", "/");
     try {
@@ -90,6 +136,7 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
         const newScore = eval(mathExpr).toString();
         liveGame.addPoints(selectedUser, newScore);
         setExpression(newScore);
+        updateScoreBoard(selectedUser, parseInt(newScore));
       } else {
         alert("User has not been defined!");
       }
@@ -101,7 +148,7 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
 
   async function setUserPoints(username: string): Promise<void> {
     console.log("SetUserPoints");
-    if (game === undefined) {
+    if (game === undefined || game === null) {
       return;
     }
     //Get score from user and setExpression(score)
@@ -112,7 +159,6 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
     if (userId === undefined) {
       return;
     }
-
     for (const score of game.players) {
       if (score.playerId === userId) {
         setExpression(score.toString());
@@ -121,15 +167,22 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
     }
   }
 
-  if (!group) {
-    return (
-      <PageWrapper title="" backPath="/" authenticated>
-        <div className="center-items">
-          <p>Gruppen finnes ikke! 🚨</p>
-        </div>
-      </PageWrapper>
-    );
+
+
+  
+  function updateScoreBoard(pName: string, addScore: number) {
+    if (scoreBoard){
+      const newScoreBoard = scoreBoard.map((score) => {
+        if (score.playerName === pName) {
+          score.score += addScore;
+        }
+        return score;
+      });
+      setScoreBoard(newScoreBoard);
+    }
+    
   }
+
 
   const gameEmoji = "😂";
   const gameTitle = gameEmoji + "Tennis";
@@ -143,6 +196,7 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
   };
 
   return (
+    
     <PageWrapper title="Spill" backPath="/" authenticated={true}>
       <div className={SpillStyles["header-cards"]}>
         <Card title={gameTitle} />
@@ -169,9 +223,9 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
           </tr>
         </thead>
         <tbody>
-          {leaderboardStats.map((member, index) => {
+          {liveGame.scores.map((member, index) => {
             return (
-              <tr key={member.userId}>
+              <tr key={member.playerId}>
                 <td>
                   {index < 3 ? (
                     <Medal type={Object.values(MedalType)[index]} />
@@ -180,9 +234,9 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
                   )}
                 </td>
                 <td className={GroupStyles["text-align-left"]}>
-                  {member.username}
+                  {member.playerName}
                 </td>
-                <td>{member.wins}</td>
+                <td>{member.points}</td>
               </tr>
             );
           })}
