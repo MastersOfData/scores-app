@@ -129,7 +129,7 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
           }
         />
         <div
-          className={`${CardStyles["card"]} ${ButtonStyles["button--green"]}`}
+          className={`${CardStyles["card"]} ${SpillStyles["time-card"]}`}
         >
           <div className={CardStyles["card-header-wrapper"]}>
             <h4

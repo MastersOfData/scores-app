@@ -29,15 +29,21 @@
 .math-buttonsContainer {
   margin-block: 1rem 0.3rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 1rem;
 }
 
 .operator-button {
-  width: 2.5rem;
+  width: 2.5rem !important;
   color: white;
+  
 }
 
 .calculate-button {
   margin-top: 1rem;
 }
+
+.time-card {
+  background-color: var(--accent-green) !important;
+}
+
