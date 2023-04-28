@@ -3,7 +3,10 @@ import type { CardItem } from "src/components/Card";
 import type { Document } from "src/fire-base/db";
 import { Group, User, Membership, Game } from "../fire-base/models";
 import type { GameType, GroupInternal, Member } from "../types/types";
-import { differenceBetweenFirestoreTimestampsInDays } from "./util";
+import {
+  calculateGroupLeaderboard,
+  differenceBetweenFirestoreTimestampsInDays,
+} from "./util";
 
 export const mapGroupAndUsersToGroupInternal = (
   group: Document<Group>,
@@ -27,13 +30,23 @@ export const mapGroupAndUsersToGroupInternal = (
 
 export const mapGroupsToCardItems = (
   groups: GroupInternal[],
-  includeLabels?: boolean,
+  includeLabels?: boolean
 ): CardItem[] => {
   return groups.map((group) => {
+    console.log(group.members);
+    const groupLeaderboard = calculateGroupLeaderboard(group.members);
+    const groupMembersSortedByPoints = groupLeaderboard.sort(
+      (a, b) => b.winRatio - a.winRatio
+    );
     return {
       key: group.id,
       title: group.name,
-      labels: includeLabels ? ["Noe relevant info", "Annen info"] : undefined,
+      labels: includeLabels
+        ? [
+            `${group.members.length} medlemmer`,
+            `${groupMembersSortedByPoints[0].username} leder 🏆`,
+          ]
+        : undefined,
       emoji: group.emoji,
       href: `/group/${group.id}`,
     };
@@ -46,10 +59,10 @@ export const mapGameTypesToCardItems = (
 ) => {
   const gameTypeCards: CardItem[] = gameTypes
     ? gameTypes.map((gameType) => ({
-      key: gameType.name.concat(gameType.id),
-      title: gameType.name,
-      emoji: gameType.emoji,
-    }))
+        key: gameType.name.concat(gameType.id),
+        title: gameType.name,
+        emoji: gameType.emoji,
+      }))
     : [];
 
   return [
