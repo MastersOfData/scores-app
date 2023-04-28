@@ -88,23 +88,25 @@ export default function GameResult({ gameId }: GameResultProps) {
               </tr>
             </thead>
             <tbody>
-              {game.players.map((member, index) => {
-                return (
-                  <tr key={index}>
-                    <td>
-                      {index < 3 ? (
-                        <Medal type={Object.values(MedalType)[index]} />
-                      ) : (
-                        index + 1
-                      )}
-                    </td>
-                    <td className={GroupStyles["text-align-left"]}>
-                      {member.username}
-                    </td>
-                    <td>{member.points}</td>
-                  </tr>
-                );
-              })}
+              {game.players
+                .sort((a, b) => b.points - a.points)
+                .map((member, index) => {
+                  return (
+                    <tr key={index}>
+                      <td>
+                        {index < 3 ? (
+                          <Medal type={Object.values(MedalType)[index]} />
+                        ) : (
+                          index + 1
+                        )}
+                      </td>
+                      <td className={GroupStyles["text-align-left"]}>
+                        {member.username}
+                      </td>
+                      <td>{member.points}</td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>

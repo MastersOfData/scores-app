@@ -1,18 +1,37 @@
-
 .header-container {
   width: 100%;
   padding-block: 2rem;
   height: max(4rem, fit-content);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  justify-content: space-between;
+  gap: 6px;
 }
 
-.back-button-container {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: fit-content;
-  display: grid;
-  place-content: center;
+.back-button-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-grow: 0;
+}
+
+.title-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 2;
+  overflow: hidden;
+}
+
+.title-wrapper h1 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.translate-left {
+  transform: translateX(-13px);
+}
+
+.spacing-right {
+  min-width: 13px;
 }

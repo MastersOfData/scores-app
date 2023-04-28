@@ -11,17 +11,19 @@ export type PageWrapperProps = {
   title: string;
   authenticated?: boolean;
   backPath?: string;
+  useHistoryBack?: boolean;
 };
 
 export default function PageWrapper({
   children,
   title,
   authenticated,
-  backPath
+  backPath,
+  useHistoryBack = false,
 }: PageWrapperProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { loading, user } = useUser()
+  const { loading, user } = useUser();
 
   if (loading) return <Spinner />;
 
@@ -32,7 +34,9 @@ export default function PageWrapper({
 
   return (
     <div className={styles.container}>
-      <Header backPath={backPath}>{title}</Header>
+      <Header backPath={backPath} useHistoryBack={useHistoryBack}>
+        {title}
+      </Header>
       {children}
     </div>
   );

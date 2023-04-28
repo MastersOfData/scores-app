@@ -5,7 +5,7 @@ import GameResult from "./GameResult";
 export default function GameResultPage({ params }: PageProps) {
   const { gameId } = params;
   return (
-    <PageWrapper title='Resultat' backPath={`/game/${gameId}`}>
+    <PageWrapper title='Resultat' useHistoryBack>
       <GameResult gameId={gameId} />
     </PageWrapper>
   );

@@ -148,26 +148,28 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
           </tr>
         </thead>
         <tbody>
-          {liveGame.localGameState?.players.map((member, index) => {
-            const score = liveGame.scores.find(
-              (u) => u.playerId === member.playerId
-            );
-            return (
-              <tr key={member.playerId}>
-                <td>
-                  {index < 3 ? (
-                    <Medal type={Object.values(MedalType)[index]} />
-                  ) : (
-                    index + 1
-                  )}
-                </td>
-                <td className={GroupStyles["text-align-left"]}>
-                  {usernameMap.get(member.playerId) ?? member.playerId}
-                </td>
-                <td>{score ? score.points : "-"}</td>
-              </tr>
-            );
-          })}
+          {liveGame.localGameState?.players
+            .sort((a, b) => b.points - a.points)
+            .map((member, index) => {
+              const score = liveGame.scores.find(
+                (u) => u.playerId === member.playerId
+              );
+              return (
+                <tr key={member.playerId}>
+                  <td>
+                    {index < 3 ? (
+                      <Medal type={Object.values(MedalType)[index]} />
+                    ) : (
+                      index + 1
+                    )}
+                  </td>
+                  <td className={GroupStyles["text-align-left"]}>
+                    {usernameMap.get(member.playerId) ?? member.playerId}
+                  </td>
+                  <td>{score ? score.points : "-"}</td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
       <div className={GroupStyles["spacing"]} />
@@ -284,7 +286,7 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
             Fullfør spill
           </Button>
         )}
-        {liveGame.gameIsFinished() && 
+        {liveGame.gameIsFinished() && (
           <Button
             variant={ButtonVariant.Round}
             color={ButtonColor.Green}
@@ -293,7 +295,7 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
           >
             Se resultat
           </Button>
-        }
+        )}
         <ActionLog actions={liveGame.localGameLog} usernameMap={usernameMap} />
       </div>
     </PageWrapper>

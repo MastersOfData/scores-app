@@ -44,10 +44,10 @@ export default function SignInPage() {
         <div className={styles.gamesBanner}>{<GamesBannerIcon />}</div>
         <form onSubmit={handleSignIn} className={styles.form}>
           <div className={styles.inputContainer}>
-            <p className={styles.inputLabel}>Email/Brukernavn:</p>
+            <p className={styles.inputLabel}>Email:</p>
             <Input
               type='text'
-              placeholder='Brukernavn'
+              placeholder='Email...'
               onInput={setUsername}
               className={styles.input}
             />
@@ -56,7 +56,7 @@ export default function SignInPage() {
             <p className={styles.inputLabel}>Passord:</p>
             <Input
               type='password'
-              placeholder='Passord'
+              placeholder='Passord...'
               onInput={setPassword}
               className={styles.input}
             />

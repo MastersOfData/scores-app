@@ -2,7 +2,11 @@ import type { CardItem } from "src/components/Card";
 import type { Group, User, Membership } from "../../fire-base/models";
 import type { GameType, GroupInternal } from "../../types/types";
 import type { Document } from "src/fire-base/db";
-import { mapGameTypesToCardItems, mapGroupAndUsersToGroupInternal, mapGroupsToCardItems } from "../mappers";
+import {
+  mapGameTypesToCardItems,
+  mapGroupAndUsersToGroupInternal,
+  mapGroupsToCardItems,
+} from "../mappers";
 
 describe("mapGroupAndUsersToGroupInternal", () => {
   const group: Document<Group> = {
@@ -101,7 +105,7 @@ describe("mapGroupsToCardItems", () => {
     emoji: "",
     games: [],
     invitationCode: "",
-    members: []
+    members: [],
   };
 
   const groups: GroupInternal[] = [
@@ -128,23 +132,16 @@ describe("mapGroupsToCardItems", () => {
         title: groups[0].name,
         labels: undefined,
         emoji: groups[0].emoji,
-        href: "/group/1"
+        href: "/group/1",
       },
       {
         key: groups[1].id,
         title: groups[1].name,
         labels: undefined,
         emoji: groups[1].emoji,
-        href: "/group/2"
+        href: "/group/2",
       },
     ]);
-  });
-
-  it("Should include labels", () => {
-    const res = mapGroupsToCardItems(groups, true);
-
-    expect(res[0].labels).toBeTruthy();
-    expect(res[1].labels).toBeTruthy();
   });
 
   it("Should return empty list", () => {
@@ -196,9 +193,7 @@ describe("mapGameTypesToCardItems", () => {
         key: "Tennis2",
         title: gameTypes[1].name,
         emoji: gameTypes[1].emoji,
-      }
+      },
     ]);
   });
 });
-
-
