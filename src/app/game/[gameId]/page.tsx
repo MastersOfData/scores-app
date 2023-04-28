@@ -5,7 +5,6 @@ import { Card } from "src/components/Card";
 import { Button, ButtonVariant, ButtonColor } from "src/components/Button";
 import PageWrapper from "src/components/PageWrapper";
 import CardStyles from "src/styles/Card.module.css";
-import ButtonStyles from "src/styles/Button.module.css";
 import SpillStyles from "src/styles/Spill.module.css";
 import {
   useGetGroupsForCurrentUser,
@@ -68,7 +67,8 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
     user &&
     (!access.hasLoaded ||
       groupsWithStatus.status === DataStatus.LOADING ||
-      groupsWithStatus.data === undefined)
+      groupsWithStatus.data === undefined ||
+      usernameMap.size === 0)
   ) {
     return <Spinner />;
   }
@@ -128,9 +128,7 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
               : "Ukjent spilltype"
           }
         />
-        <div
-          className={`${CardStyles["card"]} ${SpillStyles["time-card"]}`}
-        >
+        <div className={`${CardStyles["card"]} ${SpillStyles["time-card"]}`}>
           <div className={CardStyles["card-header-wrapper"]}>
             <h4
               className={`${CardStyles["card-title"]} ${SpillStyles.timeLabel} `}

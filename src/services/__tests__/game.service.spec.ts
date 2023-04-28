@@ -63,7 +63,7 @@ describe("GameService", () => {
 
       await updateGame("game1", {
         status: "FINISHED",
-        winner: undefined,
+        winners: undefined,
       });
 
       expect(mockGetDocument).toBeCalled();
@@ -75,7 +75,7 @@ describe("GameService", () => {
       await expect(
         updateGame("game1", {
           status: "FINISHED",
-          winner: undefined,
+          winners: undefined,
         })
       ).rejects.toMatch("Game not found: game1");
     });

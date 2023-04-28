@@ -61,7 +61,7 @@ export default function RegisterResultPage() {
         winners
       );
 
-      await dispatch(
+      const createdGame = await dispatch(
         registerResultAction({
           userId: user?.uid,
           gameData,
@@ -75,9 +75,7 @@ export default function RegisterResultPage() {
         })
       ).unwrap();
 
-      // TODO: Update route when results page is ready
-      // router.push("/result?gameId=" + createdGame.id);
-      router.push("/group/" + group.id);
+      router.push(`game/${createdGame.id}/result`);
     }
   };
 

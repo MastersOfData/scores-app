@@ -26,7 +26,7 @@ export interface RegisterResultData {
   winners: string[];
 }
 
-export type UpdateGameData = Pick<Game, "winner" | "status">;
+export type UpdateGameData = Pick<Game, "winners" | "status">;
 
 export const createGame = async (userId: string, data: CreateGameData) => {
   const players = data.participants.map((participantId) => ({
@@ -41,7 +41,7 @@ export const createGame = async (userId: string, data: CreateGameData) => {
     adminId: userId,
     players: [...players],
     timestamp: Timestamp.fromDate(new Date()),
-    status: "ONGOING",
+    status: "NOT_STARTED",
     duration: 0,
   };
 
