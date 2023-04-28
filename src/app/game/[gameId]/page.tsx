@@ -5,7 +5,6 @@ import { Card } from "src/components/Card";
 import { Button, ButtonVariant, ButtonColor } from "src/components/Button";
 import PageWrapper from "src/components/PageWrapper";
 import CardStyles from "src/styles/Card.module.css";
-import ButtonStyles from "src/styles/Button.module.css";
 import SpillStyles from "src/styles/Spill.module.css";
 import {
   useGetGroupsForCurrentUser,
@@ -286,6 +285,16 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
             Fullfør spill
           </Button>
         )}
+        {liveGame.gameIsFinished() && 
+          <Button
+            variant={ButtonVariant.Round}
+            color={ButtonColor.Green}
+            href={`/game/${gameId}/result`}
+            withLink={true}
+          >
+            Se resultat
+          </Button>
+        }
         <ActionLog actions={liveGame.localGameLog} usernameMap={usernameMap} />
       </div>
     </PageWrapper>

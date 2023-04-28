@@ -83,11 +83,11 @@ export default function GameResult({ gameId }: GameResultProps) {
         <ul className={styles["actions-list"]}>
           {game.gameActions.map((action, index) => {
             const text = `
-              ${action.actionType === GameActionType.ADD_POINTS ? `added ${action.value} points for ${action.subject?.username}` : ""}
-              ${action.actionType === GameActionType.START ? "started the game" : ""}
-              ${action.actionType === GameActionType.FINISH ? "ended the game" : ""}
-              ${action.actionType === GameActionType.PAUSE ? "paused the game" : ""}
-              ${action.actionType === GameActionType.CONTINUE ? "continued the game" : ""}
+              ${action.actionType === GameActionType.ADD_POINTS ? `la til ${action.value} poeng for ${action.subject?.username}` : ""}
+              ${action.actionType === GameActionType.START ? "startet spillet" : ""}
+              ${action.actionType === GameActionType.FINISH ? "avsluttet spillet" : ""}
+              ${action.actionType === GameActionType.PAUSE ? "satte spillet på pause" : ""}
+              ${action.actionType === GameActionType.CONTINUE ? "fortsatte spillet" : ""}
             `
             return (
               <li key={`game-action-${index}`}><strong>{action.actor?.username}</strong> {text}</li>
