@@ -8,7 +8,7 @@ import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
 import PageWrapper from "src/components/PageWrapper";
 import { usePathname, useRouter } from "next/navigation";
 import { collections, updateDocument } from "src/fire-base/db";
-import { useUser } from "src/services/user.service";
+import { useUser, updateUserName } from "src/services/user.service";
 import { useAppDispatch } from "../../store/hooks";
 import { clearGroupState } from "../../store/groupsInternal.reducer";
 
@@ -35,9 +35,11 @@ export default function AccountPage() {
     if (!username) return;
 
     try {
-      await updateDocument(collections.users, user.uid, {
-        username,
-      });
+      const updated = await updateUserName(username, user.uid)
+      if (!updated){
+        alert("Brukernavn er allerede i bruk")
+        return
+      }
 
       setInfoComponent(
         <p className={`${styles.info} ${styles.success}`}>

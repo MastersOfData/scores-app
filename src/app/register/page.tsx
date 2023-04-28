@@ -20,7 +20,11 @@ export default function RegisterPage() {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     try {
-      await createAccount(email, username, password);
+      const success = await createAccount(email, username, password);
+      if (!success) {
+        alert("Username already exists");
+        return;
+      }
       router.push("/");
     } catch (err) {
       console.error(err);

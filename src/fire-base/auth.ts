@@ -1,5 +1,5 @@
 import { auth } from "./config";
-import { collections, setDocument } from "./db";
+import { collections, setDocument, getDocuments } from "./db";
 import { User } from "./models";
 export { updateProfile, updatePassword } from "firebase/auth";
 import {
@@ -12,6 +12,8 @@ import {
   User as FirebaseUser,
   GoogleAuthProvider,
 } from "firebase/auth";
+import { where } from "firebase/firestore";
+
 
 export async function signIn(email: string, password: string) {
   return await signInWithEmailAndPassword(auth, email, password);
@@ -33,6 +35,13 @@ export async function createAccount(
   username: string,
   password: string
 ) {
+
+  const exist = await userExist(username);
+  if(exist){
+    return false;
+  }
+
+
   const credentials = await createUserWithEmailAndPassword(
     auth,
     email,
@@ -42,6 +51,8 @@ export async function createAccount(
     email,
     username,
   });
+
+  return true;
 }
 
 export function onAuthStateChanged(observer: NextOrObserver<FirebaseUser>) {
@@ -54,4 +65,16 @@ export function getCurrentUser() {
 
 export function isSignedIn() {
   return auth.currentUser !== null;
+}
+
+export const userExist = async (username: string) =>  {
+  const users = await getDocuments({
+    collection: collections.users,
+    constraints: [where("username", "==", username)],
+  });
+  
+  if (users.length > 0) {
+    return true;
+  }
+  return false;
 }
