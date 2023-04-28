@@ -2,8 +2,15 @@ import { useEffect, useState } from "react";
 import { useDispatch, TypedUseSelectorHook, useSelector } from "react-redux";
 import { AppDispatch, StoreType } from "./store";
 import { DataStatus } from "./store.types";
-import { getAllGamesAction, getGameByIdAction } from "./game.reducer";
-import { getAllGroupsAction } from "./groupsInternal.reducer";
+import {
+  getAllGamesAction,
+  getGameByIdAction,
+  updateGameAction,
+} from "./game.reducer";
+import {
+  getAllGroupsAction,
+  updateGroupMembershipsAction,
+} from "./groupsInternal.reducer";
 import { useUser } from "src/services/user.service";
 import {
   addDocument,
@@ -19,6 +26,7 @@ import { userHasAccessToGame } from "../services/game.service";
 import {
   calculateElapsedGameTime,
   calculateLiveScores,
+  recalculateMembershipsResults,
   removeCorruptGameActions,
 } from "../utils/util";
 
@@ -113,6 +121,8 @@ export const useUserHasAccessToGame = (gameId: string) => {
 
 export const useGetLiveGame = (gameId: string) => {
   const { user } = useUser();
+  const dispatch = useAppDispatch();
+  const groups = useGetGroupsForCurrentUser();
 
   const [localGameState, setLocalGameState] = useState<Document<Game> | null>(
     null
@@ -204,8 +214,67 @@ export const useGetLiveGame = (gameId: string) => {
     }
   };
 
-  const startGame = () => changeGameStatus(GameActionType.START);
-  const finishGame = () => changeGameStatus(GameActionType.FINISH);
+  const startGame = async () => {
+    await changeGameStatus(GameActionType.START);
+
+    if (localGameState && groups.data) {
+      await dispatch(
+        updateGameAction({
+          gameId: localGameState.id,
+          gameData: {
+            ...localGameState,
+            status: "ONGOING",
+            winners: [],
+          },
+        })
+      ).unwrap();
+    }
+  };
+  const finishGame = async () => {
+    await changeGameStatus(GameActionType.FINISH);
+    if (localGameState && groups.data) {
+      const scoresSortedByPointsDesc = scores.sort(
+        (a, b) => b.points - a.points
+      );
+
+      let winners: string[] = [];
+      if (scoresSortedByPointsDesc.length > 0) {
+        const winnerScore = scoresSortedByPointsDesc[0].points;
+        winners = scoresSortedByPointsDesc
+          .filter((p) => p.points === winnerScore)
+          .map((p) => p.playerId);
+      } else {
+        winners = localGameState.players.map((p) => p.playerId);
+      }
+
+      await dispatch(
+        updateGameAction({
+          gameId: localGameState.id,
+          gameData: {
+            ...localGameState,
+            status: "FINISHED",
+            winners,
+          },
+        })
+      ).unwrap();
+
+      const group = groups.data.find((g) => g.id === localGameState.groupId);
+      if (!group) return;
+
+      const recalculatedStats = recalculateMembershipsResults(
+        group?.members,
+        localGameState.players.map((p) => p.playerId),
+        winners
+      );
+
+      await dispatch(
+        updateGroupMembershipsAction({
+          memberships: recalculatedStats,
+          groupId: group.id,
+        })
+      ).unwrap();
+    }
+  };
 
   return {
     localGameState,

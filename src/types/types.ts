@@ -9,7 +9,7 @@ export enum GameActionType {
   FINISH = "finish",
 }
 
-export type GameStatus = "FINISHED" | "PAUSED" | "ONGOING";
+export type GameStatus = "FINISHED" | "PAUSED" | "ONGOING" | "NOT_STARTED";
 
 export type PlayerScore = {
   playerId: string;
@@ -49,8 +49,7 @@ export interface UserAccess {
   noAccessReason?: string;
 }
 
-
 export type playerProps = {
   playerId: string;
   playerName: string;
-}
+};

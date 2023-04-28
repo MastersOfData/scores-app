@@ -189,10 +189,7 @@ export const mapGamesToCardItems = (
       }
 
       if (game.status === "ONGOING" && game.duration) {
-        const { minutes, seconds } = convertSecondsToHoursMinutesAndSeconds(
-          game.duration
-        );
-        labels.push(`Varighet: ${minutes}:${seconds}`);
+        labels.push(`Pågår`);
       }
 
       if (game.status === "PAUSED") {
@@ -209,12 +206,19 @@ export const mapGamesToCardItems = (
         } else labels.push("Fullført");
       }
 
+      if (game.status === "NOT_STARTED") {
+        labels.push("Ikke startet");
+      }
+
       return {
         key: game.id,
         title: diffDays === 0 ? "I dag" : `${diffDays} dager siden`,
         labels: labels,
         emoji: gameType?.emoji,
-        href: `/game/${game.id}`,
+        href:
+          game.status === "FINISHED"
+            ? `/game/${game.id}/result`
+            : `/game/${game.id}`,
       };
     });
 };
