@@ -117,27 +117,27 @@ export default function GameResult({ gameId }: GameResultProps) {
               const text = `
               ${
                 action.actionType === GameActionType.ADD_POINTS
-                  ? `added ${action.value} points for ${action.subject?.username}`
+                  ? `la til ${action.value} poeng for ${action.subject?.username}`
                   : ""
               }
               ${
                 action.actionType === GameActionType.START
-                  ? "started the game"
+                  ? "startet spillet"
                   : ""
               }
               ${
                 action.actionType === GameActionType.FINISH
-                  ? "ended the game"
+                  ? "avsluttet spillet"
                   : ""
               }
               ${
                 action.actionType === GameActionType.PAUSE
-                  ? "paused the game"
+                  ? "satte spillet på pause"
                   : ""
               }
               ${
                 action.actionType === GameActionType.CONTINUE
-                  ? "continued the game"
+                  ? "fortsatte spillet"
                   : ""
               }
             `;

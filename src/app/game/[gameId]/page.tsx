@@ -284,6 +284,16 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
             Fullfør spill
           </Button>
         )}
+        {liveGame.gameIsFinished() && 
+          <Button
+            variant={ButtonVariant.Round}
+            color={ButtonColor.Green}
+            href={`/game/${gameId}/result`}
+            withLink={true}
+          >
+            Se resultat
+          </Button>
+        }
         <ActionLog actions={liveGame.localGameLog} usernameMap={usernameMap} />
       </div>
     </PageWrapper>
