@@ -1,7 +1,9 @@
-import { documentId, where } from "firebase/firestore";
+import { documentId, where, CollectionReference, UpdateData, DocumentData  } from "firebase/firestore";
+
 import { useContext } from "react";
 import { userContext } from "src/app/providers";
-import { getDocuments, collections } from "src/fire-base/db";
+import { getDocuments, collections, updateDocument } from "src/fire-base/db";
+import { userExist } from "src/fire-base/auth";
 
 export const useUser = () => useContext(userContext);
 
@@ -35,3 +37,20 @@ export const getMultipleUsernamesFromIds = async (userIds: string[]) => {
   );
   return usernameMap;
 };
+
+export const updateUserName = async (username: string, userId: string) => {
+  const exist = await userExist(username);
+  if (exist) {
+    return false
+  } 
+try{
+    await updateDocument(collections.users, userId, {
+      username,
+    });
+
+    return true
+  }
+  catch{
+    return false
+  }
+}
