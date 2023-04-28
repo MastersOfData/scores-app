@@ -135,9 +135,9 @@ const groups = createSlice({
           (group) => group.id === action.payload.id
         );
 
-        if (state.data && index === -1)
-          state.data = [...state.data, action.payload];
-        else state.data = [action.payload];
+        if (index === -1) {
+          state.data = [...(state.data || []), action.payload];
+        }
       })
       .addCase(joinGroupByInvitationCodeAction.rejected, (state) => {
         state.update.status = DataStatus.ERROR;

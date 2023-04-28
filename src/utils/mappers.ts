@@ -38,13 +38,20 @@ export const mapGroupsToCardItems = (
     const groupMembersSortedByPoints = groupLeaderboard.sort(
       (a, b) => b.winRatio - a.winRatio
     );
+    const highestScore = groupMembersSortedByPoints[0].winRatio;
+    const multipleLeaders =
+      groupMembersSortedByPoints.filter(
+        (member) => member.winRatio === highestScore
+      ).length > 1;
     return {
       key: group.id,
       title: group.name,
       labels: includeLabels
         ? [
             `${group.members.length} medlemmer`,
-            `${groupMembersSortedByPoints[0].username} leder 🏆`,
+            multipleLeaders
+              ? "Klikk for å se gruppedetaljer"
+              : `${groupMembersSortedByPoints[0].username} leder 🏆`,
           ]
         : undefined,
       emoji: group.emoji,
