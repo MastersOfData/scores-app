@@ -33,27 +33,28 @@ export const mapGroupsToCardItems = (
   includeLabels?: boolean
 ): CardItem[] => {
   return groups.map((group) => {
-    console.log(group.members);
-    const groupLeaderboard = calculateGroupLeaderboard(group.members);
-    const groupMembersSortedByPoints = groupLeaderboard.sort(
-      (a, b) => b.winRatio - a.winRatio
-    );
-    const highestScore = groupMembersSortedByPoints[0].winRatio;
-    const multipleLeaders =
-      groupMembersSortedByPoints.filter(
-        (member) => member.winRatio === highestScore
-      ).length > 1;
+    let labels: string[] | undefined;
+    if (includeLabels) {
+      const groupLeaderboard = calculateGroupLeaderboard(group.members);
+      const groupMembersSortedByPoints = groupLeaderboard.sort(
+        (a, b) => b.winRatio - a.winRatio
+      );
+      const highestScore = groupMembersSortedByPoints[0].winRatio;
+      const multipleLeaders =
+        groupMembersSortedByPoints.filter(
+          (member) => member.winRatio === highestScore
+        ).length > 1;
+      labels = [
+        `${group.members.length} medlemmer`,
+        multipleLeaders
+          ? "Klikk for å se gruppedetaljer"
+          : `${groupMembersSortedByPoints[0].username} leder 🏆`,
+      ];
+    }
     return {
       key: group.id,
       title: group.name,
-      labels: includeLabels
-        ? [
-            `${group.members.length} medlemmer`,
-            multipleLeaders
-              ? "Klikk for å se gruppedetaljer"
-              : `${groupMembersSortedByPoints[0].username} leder 🏆`,
-          ]
-        : undefined,
+      labels: includeLabels ? labels : undefined,
       emoji: group.emoji,
       href: `/group/${group.id}`,
     };
