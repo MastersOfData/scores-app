@@ -148,12 +148,9 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
           </tr>
         </thead>
         <tbody>
-          {liveGame.localGameState?.players
-            .sort((a, b) => b.points - a.points)
+          {liveGame.scores
+            ?.sort((a, b) => b.points - a.points)
             .map((member, index) => {
-              const score = liveGame.scores.find(
-                (u) => u.playerId === member.playerId
-              );
               return (
                 <tr key={member.playerId}>
                   <td>
@@ -166,7 +163,7 @@ const GameScreen: FC<GameScreenProps> = ({ params }) => {
                   <td className={GroupStyles["text-align-left"]}>
                     {usernameMap.get(member.playerId) ?? member.playerId}
                   </td>
-                  <td>{score ? score.points : "-"}</td>
+                  <td>{member.points}</td>
                 </tr>
               );
             })}
