@@ -180,6 +180,9 @@ export const useGetLiveGame = (gameId: string) => {
   const addPoints = async (userId: string, points: number) => {
     if (!gameHasStarted() || gameIsFinished()) return;
 
+    const res = await fetch("/api/time")
+    const { time }: { time: number } = await res.json()
+
     if (user) {
       await addDocument(collections.gameActions, {
         subjectId: userId,
@@ -187,7 +190,7 @@ export const useGetLiveGame = (gameId: string) => {
         actionType: GameActionType.ADD_POINTS,
         gameId,
         actorId: user.uid,
-        timestamp: Timestamp.now(),
+        timestamp: Timestamp.fromMillis(time),
       });
     }
   };

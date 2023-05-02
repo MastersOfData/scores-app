@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { FC, FormEvent, useEffect, useState } from "react";
 import { RemoveIcon } from "src/assets/icons/RemoveIcon";
 import { Button, ButtonColor, ButtonVariant } from "src/components/Button";
@@ -21,6 +22,7 @@ interface ManagePageProps {
 }
 
 const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
+  const router = useRouter()
   const groupsWithStatus = useGetGroupsForCurrentUser();
   const dispatch = useAppDispatch();
   const { groupId } = params;
@@ -53,7 +55,10 @@ const ManageGroupPage: FC<ManagePageProps> = ({ params }) => {
             userId: userId,
           })
         ).unwrap();
+
         setErrorMessage("");
+
+        router.refresh()
       } else {
         setErrorMessage(`Fant ingen bruker med brukernavn: ${username}`);
       }
