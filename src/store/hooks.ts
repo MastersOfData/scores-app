@@ -132,6 +132,15 @@ export const useGetLiveGame = (gameId: string) => {
   const [scores, setScores] = useState<PlayerScore[]>([]);
   const [nextPlayersTurn, setNextPlayersTurn] = useState<string | null>(null);
 
+  // useEffect(() => {
+  //   if (localGameState?.players && scores === null) {
+  //     setScores(
+  //       localGameState.players.map((p) => ({ playerId: p.playerId, points: 0 }))
+  //     );
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [localGameState?.players]);
+
   useEffect(() => {
     return subscribeToDocument(collections.games, gameId, setLocalGameState);
   }, [gameId]);
