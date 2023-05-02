@@ -129,17 +129,8 @@ export const useGetLiveGame = (gameId: string) => {
   );
   const [localGameLog, setLocalGameLog] = useState<Document<GameAction>[]>([]);
   const [elapsedGameTime, setElapsedGameTime] = useState(0);
-  const [scores, setScores] = useState<PlayerScore[] | null>(null);
+  const [scores, setScores] = useState<PlayerScore[]>([]);
   const [nextPlayersTurn, setNextPlayersTurn] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (localGameState?.players && scores === null) {
-      setScores(
-        localGameState.players.map((p) => ({ playerId: p.playerId, points: 0 }))
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [localGameState?.players]);
 
   useEffect(() => {
     return subscribeToDocument(collections.games, gameId, setLocalGameState);
@@ -248,7 +239,7 @@ export const useGetLiveGame = (gameId: string) => {
   const finishGame = async () => {
     await changeGameStatus(GameActionType.FINISH);
     if (localGameState && groups.data) {
-      const scoresSortedByPointsDesc = scores!.sort(
+      const scoresSortedByPointsDesc = scores.sort(
         (a, b) => b.points - a.points
       );
 
